@@ -1,27 +1,47 @@
 package software.amazon.fms.notificationchannel;
 
-import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.awssdk.services.fms.FmsClient;
+import software.amazon.awssdk.services.fms.model.*;
+import software.amazon.cloudformation.proxy.*;
 
 public class ReadHandler extends BaseHandler<CallbackContext> {
 
     @Override
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-        final AmazonWebServicesClientProxy proxy,
-        final ResourceHandlerRequest<ResourceModel> request,
-        final CallbackContext callbackContext,
-        final Logger logger) {
+            final AmazonWebServicesClientProxy proxy,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final CallbackContext callbackContext,
+            final Logger logger) {
 
-        final ResourceModel model = request.getDesiredResourceState();
+        // define the fms client
+        final FmsClient client = FmsClient.create();
 
-        // TODO : put your code here
+        // build the GetNotificationChannelRequest
+        final GetNotificationChannelRequest getNotificationChannelRequest =
+                GetNotificationChannelRequest.builder().build();
 
-        return ProgressEvent.<ResourceModel, CallbackContext>builder()
-            .resourceModel(model)
-            .status(OperationStatus.SUCCESS)
-            .build();
+        // get the notification channel
+        final GetNotificationChannelResponse response;
+        try {
+            response = proxy.injectCredentialsAndInvokeV2(getNotificationChannelRequest, client::getNotificationChannel);
+            if (response.snsTopicArn() == null) {
+                return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
+            }
+        } catch(ResourceNotFoundException e) {
+            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
+        } catch(InvalidOperationException e) {
+            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.InvalidRequest, null);
+        } catch(FmsException e) {
+            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.ServiceInternalError, null);
+        }
+
+        // assemble the resource model from the request
+        final ResourceModel resourceModel = ResourceModel.builder()
+                .snsRoleName(response.snsRoleName())
+                .snsTopicArn(response.snsTopicArn())
+                .build();
+
+        // successful read request
+        return ProgressEvent.success(resourceModel, callbackContext);
     }
 }
