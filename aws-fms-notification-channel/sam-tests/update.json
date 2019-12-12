@@ -1,0 +1,17 @@
+{
+    "credentials": {
+        "accessKeyId": "STS CREDENTIALS",
+        "secretAccessKey": "STS CREDENTIALS",
+        "sessionToken": "STS CREDENTIALS"
+    },
+    "action": "CREATE",
+    "request": {
+        "clientRequestToken": "00000000-0000-0000-0000-000000000000",
+        "desiredResourceState": {
+            "SnsRoleName": "REAL IAM FMS ROLE ARN",
+            "SnsTopicArn": "REAL SNS TOPIC ARN"
+        },
+        "logicalResourceIdentifier": "MyResource"
+    },
+    "callbackContext": null
+}
