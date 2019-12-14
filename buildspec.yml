@@ -5,8 +5,13 @@ phases:
       java: openjdk8
       python: 3.7
     commands:
-      - pip install pre-commit
-      - pip install cloudformation-cli-java-plugin
+      - pip install pre-commit cloudformation-cli-java-plugin
   build:
     commands:
+      # run pre-commit on all files in repo
       - pre-commit run --all-files
+      # run through the build lifecycle for the notification channel resource provider
+      - cd "$CODEBUILD_SRC_DIR/aws-fms-notification-channel"
+      - mvn clean verify --no-transfer-progress
+    finally:
+      - cat "$CODEBUILD_SRC_DIR/aws-fms-notification-channel/rpdk.log"
