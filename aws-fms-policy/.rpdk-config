@@ -1,0 +1,15 @@
+{
+    "typeName": "AWS::FMS::Policy",
+    "language": "java",
+    "runtime": "java8",
+    "entrypoint": "software.amazon.fms.policy.HandlerWrapper::handleRequest",
+    "testEntrypoint": "software.amazon.fms.policy.HandlerWrapper::testEntrypoint",
+    "settings": {
+        "namespace": [
+            "software",
+            "amazon",
+            "fms",
+            "policy"
+        ]
+    }
+}
