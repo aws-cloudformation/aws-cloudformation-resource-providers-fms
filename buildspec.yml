@@ -13,5 +13,9 @@ phases:
       # run through the build lifecycle for the notification channel resource provider
       - cd "$CODEBUILD_SRC_DIR/aws-fms-notificationchannel"
       - mvn clean verify --no-transfer-progress
+      # run through the build lifecycle for the policy resource provider
+      - cd "$CODEBUILD_SRC_DIR/aws-fms-policy"
+      - mvn clean verify --no-transfer-progress
     finally:
       - cat "$CODEBUILD_SRC_DIR/aws-fms-notificationchannel/rpdk.log"
+      - cat "$CODEBUILD_SRC_DIR/aws-fms-policy/rpdk.log"
