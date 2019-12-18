@@ -1,16 +1,29 @@
 package software.amazon.fms.notificationchannel;
 
 import org.mockito.ArgumentMatchers;
-import software.amazon.awssdk.services.fms.model.*;
-import software.amazon.cloudformation.proxy.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.services.fms.model.FmsException;
+import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
+import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
+import software.amazon.awssdk.services.fms.model.InvalidOperationException;
+import software.amazon.awssdk.services.fms.model.PutNotificationChannelRequest;
+import software.amazon.awssdk.services.fms.model.PutNotificationChannelResponse;
+import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
+import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.HandlerErrorCode;
+import software.amazon.cloudformation.proxy.Logger;
+import software.amazon.cloudformation.proxy.OperationStatus;
+import software.amazon.cloudformation.proxy.ProgressEvent;
+import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class UpdateHandlerTest {
