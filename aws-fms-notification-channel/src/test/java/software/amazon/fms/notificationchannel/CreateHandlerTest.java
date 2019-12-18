@@ -192,41 +192,4 @@ public class CreateHandlerTest {
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.InvalidRequest);
     }
-
-    @Test
-    public void handleRequestCreateFmsException() {
-        // stub the response for the read request
-        final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder().build();
-        doReturn(describeGetResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(GetNotificationChannelRequest.class),
-                        ArgumentMatchers.any()
-                );
-
-        // mock a FmsException from the FMS API
-        doThrow(FmsException.builder().build())
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutNotificationChannelRequest.class),
-                        ArgumentMatchers.any()
-                );
-
-        // create the create request and send it
-        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
-                .build();
-        final ProgressEvent<ResourceModel, CallbackContext> response =
-                handler.handleRequest(proxy, request, null, logger);
-
-        // assertions
-        assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
-        assertThat(response.getCallbackContext()).isNull();
-        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isNull();
-        assertThat(response.getResourceModels()).isNull();
-        assertThat(response.getMessage()).isNull();
-        assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.ServiceInternalError);
-    }
 }
