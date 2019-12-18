@@ -1,58 +1,35 @@
 package software.amazon.fms.notificationchannel;
 
-import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.DeleteNotificationChannelRequest;
-import software.amazon.awssdk.services.fms.model.FmsException;
-import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
+import software.amazon.awssdk.services.fms.model.DeleteNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
-import software.amazon.awssdk.services.fms.model.InvalidOperationException;
-import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.HandlerErrorCode;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
-public class DeleteHandler extends BaseHandler<CallbackContext> {
+public class DeleteHandler extends NotificationChannelHandler {
 
     @Override
-    public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
+    protected boolean throwNotFoundException() {
+        return true;
+    }
+
+    @Override
+    protected DeleteNotificationChannelResponse makeRequest(
             final AmazonWebServicesClientProxy proxy,
-            final ResourceHandlerRequest<ResourceModel> request,
-            final CallbackContext callbackContext,
-            final Logger logger) {
+            final ResourceModel desiredResourceState,
+            final GetNotificationChannelResponse getNotificationChannelResponse) {
 
-        // get the desired resource model and fms client
-        final ResourceModel model = request.getDesiredResourceState();
-        final FmsClient client = FmsClient.create();
-
-        // build the GetNotificationChannelRequest
-        final GetNotificationChannelRequest getNotificationChannelRequest =
-                GetNotificationChannelRequest.builder().build();
-
-        // build the DeleteNotificationChannelRequest
+        // send the delete request
         final DeleteNotificationChannelRequest deleteNotificationChannelRequest =
                 DeleteNotificationChannelRequest.builder().build();
+        return proxy.injectCredentialsAndInvokeV2(deleteNotificationChannelRequest, client::deleteNotificationChannel);
+    }
 
-        // inject creds from proxy and make request
-        try {
-            // get the notification channel before attempting to delete and fail if it does not exists
-            final GetNotificationChannelResponse response =
-                    proxy.injectCredentialsAndInvokeV2(getNotificationChannelRequest, client::getNotificationChannel);
-            if (response.snsTopicArn() == null) {
-                return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
-            }
+    @Override
+    protected ResourceModel constructSuccessResourceState(
+            ResourceModel desiredResourceState,
+            final GetNotificationChannelResponse getNotificationChannelResponse) {
 
-            proxy.injectCredentialsAndInvokeV2(deleteNotificationChannelRequest, client::deleteNotificationChannel);
-        } catch(ResourceNotFoundException e) {
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
-        } catch(InvalidOperationException e) {
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.InvalidRequest, null);
-        } catch(FmsException e) {
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.ServiceInternalError, null);
-        }
-
-        // successful deletion request
-        return ProgressEvent.success(model, callbackContext);
+        // use the desired resource state as the post-delete resource state
+        return desiredResourceState;
     }
 }
