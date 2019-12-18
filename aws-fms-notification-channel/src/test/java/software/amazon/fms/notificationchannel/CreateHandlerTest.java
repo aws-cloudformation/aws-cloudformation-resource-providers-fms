@@ -1,7 +1,13 @@
 package software.amazon.fms.notificationchannel;
 
 import org.mockito.ArgumentMatchers;
-import software.amazon.awssdk.services.fms.model.*;
+import software.amazon.awssdk.services.fms.model.FmsException;
+import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
+import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
+import software.amazon.awssdk.services.fms.model.InvalidOperationException;
+import software.amazon.awssdk.services.fms.model.PutNotificationChannelRequest;
+import software.amazon.awssdk.services.fms.model.PutNotificationChannelResponse;
+import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import software.amazon.cloudformation.proxy.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest {

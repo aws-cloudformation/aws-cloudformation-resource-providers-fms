@@ -38,14 +38,12 @@
         },
         "read": {
             "permissions": [
-                "fms:GetNotificationChannel",
-                "iam:PassRole"
+                "fms:GetNotificationChannel"
             ]
         },
         "delete": {
             "permissions": [
-                "fms:DeleteNotificationChannel",
-                "iam:PassRole"
+                "fms:DeleteNotificationChannel"
             ]
         }
     },
