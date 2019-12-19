@@ -1,12 +1,9 @@
 package software.amazon.fms.notificationchannel;
 
-import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.fms.FmsClient;
-import software.amazon.awssdk.services.fms.model.FmsException;
 import software.amazon.awssdk.services.fms.model.FmsResponse;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
-import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -18,10 +15,10 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 public abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
 
     /** FMS client instance to make requests on behalf of CloudFormation. */
-    protected FmsClient client;
+    protected final FmsClient client;
 
     /** Standard read request to check pre-action resource state. */
-    private GetNotificationChannelRequest getNotificationChannelRequest;
+    private final GetNotificationChannelRequest getNotificationChannelRequest;
 
     /** Constructor. */
     NotificationChannelHandler() {
