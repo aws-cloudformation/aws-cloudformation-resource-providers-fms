@@ -26,7 +26,7 @@ public class DeleteHandler extends NotificationChannelHandler {
 
     @Override
     protected ResourceModel constructSuccessResourceState(
-            ResourceModel desiredResourceState,
+            final ResourceModel desiredResourceState,
             final GetNotificationChannelResponse getNotificationChannelResponse) {
 
         // use the desired resource state as the post-delete resource state

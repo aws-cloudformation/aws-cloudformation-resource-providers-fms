@@ -22,7 +22,7 @@ public class ReadHandler extends NotificationChannelHandler {
 
     @Override
     protected ResourceModel constructSuccessResourceState(
-            ResourceModel desiredResourceState,
+            final ResourceModel desiredResourceState,
             final GetNotificationChannelResponse getNotificationChannelResponse) {
 
         // assemble the post-read resource state from the read request
