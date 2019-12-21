@@ -1,104 +1,190 @@
 {
     "typeName": "AWS::FMS::Policy",
-    "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
+    "description": "Creates an AWS Firewall Manager policy.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-fms.git",
     "definitions": {
-        "InitechDateFormat": {
-            "$comment": "Use the `definitions` block to provide shared resource property schemas",
+        "AccountId": {
+            "description": "An AWS account ID.",
             "type": "string",
-            "format": "date-time"
+            "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+            "minLength": 1,
+            "maxLength": 1024
         },
-        "Memo": {
+        "AccountMap": {
+            "description": "An AWS account mappings.",
             "type": "object",
             "properties": {
-                "Heading": {
-                    "type": "string"
-                },
-                "Body": {
-                    "type": "string"
+                "ACCOUNT": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AccountId"
+                    }
                 }
             },
-            "additionalProperties": false
+            "required": [
+                "ACCOUNT"
+            ]
+        },
+        "ResourceTag": {
+            "description": "An AWS tag.",
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+                    "minLength": 1,
+                    "maxLength": 128
+                },
+                "Value": {
+                    "type": "string",
+                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+                    "maxLength": 256
+                }
+            },
+            "required": [
+                "Key",
+                "Value"
+            ]
+        },
+        "ResourceType": {
+            "description": "An AWS resource type",
+            "type": "string",
+            "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+            "minLength": 1,
+            "maxLength": 128
+        },
+        "ResourceArn": {
+            "description": "A resource ARN.",
+            "type": "string",
+            "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+            "minLength": 1,
+            "maxLength": 1024
         }
     },
     "properties": {
-        "TPSCode": {
-            "description": "A TPS Code is automatically generated on creation and assigned as the unique identifier.",
-            "type": "string",
-            "pattern": "^[A-Z]{3,5}[0-9]{8}-[0-9]{4}$"
-        },
-        "Title": {
-            "description": "The title of the TPS report is a mandatory element.",
-            "type": "string",
-            "minLength": 20,
-            "maxLength": 250
-        },
-        "CoverSheetIncluded": {
-            "description": "Required for all TPS Reports submitted after 2/19/1999",
-            "type": "boolean"
-        },
-        "DueDate": {
-            "$ref": "#/definitions/InitechDateFormat"
-        },
-        "ApprovalDate": {
-            "$ref": "#/definitions/InitechDateFormat"
-        },
-        "Memo": {
-            "$ref": "#/definitions/Memo"
-        },
-        "SecondCopyOfMemo": {
-            "description": "In case you didn't get the first one.",
-            "$ref": "#/definitions/Memo"
-        },
-        "TestCode": {
-            "type": "string",
-            "enum": [
-                "NOT_STARTED",
-                "CANCELLED"
+        "Policy": {
+            "type": "object",
+            "properties": {
+                "ExcludeMap": {
+                    "$ref": "#/definitions/AccountMap"
+                },
+                "ExcludeResourceTags": {
+                    "type": "boolean"
+                },
+                "IncludeMap": {
+                    "$ref": "#/definitions/AccountMap"
+                },
+                "PolicyId": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9A-Z-]{36}$",
+                    "minLength": 36,
+                    "maxLength": 36
+                },
+                "PolicyName": {
+                    "type": "string",
+                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+                    "minLength": 1,
+                    "maxLength": 1024
+                },
+                "PolicyUpdateToken": {
+                    "type": "string",
+                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+                    "minLength": 1,
+                    "maxLength": 1024
+                },
+                "RemediationEnabled": {
+                    "type": "boolean"
+                },
+                "ResourceTags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ResourceTag"
+                    },
+                    "maxLength": 8
+                },
+                "ResourceType": {
+                    "$ref": "#/definitions/ResourceType"
+                },
+                "ResourceTypeList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ResourceType"
+                    }
+                },
+                "SecurityServicePolicyData": {
+                    "type": "object",
+                    "properties": {
+                        "ManagedServiceData": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1024
+                        },
+                        "Type": {
+                            "type": "string",
+                            "enum": [
+                                "WAF",
+                                "SHIELD_ADVANCED",
+                                "SECURITY_GROUPS_COMMON",
+                                "SECURITY_GROUPS_CONTENT_AUDIT",
+                                "SECURITY_GROUPS_USAGE_AUDIT"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "Type"
+                    ]
+                }
+            },
+            "required": [
+                "ExcludeResourceTags",
+                "PolicyName",
+                "RemediationEnabled",
+                "ResourceType",
+                "SecurityServicePolicyData"
             ]
         },
-        "Authors": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
+        "PolicyArn": {
+            "$ref": "#/definitions/ResourceArn"
         }
     },
     "additionalProperties": false,
     "required": [
-        "TestCode",
-        "Title"
+        "Policy"
     ],
     "readOnlyProperties": [
-        "/properties/TPSCode"
+        "/properties/Policy/PolicyId",
+        "/properties/Policy/PolicyUpdateToken",
+        "/properties/PolicyArn"
     ],
     "primaryIdentifier": [
-        "/properties/TPSCode"
+        "/properties/Policy/PolicyId"
     ],
     "handlers": {
         "create": {
             "permissions": [
-                "initech:CreateReport"
-            ]
-        },
-        "read": {
-            "permissions": [
-                "initech:DescribeReport"
+                "fms:PutPolicy",
+                "iam:PassRole"
             ]
         },
         "update": {
             "permissions": [
-                "initech:UpdateReport"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "initech:DeleteReport"
+                "fms:PutPolicy",
+                "iam:PassRole"
             ]
         },
         "list": {
             "permissions": [
-                "initech:ListReports"
+                "fms:ListPolicies"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "fms:GetPolicy"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "fms:DeletePolicy"
             ]
         }
     }
