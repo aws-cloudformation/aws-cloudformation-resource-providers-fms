@@ -1,27 +1,26 @@
 package software.amazon.fms.policy;
 
+import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
+import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
-public class DeleteHandler extends BaseHandler<CallbackContext> {
+public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
 
     @Override
-    public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-        final AmazonWebServicesClientProxy proxy,
-        final ResourceHandlerRequest<ResourceModel> request,
-        final CallbackContext callbackContext,
-        final Logger logger) {
+    protected DeletePolicyResponse makeRequest(
+            final AmazonWebServicesClientProxy proxy,
+            final ResourceModel desiredResourceState) {
 
-        final ResourceModel model = request.getDesiredResourceState();
+        final DeletePolicyRequest deletePolicyRequest = DeletePolicyRequest.builder()
+                .policyId(desiredResourceState.getPolicy().getPolicyId())
+                .deleteAllPolicyResources(true)
+                .build();
+        return proxy.injectCredentialsAndInvokeV2(deletePolicyRequest, client::deletePolicy);
+    }
 
-        // TODO : put your code here
+    @Override
+    protected ResourceModel constructSuccessResourceModel(final DeletePolicyResponse response) {
 
-        return ProgressEvent.<ResourceModel, CallbackContext>builder()
-            .resourceModel(model)
-            .status(OperationStatus.SUCCESS)
-            .build();
+        return ResourceModel.builder().build();
     }
 }

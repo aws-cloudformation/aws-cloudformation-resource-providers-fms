@@ -1,27 +1,43 @@
 package software.amazon.fms.policy;
 
+import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
+import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
+import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
+import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.fms.policy.helpers.CfnHelper;
+import software.amazon.fms.policy.helpers.FmsHelper;
 
-public class UpdateHandler extends BaseHandler<CallbackContext> {
+public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
 
     @Override
-    public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-        final AmazonWebServicesClientProxy proxy,
-        final ResourceHandlerRequest<ResourceModel> request,
-        final CallbackContext callbackContext,
-        final Logger logger) {
+    protected PutPolicyResponse makeRequest(
+            final AmazonWebServicesClientProxy proxy,
+            final ResourceModel desiredResourceState) {
 
-        final ResourceModel model = request.getDesiredResourceState();
+        // make a read request to retrieve an up-to-date PolicyUpdateToken
+        final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
+                .policyId(desiredResourceState.getPolicy().getPolicyId())
+                .build();
+        GetPolicyResponse response = proxy.injectCredentialsAndInvokeV2(getPolicyRequest, client::getPolicy);
 
-        // TODO : put your code here
+        // update the resource model policy with the PolicyUpdateToken
+        Policy policy = desiredResourceState.getPolicy();
+        policy.setPolicyUpdateToken(response.policy().policyUpdateToken());
 
-        return ProgressEvent.<ResourceModel, CallbackContext>builder()
-            .resourceModel(model)
-            .status(OperationStatus.SUCCESS)
-            .build();
+        // make the update request
+        final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
+                .policy(FmsHelper.convertCFNPolicyToFMSPolicy(policy))
+                .build();
+        return proxy.injectCredentialsAndInvokeV2(putPolicyRequest, client::putPolicy);
+    }
+
+    @Override
+    protected ResourceModel constructSuccessResourceModel(final PutPolicyResponse response) {
+
+        return ResourceModel.builder()
+                .policy(CfnHelper.convertFMSPolicyToCFNPolicy(response.policy()))
+                .policyArn(response.policyArn())
+                .build();
     }
 }
