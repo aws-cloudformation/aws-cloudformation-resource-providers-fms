@@ -151,7 +151,6 @@ public class CfnSampleHelper extends BaseSampleHelper {
 
         Policy policy = resourceModel.getPolicy();
         policy.setPolicyId(samplePolicyId);
-        policy.setPolicyUpdateToken(samplePolicyUpdateToken);
         return ResourceModel.builder()
                 .policy(policy)
                 .policyArn(samplePolicyArn)

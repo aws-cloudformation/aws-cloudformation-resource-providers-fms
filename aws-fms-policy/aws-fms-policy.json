@@ -86,12 +86,6 @@
                     "minLength": 1,
                     "maxLength": 1024
                 },
-                "PolicyUpdateToken": {
-                    "type": "string",
-                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
-                    "minLength": 1,
-                    "maxLength": 1024
-                },
                 "RemediationEnabled": {
                     "type": "boolean"
                 },
