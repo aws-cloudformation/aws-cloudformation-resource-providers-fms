@@ -1,30 +1,29 @@
 package software.amazon.fms.policy;
 
+import software.amazon.awssdk.services.fms.model.ListPoliciesRequest;
+import software.amazon.awssdk.services.fms.model.ListPoliciesResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.fms.policy.helpers.CfnHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListHandler extends BaseHandler<CallbackContext> {
+public class ListHandler extends PolicyHandler<ListPoliciesResponse> {
 
     @Override
-    public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-        final AmazonWebServicesClientProxy proxy,
-        final ResourceHandlerRequest<ResourceModel> request,
-        final CallbackContext callbackContext,
-        final Logger logger) {
+    protected ListPoliciesResponse makeRequest(
+            final AmazonWebServicesClientProxy proxy,
+            final ResourceModel desiredResourceState) {
 
-        final List<ResourceModel> models = new ArrayList<>();
+        final ListPoliciesRequest listPoliciesRequest = ListPoliciesRequest.builder().build();
+        return proxy.injectCredentialsAndInvokeV2(listPoliciesRequest, client::listPolicies);
+    }
 
-        // TODO : put your code here
+    @Override
+    protected List<ResourceModel> constructSuccessResourceModels(final ListPoliciesResponse response) {
 
-        return ProgressEvent.<ResourceModel, CallbackContext>builder()
-            .resourceModels(models)
-            .status(OperationStatus.SUCCESS)
-            .build();
+        List<ResourceModel> resourceModels = new ArrayList<>();
+        response.policyList().forEach(p -> resourceModels.add(CfnHelper.convertFMSPolicySummaryToCFNResourceModel(p)));
+        return resourceModels;
     }
 }

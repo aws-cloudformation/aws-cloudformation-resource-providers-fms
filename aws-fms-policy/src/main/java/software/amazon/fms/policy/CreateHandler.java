@@ -1,27 +1,30 @@
 package software.amazon.fms.policy;
 
+import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
+import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.fms.policy.helpers.CfnHelper;
+import software.amazon.fms.policy.helpers.FmsHelper;
 
-public class CreateHandler extends BaseHandler<CallbackContext> {
+public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
 
     @Override
-    public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-        final AmazonWebServicesClientProxy proxy,
-        final ResourceHandlerRequest<ResourceModel> request,
-        final CallbackContext callbackContext,
-        final Logger logger) {
+    protected PutPolicyResponse makeRequest(
+            final AmazonWebServicesClientProxy proxy,
+            final ResourceModel desiredResourceState) {
 
-        final ResourceModel model = request.getDesiredResourceState();
+        final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
+                .policy(FmsHelper.convertCFNPolicyToFMSPolicy(desiredResourceState.getPolicy()))
+                .build();
+        return proxy.injectCredentialsAndInvokeV2(putPolicyRequest, client::putPolicy);
+    }
 
-        // TODO : put your code here
+    @Override
+    protected ResourceModel constructSuccessResourceModel(final PutPolicyResponse response) {
 
-        return ProgressEvent.<ResourceModel, CallbackContext>builder()
-            .resourceModel(model)
-            .status(OperationStatus.SUCCESS)
-            .build();
+        return ResourceModel.builder()
+                .policy(CfnHelper.convertFMSPolicyToCFNPolicy(response.policy()))
+                .policyArn(response.policyArn())
+                .build();
     }
 }
