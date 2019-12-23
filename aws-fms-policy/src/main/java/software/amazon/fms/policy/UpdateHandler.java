@@ -21,13 +21,9 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                 .build();
         GetPolicyResponse response = proxy.injectCredentialsAndInvokeV2(getPolicyRequest, client::getPolicy);
 
-        // update the resource model policy with the PolicyUpdateToken
-        Policy policy = desiredResourceState.getPolicy();
-        policy.setPolicyUpdateToken(response.policy().policyUpdateToken());
-
         // make the update request
         final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
-                .policy(FmsHelper.convertCFNPolicyToFMSPolicy(policy))
+                .policy(FmsHelper.convertCFNPolicyToFMSPolicy(desiredResourceState.getPolicy(), response.policy().policyUpdateToken()))
                 .build();
         return proxy.injectCredentialsAndInvokeV2(putPolicyRequest, client::putPolicy);
     }

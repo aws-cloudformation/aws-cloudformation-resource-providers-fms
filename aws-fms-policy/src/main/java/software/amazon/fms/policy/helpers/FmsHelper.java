@@ -24,13 +24,7 @@ public class FmsHelper {
         }};
     }
 
-    /**
-     * Convert a CFN policy (from the resource provider) to an FMS policy (from the FMS SDK).
-     * @param policy CFN policy that was converted from.
-     * @return FMS policy that was converted to.
-     */
-    public static Policy convertCFNPolicyToFMSPolicy(software.amazon.fms.policy.Policy policy) {
-
+    private static Policy.Builder convertCFNPolicyToBuilder(software.amazon.fms.policy.Policy policy) {
         // assemble the security service policy data
         SecurityServicePolicyData.Builder securityServicePolicyData = SecurityServicePolicyData.builder()
                 .type(policy.getSecurityServicePolicyData().getType());
@@ -60,9 +54,6 @@ public class FmsHelper {
         if (policy.getPolicyId() != null) {
             builder.policyId(policy.getPolicyId());
         }
-        if (policy.getPolicyUpdateToken() != null) {
-            builder.policyUpdateToken(policy.getPolicyUpdateToken());
-        }
         if (policy.getResourceTags() != null) {
             Collection<ResourceTag> resourceTags = new ArrayList<>();
             policy.getResourceTags().forEach(rt -> resourceTags.add(
@@ -78,7 +69,31 @@ public class FmsHelper {
             builder.resourceTypeList(resourceTypeList);
         }
 
-        // build and return the policy
-        return builder.build();
+        // return the policy builder
+        return builder;
+    }
+
+    /**
+     * Convert a CFN policy (from the resource provider) to an FMS policy (from the FMS SDK).
+     * @param policy CFN policy that was converted from.
+     * @return FMS policy that was converted to.
+     */
+    public static Policy convertCFNPolicyToFMSPolicy(software.amazon.fms.policy.Policy policy) {
+
+        return convertCFNPolicyToBuilder(policy).build();
+    }
+
+    /**
+     * Convert a CFN policy (from the resource provider) to an FMS policy (from the FMS SDK) and inject a
+     * policyUpdateToken.
+     * @param policy CFN policy that was converted from.
+     * @param policyUpdateToken The Policy update token to inject into the FMS policy
+     * @return FMS policy that was converted to with the policyUpdateToken.
+     */
+    public static Policy convertCFNPolicyToFMSPolicy(
+            software.amazon.fms.policy.Policy policy,
+            String policyUpdateToken) {
+
+        return convertCFNPolicyToBuilder(policy).policyUpdateToken(policyUpdateToken).build();
     }
 }

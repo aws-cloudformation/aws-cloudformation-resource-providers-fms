@@ -35,8 +35,7 @@ public class CfnHelper {
                 .remediationEnabled(policy.remediationEnabled())
                 .resourceType(policy.resourceType())
                 .securityServicePolicyData(securityServicePolicyData.build())
-                .policyId(policy.policyId())
-                .policyUpdateToken(policy.policyUpdateToken());
+                .policyId(policy.policyId());
 
         // check each optional parameter and add it if it exists
         if (!policy.excludeMap().isEmpty()) {
