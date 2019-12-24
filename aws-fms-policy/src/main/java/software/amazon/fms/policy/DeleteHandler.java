@@ -12,7 +12,7 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
             final ResourceModel desiredResourceState) {
 
         final DeletePolicyRequest deletePolicyRequest = DeletePolicyRequest.builder()
-                .policyId(desiredResourceState.getPolicy().getPolicyId())
+                .policyId(desiredResourceState.getPolicyId())
                 .deleteAllPolicyResources(true)
                 .build();
         return proxy.injectCredentialsAndInvokeV2(deletePolicyRequest, client::deletePolicy);

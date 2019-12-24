@@ -17,13 +17,13 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
 
         // make a read request to retrieve an up-to-date PolicyUpdateToken
         final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
-                .policyId(desiredResourceState.getPolicy().getPolicyId())
+                .policyId(desiredResourceState.getPolicyId())
                 .build();
         GetPolicyResponse response = proxy.injectCredentialsAndInvokeV2(getPolicyRequest, client::getPolicy);
 
         // make the update request
         final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
-                .policy(FmsHelper.convertCFNPolicyToFMSPolicy(desiredResourceState.getPolicy(), response.policy().policyUpdateToken()))
+                .policy(FmsHelper.convertCFNResourceModelToFMSPolicy(desiredResourceState, response.policy().policyUpdateToken()))
                 .build();
         return proxy.injectCredentialsAndInvokeV2(putPolicyRequest, client::putPolicy);
     }
@@ -31,9 +31,8 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(final PutPolicyResponse response) {
 
-        return ResourceModel.builder()
-                .policy(CfnHelper.convertFMSPolicyToCFNPolicy(response.policy()))
-                .policyArn(response.policyArn())
-                .build();
+        ResourceModel resourceModel = CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy());
+        resourceModel.setPolicyArn(response.policyArn());
+        return resourceModel;
     }
 }

@@ -13,7 +13,7 @@ public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
             final ResourceModel desiredResourceState) {
 
         final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
-                .policyId(desiredResourceState.getPolicy().getPolicyId())
+                .policyId(desiredResourceState.getPolicyId())
                 .build();
         return proxy.injectCredentialsAndInvokeV2(getPolicyRequest, client::getPolicy);
     }
@@ -21,9 +21,8 @@ public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(final GetPolicyResponse response) {
 
-        return ResourceModel.builder()
-                .policy(CfnHelper.convertFMSPolicyToCFNPolicy(response.policy()))
-                .policyArn(response.policyArn())
-                .build();
+        ResourceModel resourceModel = CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy());
+        resourceModel.setPolicyArn(response.policyArn());
+        return resourceModel;
     }
 }
