@@ -14,7 +14,7 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
             final ResourceModel desiredResourceState) {
 
         final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
-                .policy(FmsHelper.convertCFNPolicyToFMSPolicy(desiredResourceState.getPolicy()))
+                .policy(FmsHelper.convertCFNResourceModelToFMSPolicy(desiredResourceState))
                 .build();
         return proxy.injectCredentialsAndInvokeV2(putPolicyRequest, client::putPolicy);
     }
@@ -22,9 +22,8 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(final PutPolicyResponse response) {
 
-        return ResourceModel.builder()
-                .policy(CfnHelper.convertFMSPolicyToCFNPolicy(response.policy()))
-                .policyArn(response.policyArn())
-                .build();
+        ResourceModel resourceModel = CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy());
+        resourceModel.setPolicyArn(response.policyArn());
+        return resourceModel;
     }
 }
