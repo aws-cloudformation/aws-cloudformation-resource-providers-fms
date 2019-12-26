@@ -1,0 +1,23 @@
+{
+    "credentials": {
+        "accessKeyId": "STS CREDENTIALS",
+        "secretAccessKey": "STS CREDENTIALS",
+        "sessionToken": "STS CREDENTIALS"
+    },
+    "action": "CREATE",
+    "request": {
+        "clientRequestToken": "00000000-0000-0000-0000-000000000000",
+        "desiredResourceState": {
+            "ExcludeResourceTags": false,
+            "PolicyName": "TEST",
+            "RemediationEnabled": false,
+            "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "SecurityServicePolicyData": {
+                "ManagedServiceData": "{\"type\":\"SHIELD_ADVANCED\"}",
+                "Type": "SHIELD_ADVANCED"
+            }
+        },
+        "logicalResourceIdentifier": "MyResource"
+    },
+    "callbackContext": null
+}

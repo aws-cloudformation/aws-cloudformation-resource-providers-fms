@@ -1,0 +1,25 @@
+{
+    "credentials": {
+        "accessKeyId": "STS CREDENTIALS",
+        "secretAccessKey": "STS CREDENTIALS",
+        "sessionToken": "STS CREDENTIALS"
+    },
+    "action": "UPDATE",
+    "request": {
+        "clientRequestToken": "00000000-0000-0000-0000-000000000000",
+        "desiredResourceState": {
+            "ExcludeResourceTags": false,
+            "PolicyId": "REAL POLICY ID",
+            "PolicyName": "CHANGED",
+            "PolicyUpdateToken": "REAL POLICY UPDATE TOKEN",
+            "RemediationEnabled": false,
+            "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "SecurityServicePolicyData": {
+                "ManagedServiceData": "{\"type\":\"SHIELD_ADVANCED\"}",
+                "Type": "SHIELD_ADVANCED"
+            }
+        },
+        "logicalResourceIdentifier": "MyResource"
+    },
+    "callbackContext": null
+}
