@@ -1,0 +1,16 @@
+{
+    "credentials": {
+        "accessKeyId": "STS CREDENTIALS",
+        "secretAccessKey": "STS CREDENTIALS",
+        "sessionToken": "STS CREDENTIALS"
+    },
+    "action": "DELETE",
+    "request": {
+        "clientRequestToken": "00000000-0000-0000-0000-000000000000",
+        "desiredResourceState": {
+            "PolicyId": "REAL POLICY ID"
+        },
+        "logicalResourceIdentifier": "MyResource"
+    },
+    "callbackContext": null
+}
