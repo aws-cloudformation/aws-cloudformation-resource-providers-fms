@@ -1,6 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
-public class BaseSampleHelper {
+class BaseSampleHelper {
     public final static String sampleAccountId = "000000000000";
     public final static String sampleManagedServiceData = "{\"type\":\"SHIELD_ADVANCED\"}";
     public final static String samplePolicyType = "SHIELD_ADVANCED";

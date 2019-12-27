@@ -19,7 +19,7 @@ public class FmsHelper {
      * @param accounts Account list to map.
      * @return Map with one key, ACCOUNT, containing a list of account IDs.
      */
-    protected static Map<CustomerPolicyScopeIdType, ? extends List<String>> mapAccounts(List<String> accounts) {
+    static Map<CustomerPolicyScopeIdType, ? extends List<String>> mapAccounts(List<String> accounts) {
         return new HashMap<CustomerPolicyScopeIdType, List<String>>() {{
             put(CustomerPolicyScopeIdType.fromValue("ACCOUNT"), new ArrayList<>(accounts));
         }};

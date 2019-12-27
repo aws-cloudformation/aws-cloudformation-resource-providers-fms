@@ -11,6 +11,7 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
             final AmazonWebServicesClientProxy proxy,
             final ResourceModel desiredResourceState) {
 
+        // make the delete request
         final DeletePolicyRequest deletePolicyRequest = DeletePolicyRequest.builder()
                 .policyId(desiredResourceState.getPolicyId())
                 .deleteAllPolicyResources(true)
@@ -21,6 +22,7 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(final DeletePolicyResponse response) {
 
+        // create an empty resource model since the resource no longer exists
         return ResourceModel.builder().build();
     }
 }

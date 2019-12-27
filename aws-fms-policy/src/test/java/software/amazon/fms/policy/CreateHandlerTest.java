@@ -28,7 +28,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateHandlerTest {
+class CreateHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -39,14 +39,14 @@ public class CreateHandlerTest {
     private CreateHandler handler;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new CreateHandler();
     }
 
     @Test
-    public void handleRequestRequiredParametersSuccess() {
+    void handleRequestRequiredParametersSuccess() {
         // stub the response for the create request
         final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersResponse();
         doReturn(describeResponse)
@@ -81,7 +81,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestAllParametersSuccess() {
+    void handleRequestAllParametersSuccess() {
         // stub the response for the create request
         final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyAllParametersResponse();
         doReturn(describeResponse)
@@ -116,7 +116,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestResourceNotFoundException() {
+    void handleRequestResourceNotFoundException() {
     // mock a ResourceNotFoundException from the FMS API
     doThrow(ResourceNotFoundException.builder().build())
             .when(proxy)
@@ -147,7 +147,7 @@ public class CreateHandlerTest {
 }
 
     @Test
-    public void handleRequestInvalidOperationException() {
+    void handleRequestInvalidOperationException() {
         // mock an InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
@@ -178,7 +178,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidInputException() {
+    void handleRequestInvalidInputException() {
         // mock an InvalidInputException from the FMS API
         doThrow(InvalidInputException.builder().build())
                 .when(proxy)
@@ -209,7 +209,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidTypeException() {
+    void handleRequestInvalidTypeException() {
         // mock an InvalidTypeException from the FMS API
         doThrow(InvalidTypeException.builder().build())
                 .when(proxy)
@@ -240,7 +240,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestLimitExceededException() {
+    void handleRequestLimitExceededException() {
         // mock a LimitExceededException from the FMS API
         doThrow(LimitExceededException.builder().build())
                 .when(proxy)

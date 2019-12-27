@@ -15,9 +15,10 @@ public class CfnHelper {
     /**
      * Convert an FMS policy (from the FMS SDK) to a CFN resource model (from the resource provider).
      * @param policy FMS policy that was converted from.
+     * @param policyArn Policy ARN to add to the resource model.
      * @return CFN resource model that was converted to.
      */
-    public static ResourceModel convertFMSPolicyToCFNResourceModel(software.amazon.awssdk.services.fms.model.Policy policy) {
+    public static ResourceModel convertFMSPolicyToCFNResourceModel(software.amazon.awssdk.services.fms.model.Policy policy, String policyArn) {
         // assemble the security service policy data
         SecurityServicePolicyData.SecurityServicePolicyDataBuilder securityServicePolicyData = SecurityServicePolicyData.builder()
                 .type(policy.securityServicePolicyData().typeAsString());
@@ -34,20 +35,23 @@ public class CfnHelper {
                 .remediationEnabled(policy.remediationEnabled())
                 .resourceType(policy.resourceType())
                 .securityServicePolicyData(securityServicePolicyData.build())
-                .policyId(policy.policyId());
+                .policyId(policy.policyId())
+                .policyArn(policyArn);
 
         // check each optional parameter and add it if it exists
         if (!policy.excludeMap().isEmpty()) {
-            final AccountMap excludeMap = AccountMap.builder()
-                .aCCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
-                .build();
-            resourceModelBuilder.excludeMap(excludeMap);
+            resourceModelBuilder.excludeMap(
+                    AccountMap.builder()
+                            .aCCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
+                            .build()
+            );
         }
         if (!policy.includeMap().isEmpty()) {
-            final AccountMap includeMap = AccountMap.builder()
-                .aCCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
-                .build();
-            resourceModelBuilder.includeMap(includeMap);
+            resourceModelBuilder.includeMap(
+                    AccountMap.builder()
+                            .aCCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
+                            .build()
+            );
         }
         if (!policy.resourceTags().isEmpty()) {
             final List<ResourceTag> resourceTags = new ArrayList<>();

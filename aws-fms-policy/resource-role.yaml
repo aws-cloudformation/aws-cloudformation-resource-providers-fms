@@ -28,6 +28,7 @@ Resources:
                 - "fms:ListPolicies"
                 - "fms:PutPolicy"
                 - "iam:PassRole"
+                - "waf-regional:ListRuleGroups"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

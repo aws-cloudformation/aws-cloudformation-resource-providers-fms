@@ -13,6 +13,7 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
             final AmazonWebServicesClientProxy proxy,
             final ResourceModel desiredResourceState) {
 
+        // make the create request
         final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
                 .policy(FmsHelper.convertCFNResourceModelToFMSPolicy(desiredResourceState))
                 .build();
@@ -22,8 +23,7 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(final PutPolicyResponse response) {
 
-        ResourceModel resourceModel = CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy());
-        resourceModel.setPolicyArn(response.policyArn());
-        return resourceModel;
+        // convert the create request response to a resource model
+        return CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy(), response.policyArn());
     }
 }

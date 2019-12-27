@@ -28,7 +28,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class ListHandlerTest {
+class ListHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -39,14 +39,14 @@ public class ListHandlerTest {
     private ListHandler handler;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new ListHandler();
     }
 
     @Test
-    public void handleRequestSuccess() {
+    void handleRequestSuccess() {
         // stub the response for the list request
         ListPoliciesResponse describeResponse = FmsSampleHelper.sampleListPoliciesResponse();
         doReturn(describeResponse)
@@ -76,7 +76,7 @@ public class ListHandlerTest {
     }
 
     @Test
-    public void handleRequestResourceNotFoundException() {
+    void handleRequestResourceNotFoundException() {
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
@@ -102,7 +102,7 @@ public class ListHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidOperationException() {
+    void handleRequestInvalidOperationException() {
         // mock a InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
@@ -128,7 +128,7 @@ public class ListHandlerTest {
     }
 
     @Test
-    public void handleRequestLimitExceededException() {
+    void handleRequestLimitExceededException() {
         // mock a LimitExceededException from the FMS API
         doThrow(LimitExceededException.builder().build())
                 .when(proxy)

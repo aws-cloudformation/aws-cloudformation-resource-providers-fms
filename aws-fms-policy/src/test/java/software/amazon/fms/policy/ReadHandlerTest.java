@@ -26,7 +26,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class ReadHandlerTest {
+class ReadHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -37,14 +37,14 @@ public class ReadHandlerTest {
     private ReadHandler handler;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new ReadHandler();
     }
 
     @Test
-    public void handleRequestRequiredParametersSuccess() {
+    void handleRequestRequiredParametersSuccess() {
         // stub the response for the read request
         GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeResponse)
@@ -79,7 +79,7 @@ public class ReadHandlerTest {
     }
 
     @Test
-    public void handleRequestAllParametersSuccess() {
+    void handleRequestAllParametersSuccess() {
         // stub the response for the read request
         GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeResponse)
@@ -114,7 +114,7 @@ public class ReadHandlerTest {
     }
 
     @Test
-    public void handleRequestResourceNotFoundException() {
+    void handleRequestResourceNotFoundException() {
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
@@ -145,7 +145,7 @@ public class ReadHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidOperationException() {
+    void handleRequestInvalidOperationException() {
         // mock an InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
@@ -176,7 +176,7 @@ public class ReadHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidTypeException() {
+    void handleRequestInvalidTypeException() {
         // mock an InvalidTypeException from the FMS API
         doThrow(InvalidTypeException.builder().build())
                 .when(proxy)

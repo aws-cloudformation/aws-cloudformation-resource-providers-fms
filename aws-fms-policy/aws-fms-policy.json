@@ -151,13 +151,16 @@
         "create": {
             "permissions": [
                 "fms:PutPolicy",
-                "iam:PassRole"
+                "iam:PassRole",
+                "waf-regional:ListRuleGroups"
             ]
         },
         "update": {
             "permissions": [
                 "fms:PutPolicy",
-                "iam:PassRole"
+                "fms:GetPolicy",
+                "iam:PassRole",
+                "waf-regional:ListRuleGroups"
             ]
         },
         "list": {
