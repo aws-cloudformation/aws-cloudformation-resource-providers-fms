@@ -12,6 +12,7 @@ public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
             final AmazonWebServicesClientProxy proxy,
             final ResourceModel desiredResourceState) {
 
+        // make the read request
         final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
                 .policyId(desiredResourceState.getPolicyId())
                 .build();
@@ -21,8 +22,7 @@ public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(final GetPolicyResponse response) {
 
-        ResourceModel resourceModel = CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy());
-        resourceModel.setPolicyArn(response.policyArn());
-        return resourceModel;
+        // convert the read request response to a resource model
+        return CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy(), response.policyArn());
     }
 }

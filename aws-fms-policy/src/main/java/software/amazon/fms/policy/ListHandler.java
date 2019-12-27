@@ -15,6 +15,7 @@ public class ListHandler extends PolicyHandler<ListPoliciesResponse> {
             final AmazonWebServicesClientProxy proxy,
             final ResourceModel desiredResourceState) {
 
+        // make the list request
         final ListPoliciesRequest listPoliciesRequest = ListPoliciesRequest.builder().build();
         return proxy.injectCredentialsAndInvokeV2(listPoliciesRequest, client::listPolicies);
     }
@@ -22,6 +23,7 @@ public class ListHandler extends PolicyHandler<ListPoliciesResponse> {
     @Override
     protected List<ResourceModel> constructSuccessResourceModels(final ListPoliciesResponse response) {
 
+        // convert the list request response to resource models
         List<ResourceModel> resourceModels = new ArrayList<>();
         response.policyList().forEach(p -> resourceModels.add(CfnHelper.convertFMSPolicySummaryToCFNResourceModel(p)));
         return resourceModels;

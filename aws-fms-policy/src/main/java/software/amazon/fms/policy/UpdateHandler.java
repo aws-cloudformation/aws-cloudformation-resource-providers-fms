@@ -31,8 +31,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(final PutPolicyResponse response) {
 
-        ResourceModel resourceModel = CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy());
-        resourceModel.setPolicyArn(response.policyArn());
-        return resourceModel;
+        // convert the update request response to a resource model
+        return CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy(), response.policyArn());
     }
 }

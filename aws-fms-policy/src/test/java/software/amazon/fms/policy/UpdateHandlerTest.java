@@ -30,7 +30,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class UpdateHandlerTest {
+class UpdateHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -41,14 +41,14 @@ public class UpdateHandlerTest {
     private UpdateHandler handler;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new UpdateHandler();
     }
 
     @Test
-    public void handleRequestRequiredParametersSuccess() {
+    void handleRequestRequiredParametersSuccess() {
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeGetResponse)
@@ -92,7 +92,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestAllParametersSuccess() {
+    void handleRequestAllParametersSuccess() {
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -136,7 +136,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestResourceNotFoundException() {
+    void handleRequestResourceNotFoundException() {
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -176,7 +176,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidOperationException() {
+    void handleRequestInvalidOperationException() {
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -216,7 +216,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidInputException() {
+    void handleRequestInvalidInputException() {
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -256,7 +256,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidTypeException() {
+    void handleRequestInvalidTypeException() {
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -296,7 +296,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestLimitExceededException() {
+    void handleRequestLimitExceededException() {
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)

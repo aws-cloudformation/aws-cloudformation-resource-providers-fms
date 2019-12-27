@@ -15,7 +15,7 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import java.util.List;
 
-public abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
+abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
 
     /** FMS client instance to make requests on behalf of CloudFormation. */
     protected final FmsClient client;
@@ -41,7 +41,7 @@ public abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackConte
      * @param response Generic type request response from makeRequest call.
      * @return Post-action resource state or null.
      */
-    protected ResourceModel constructSuccessResourceModel(ResponseT response) {
+    ResourceModel constructSuccessResourceModel(ResponseT response) {
 
         return null;
     }
@@ -51,7 +51,7 @@ public abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackConte
      * @param response Generic type request response from makeRequest call.
      * @return Post-action multi-resource state or null.
      */
-    protected List<ResourceModel> constructSuccessResourceModels(ResponseT response) {
+    List<ResourceModel> constructSuccessResourceModels(ResponseT response) {
 
         return null;
     }

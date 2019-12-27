@@ -25,7 +25,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteHandlerTest {
+class DeleteHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -36,14 +36,14 @@ public class DeleteHandlerTest {
     private DeleteHandler handler;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new DeleteHandler();
     }
 
     @Test
-    public void handleRequestSuccess() {
+    void handleRequestSuccess() {
         // stub the response for the delete request
         DeletePolicyResponse describeResponse = FmsSampleHelper.sampleDeletePolicyResponse();
         doReturn(describeResponse)
@@ -75,7 +75,7 @@ public class DeleteHandlerTest {
     }
 
     @Test
-    public void handleRequestResourceNotFoundException() {
+    void handleRequestResourceNotFoundException() {
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
@@ -106,7 +106,7 @@ public class DeleteHandlerTest {
     }
 
     @Test
-    public void handleRequestInvalidOperationException() {
+    void handleRequestInvalidOperationException() {
         // mock an InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
