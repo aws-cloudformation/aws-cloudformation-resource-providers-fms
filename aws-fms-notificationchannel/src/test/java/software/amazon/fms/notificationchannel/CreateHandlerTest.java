@@ -1,7 +1,8 @@
 package software.amazon.fms.notificationchannel;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import software.amazon.awssdk.services.fms.model.FmsException;
+import org.mockito.Captor;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
@@ -15,10 +16,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest {
@@ -28,6 +34,9 @@ public class CreateHandlerTest {
 
     @Mock
     private Logger logger;
+
+    @Captor
+    private ArgumentCaptor<GetNotificationChannelRequest> captor;
 
     private CreateHandler handler;
     private String sampleSnsTopicArn;
@@ -76,6 +85,16 @@ public class CreateHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                GetNotificationChannelRequest.builder().build(),
+                PutNotificationChannelRequest.builder()
+                        .snsTopicArn(sampleSnsTopicArn)
+                        .snsRoleName(sampleSnsRoleName)
+                        .build()
+        ));
+
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
@@ -107,6 +126,11 @@ public class CreateHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        GetNotificationChannelRequest captorValue = captor.getValue();
+        assertThat(captorValue).isEqualTo(GetNotificationChannelRequest.builder().build());
 
         // assertions
         assertThat(response).isNotNull();
@@ -145,6 +169,16 @@ public class CreateHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                GetNotificationChannelRequest.builder().build(),
+                PutNotificationChannelRequest.builder()
+                        .snsTopicArn(sampleSnsTopicArn)
+                        .snsRoleName(sampleSnsRoleName)
+                        .build()
+        ));
+
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
@@ -181,6 +215,16 @@ public class CreateHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                GetNotificationChannelRequest.builder().build(),
+                PutNotificationChannelRequest.builder()
+                        .snsTopicArn(sampleSnsTopicArn)
+                        .snsRoleName(sampleSnsRoleName)
+                        .build()
+        ));
 
         // assertions
         assertThat(response).isNotNull();
