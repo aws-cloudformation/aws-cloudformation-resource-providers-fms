@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.fms.model.DeleteNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.DeleteNotificationChannelResponse;
+import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
@@ -36,7 +37,7 @@ class DeleteHandlerTest {
     private Logger logger;
 
     @Captor
-    private ArgumentCaptor<GetNotificationChannelRequest> captor;
+    private ArgumentCaptor<FmsRequest> captor;
 
     private DeleteHandler handler;
     private String sampleSnsTopicArn;
@@ -124,8 +125,7 @@ class DeleteHandlerTest {
 
         // verify stub calls
         verify(proxy, times(1)).injectCredentialsAndInvokeV2(captor.capture(), any());
-        GetNotificationChannelRequest captorValue = captor.getValue();
-        assertThat(captorValue).isEqualTo(GetNotificationChannelRequest.builder().build());
+        assertThat(captor.getValue()).isEqualTo(GetNotificationChannelRequest.builder().build());
 
         // assertions
         assertThat(response).isNotNull();
