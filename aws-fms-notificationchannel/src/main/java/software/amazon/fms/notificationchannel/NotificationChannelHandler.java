@@ -12,7 +12,7 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
-public abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
+abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
 
     /** FMS client instance to make requests on behalf of CloudFormation. */
     protected final FmsClient client;
@@ -30,7 +30,7 @@ public abstract class NotificationChannelHandler extends BaseHandler<CallbackCon
      * Flag to enable failure events if the notification channel already exists.
      * @return A flag indicating if this failure event is enabled.
      */
-    protected boolean throwAlreadyExistsException() {
+    boolean throwAlreadyExistsException() {
         return false;
     }
 
@@ -38,7 +38,7 @@ public abstract class NotificationChannelHandler extends BaseHandler<CallbackCon
      * Flag to enable failure events if the notification channel does not exist.
      * @return A flag indicating if this failure event is enabled.
      */
-    protected boolean throwNotFoundException() {
+    boolean throwNotFoundException() {
         return false;
     }
 
@@ -81,7 +81,7 @@ public abstract class NotificationChannelHandler extends BaseHandler<CallbackCon
 
         GetNotificationChannelResponse getNotificationChannelResponse;
         try {
-            // attempt an existing notification channel
+            // attempt to get an existing notification channel
             getNotificationChannelResponse =
                     proxy.injectCredentialsAndInvokeV2(getNotificationChannelRequest, client::getNotificationChannel);
 
