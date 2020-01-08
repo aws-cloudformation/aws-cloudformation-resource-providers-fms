@@ -1,6 +1,8 @@
 package software.amazon.fms.policy;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
@@ -24,10 +26,14 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.FmsSampleHelper;
 import software.amazon.fms.policy.helpers.CfnSampleHelper;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateHandlerTest {
@@ -37,6 +43,9 @@ class UpdateHandlerTest {
 
     @Mock
     private Logger logger;
+
+    @Captor
+    private ArgumentCaptor<PutPolicyRequest> captor;
 
     private UpdateHandler handler;
 
@@ -68,7 +77,7 @@ class UpdateHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleRequiredParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleRequiredParametersResourceModel(true);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -77,15 +86,21 @@ class UpdateHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
-        // add identity characteristics to the resource model
-        ResourceModel identifiedModel = CfnSampleHelper.identifySampleResourceModel(request.getDesiredResourceState());
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true)
+        ));
 
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(identifiedModel);
+        assertThat(response.getResourceModel()).isEqualTo(model);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
@@ -112,7 +127,7 @@ class UpdateHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel(true);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -121,15 +136,21 @@ class UpdateHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
-        // add identity characteristics to the resource model
-        ResourceModel identifiedModel = CfnSampleHelper.identifySampleResourceModel(request.getDesiredResourceState());
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyAllParametersRequest(true)
+        ));
 
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(identifiedModel);
+        assertThat(response.getResourceModel()).isEqualTo(model);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
@@ -155,7 +176,7 @@ class UpdateHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel(true);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -163,6 +184,15 @@ class UpdateHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyAllParametersRequest(true)
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -195,7 +225,7 @@ class UpdateHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel(true);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -203,6 +233,15 @@ class UpdateHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyAllParametersRequest(true)
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -235,7 +274,7 @@ class UpdateHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel(true);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -243,6 +282,15 @@ class UpdateHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyAllParametersRequest(true)
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -275,7 +323,7 @@ class UpdateHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel(true);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -283,6 +331,15 @@ class UpdateHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyAllParametersRequest(true)
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -315,7 +372,7 @@ class UpdateHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel(true);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -323,6 +380,15 @@ class UpdateHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyAllParametersRequest(true)
+        ));
 
         // assertions
         assertThat(response).isNotNull();

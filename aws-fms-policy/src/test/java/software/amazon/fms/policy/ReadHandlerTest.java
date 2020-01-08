@@ -1,6 +1,8 @@
 package software.amazon.fms.policy;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
@@ -24,6 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class ReadHandlerTest {
@@ -33,6 +37,9 @@ class ReadHandlerTest {
 
     @Mock
     private Logger logger;
+
+    @Captor
+    private ArgumentCaptor<GetPolicyRequest> captor;
 
     private ReadHandler handler;
 
@@ -55,7 +62,8 @@ class ReadHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
+        ResourceModel identifiedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -64,8 +72,14 @@ class ReadHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
-        // add identity characteristics to the resource model
-        ResourceModel identifiedModel = CfnSampleHelper.identifySampleResourceModel(CfnSampleHelper.sampleRequiredParametersResourceModel());
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleGetPolicyRequest()
+        );
 
         // assertions
         assertThat(response).isNotNull();
@@ -90,7 +104,8 @@ class ReadHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
+        ResourceModel identifiedModel = CfnSampleHelper.sampleAllParametersResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -99,8 +114,14 @@ class ReadHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
-        // add identity characteristics to the resource model
-        ResourceModel identifiedModel = CfnSampleHelper.identifySampleResourceModel(CfnSampleHelper.sampleAllParametersResourceModel());
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleGetPolicyRequest()
+        );
 
         // assertions
         assertThat(response).isNotNull();
@@ -124,7 +145,7 @@ class ReadHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -132,6 +153,15 @@ class ReadHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleGetPolicyRequest()
+        );
 
         // assertions
         assertThat(response).isNotNull();
@@ -155,7 +185,7 @@ class ReadHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -163,6 +193,15 @@ class ReadHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleGetPolicyRequest()
+        );
 
         // assertions
         assertThat(response).isNotNull();
@@ -186,7 +225,7 @@ class ReadHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleAllParametersResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -194,6 +233,15 @@ class ReadHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleGetPolicyRequest()
+        );
 
         // assertions
         assertThat(response).isNotNull();
