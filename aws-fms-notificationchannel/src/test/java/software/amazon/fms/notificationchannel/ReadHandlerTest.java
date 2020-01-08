@@ -1,7 +1,9 @@
 package software.amazon.fms.notificationchannel;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import software.amazon.awssdk.services.fms.model.FmsException;
+import org.mockito.Captor;
+import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
@@ -18,9 +20,12 @@ import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class ReadHandlerTest {
@@ -30,6 +35,9 @@ public class ReadHandlerTest {
 
     @Mock
     private Logger logger;
+
+    @Captor
+    private ArgumentCaptor<GetNotificationChannelRequest> captor;
 
     private ReadHandler handler;
     private String sampleSnsTopicArn;
@@ -72,6 +80,11 @@ public class ReadHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        GetNotificationChannelRequest captorValue = captor.getValue();
+        assertThat(captorValue).isEqualTo(GetNotificationChannelRequest.builder().build());
+
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
@@ -101,6 +114,11 @@ public class ReadHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        GetNotificationChannelRequest captorValue = captor.getValue();
+        assertThat(captorValue).isEqualTo(GetNotificationChannelRequest.builder().build());
+
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
@@ -129,6 +147,11 @@ public class ReadHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        GetNotificationChannelRequest captorValue = captor.getValue();
+        assertThat(captorValue).isEqualTo(GetNotificationChannelRequest.builder().build());
+
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
@@ -156,6 +179,11 @@ public class ReadHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        GetNotificationChannelRequest captorValue = captor.getValue();
+        assertThat(captorValue).isEqualTo(GetNotificationChannelRequest.builder().build());
 
         // assertions
         assertThat(response).isNotNull();
