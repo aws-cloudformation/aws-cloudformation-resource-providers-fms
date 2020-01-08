@@ -28,7 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class ReadHandlerTest {
+class ReadHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -45,7 +45,7 @@ public class ReadHandlerTest {
     private ResourceModel model;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new ReadHandler();
@@ -60,7 +60,7 @@ public class ReadHandlerTest {
     }
 
     @Test
-    public void handleRequestSuccess() {
+    void handleRequestSuccess() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeResponse = GetNotificationChannelResponse.builder()
                 .snsTopicArn(sampleSnsTopicArn)
@@ -97,7 +97,7 @@ public class ReadHandlerTest {
     }
 
     @Test
-    public void handleRequestReadResourceNotFound() {
+    void handleRequestReadResourceNotFound() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeResponse = GetNotificationChannelResponse.builder().build();
         doReturn(describeResponse)
@@ -131,7 +131,7 @@ public class ReadHandlerTest {
     }
 
     @Test
-    public void handleRequestReadNotFoundException() {
+    void handleRequestReadNotFoundException() {
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
@@ -164,7 +164,7 @@ public class ReadHandlerTest {
     }
 
     @Test
-    public void handleRequestReadInvalidOperationException() {
+    void handleRequestReadInvalidOperationException() {
         // mock an InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)

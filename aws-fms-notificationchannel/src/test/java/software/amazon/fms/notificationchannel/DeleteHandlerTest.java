@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteHandlerTest {
+class DeleteHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -44,7 +44,7 @@ public class DeleteHandlerTest {
     private ResourceModel model;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new DeleteHandler();
@@ -56,7 +56,7 @@ public class DeleteHandlerTest {
     }
 
     @Test
-    public void handleRequestSuccess() {
+    void handleRequestSuccess() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder()
                 .snsTopicArn(sampleSnsTopicArn)
@@ -105,7 +105,7 @@ public class DeleteHandlerTest {
     }
 
     @Test
-    public void handleRequestReadResourceNotFound() {
+    void handleRequestReadResourceNotFound() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder().build();
         doReturn(describeGetResponse)
@@ -139,7 +139,7 @@ public class DeleteHandlerTest {
     }
 
     @Test
-    public void handleRequestDeleteResourceNotFoundException() {
+    void handleRequestDeleteResourceNotFoundException() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder()
                 .snsTopicArn(sampleSnsTopicArn)
@@ -186,7 +186,7 @@ public class DeleteHandlerTest {
     }
 
     @Test
-    public void handleRequestDeleteInvalidOperationException() {
+    void handleRequestDeleteInvalidOperationException() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder()
                 .snsTopicArn(sampleSnsTopicArn)

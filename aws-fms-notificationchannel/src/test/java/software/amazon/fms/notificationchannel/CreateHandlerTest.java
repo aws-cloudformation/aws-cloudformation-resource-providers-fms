@@ -27,7 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateHandlerTest {
+class CreateHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -44,7 +44,7 @@ public class CreateHandlerTest {
     private ResourceModel model;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new CreateHandler();
@@ -59,7 +59,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestSuccess() {
+    void handleRequestSuccess() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder().build();
         doReturn(describeGetResponse)
@@ -107,7 +107,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestReadResourceAlreadyExists() {
+    void handleRequestReadResourceAlreadyExists() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder()
                 .snsTopicArn(sampleSnsTopicArn)
@@ -144,7 +144,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestCreateNotFoundException() {
+    void handleRequestCreateNotFoundException() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder().build();
         doReturn(describeGetResponse)
@@ -191,7 +191,7 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestCreateInvalidOperationException() {
+    void handleRequestCreateInvalidOperationException() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder().build();
         doReturn(describeGetResponse)

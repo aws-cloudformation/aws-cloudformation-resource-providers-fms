@@ -32,7 +32,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class UpdateHandlerTest {
+class UpdateHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -49,7 +49,7 @@ public class UpdateHandlerTest {
     private ResourceModel model;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new UpdateHandler();
@@ -64,7 +64,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestSuccess() {
+    void handleRequestSuccess() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder()
                 .snsTopicArn(sampleSnsTopicArn)
@@ -115,7 +115,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestReadResourceNotFound() {
+    void handleRequestReadResourceNotFound() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder().build();
         doReturn(describeGetResponse)
@@ -149,7 +149,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestUpdateNotFoundException() {
+    void handleRequestUpdateNotFoundException() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder()
                 .snsTopicArn(sampleSnsTopicArn)
@@ -199,7 +199,7 @@ public class UpdateHandlerTest {
     }
 
     @Test
-    public void handleRequestUpdateInvalidOperationException() {
+    void handleRequestUpdateInvalidOperationException() {
         // stub the response for the read request
         final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder()
                 .snsTopicArn(sampleSnsTopicArn)
