@@ -1,6 +1,8 @@
 package software.amazon.fms.policy;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
@@ -23,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DeleteHandlerTest {
@@ -32,6 +36,9 @@ class DeleteHandlerTest {
 
     @Mock
     private Logger logger;
+
+    @Captor
+    private ArgumentCaptor<DeletePolicyRequest> captor;
 
     private DeleteHandler handler;
 
@@ -54,7 +61,7 @@ class DeleteHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the delete request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -63,12 +70,21 @@ class DeleteHandlerTest {
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleDeletePolicyRequest()
+        );
+
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(ResourceModel.builder().build());
+        assertThat(response.getResourceModel()).isEqualTo(CfnSampleHelper.sampleBareResourceModel(false));
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
@@ -85,7 +101,7 @@ class DeleteHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the delete request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -93,6 +109,15 @@ class DeleteHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleDeletePolicyRequest()
+        );
 
         // assertions
         assertThat(response).isNotNull();
@@ -116,7 +141,7 @@ class DeleteHandlerTest {
                 );
 
         // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel();
+        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the delete request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -124,6 +149,15 @@ class DeleteHandlerTest {
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleDeletePolicyRequest()
+        );
 
         // assertions
         assertThat(response).isNotNull();

@@ -12,9 +12,10 @@ public class CfnSampleHelper extends BaseSampleHelper {
 
     /**
      * Assembles a sample resource model builder with only the required read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
      * @return The assembled resource model builder.
      */
-    private static ResourceModel.ResourceModelBuilder sampleRequiredParametersResourceModelBuilder() {
+    private static ResourceModel.ResourceModelBuilder sampleRequiredParametersResourceModelBuilder(boolean includeIdentifiers) {
 
         // assemble sample security service policy data
         final SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
@@ -23,19 +24,28 @@ public class CfnSampleHelper extends BaseSampleHelper {
                 .build();
 
         // assemble a sample policy with only the required parameters
-        return ResourceModel.builder()
+        ResourceModel.ResourceModelBuilder builder = ResourceModel.builder()
                 .excludeResourceTags(sampleExcludeResourceTags)
                 .policyName(samplePolicyName)
                 .remediationEnabled(sampleRemediationEnabled)
                 .resourceType(sampleResourceTypeListElement)
                 .securityServicePolicyData(securityServicePolicyData);
+
+        // optionally include the policy id
+        if (includeIdentifiers) {
+            builder.policyId(samplePolicyId);
+            builder.policyArn(samplePolicyArn);
+        }
+
+        return builder;
     }
 
     /**
      * Assembles a sample resource model builder with all possible read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
      * @return The assembled resource model builder.
      */
-    private static ResourceModel.ResourceModelBuilder sampleAllParametersResourceModelBuilder() {
+    private static ResourceModel.ResourceModelBuilder sampleAllParametersResourceModelBuilder(boolean includeIdentifiers) {
 
         // assemble a sample account map
         List<String> accountList = new ArrayList<>();
@@ -58,7 +68,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
         // assemble sample policy with all possible parameters
-        return sampleRequiredParametersResourceModelBuilder()
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers)
                 .excludeMap(sampleAccountMap)
                 .includeMap(sampleAccountMap)
                 .resourceTags(sampleResourceTags)
@@ -68,20 +78,22 @@ public class CfnSampleHelper extends BaseSampleHelper {
 
     /**
      * Assembles a sample resource model with only the required read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
      * @return The assembled resource model.
      */
-    public static ResourceModel sampleRequiredParametersResourceModel() {
+    public static ResourceModel sampleRequiredParametersResourceModel(boolean includeIdentifiers) {
 
-        return sampleRequiredParametersResourceModelBuilder().build();
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers).build();
     }
 
     /**
      * Assembles a sample resource model with all possible read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
      * @return The assembled resource model.
      */
-    public static ResourceModel sampleAllParametersResourceModel() {
+    public static ResourceModel sampleAllParametersResourceModel(boolean includeIdentifiers) {
 
-        return sampleAllParametersResourceModelBuilder().build();
+        return sampleAllParametersResourceModelBuilder(includeIdentifiers).build();
     }
 
     /**
@@ -120,22 +132,18 @@ public class CfnSampleHelper extends BaseSampleHelper {
 
     /**
      * Assembles a sample resource model with only the SamplePolicyId parameter.
+     * @param includeIdentifiers Should the policy identifiers be included.
      * @return The assembled resource model.
      */
-    public static ResourceModel sampleBareResourceModel() {
+    public static ResourceModel sampleBareResourceModel(boolean includeIdentifiers) {
 
-        return ResourceModel.builder().policyId(samplePolicyId).build();
-    }
+        ResourceModel.ResourceModelBuilder builder = ResourceModel.builder();
 
-    /**
-     * Adds identifying characteristics (PolicyId and PolicyArn) to a resource model.
-     * @param resourceModel Resource model to add identifying characteristics to.
-     * @return Resource model containing identifying characteristics.
-     */
-    public static ResourceModel identifySampleResourceModel(final ResourceModel resourceModel) {
+        // optionally include the policy id
+        if (includeIdentifiers) {
+            builder.policyId(samplePolicyId);
+        }
 
-        resourceModel.setPolicyId(samplePolicyId);
-        resourceModel.setPolicyArn(samplePolicyArn);
-        return resourceModel;
+        return builder.build();
     }
 }
