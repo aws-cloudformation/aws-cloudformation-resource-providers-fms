@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
@@ -41,7 +42,7 @@ class UpdateHandlerTest {
     private Logger logger;
 
     @Captor
-    private ArgumentCaptor<GetNotificationChannelRequest> captor;
+    private ArgumentCaptor<FmsRequest> captor;
 
     private UpdateHandler handler;
     private String sampleSnsTopicArn;
@@ -134,8 +135,7 @@ class UpdateHandlerTest {
 
         // verify stub calls
         verify(proxy, times(1)).injectCredentialsAndInvokeV2(captor.capture(), any());
-        GetNotificationChannelRequest captorValue = captor.getValue();
-        assertThat(captorValue).isEqualTo(GetNotificationChannelRequest.builder().build());
+        assertThat(captor.getValue()).isEqualTo(GetNotificationChannelRequest.builder().build());
 
         // assertions
         assertThat(response).isNotNull();
