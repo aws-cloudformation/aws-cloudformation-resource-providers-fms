@@ -4,13 +4,17 @@ import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
 import software.amazon.awssdk.services.fms.model.Policy;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
 import software.amazon.awssdk.services.fms.model.SecurityServicePolicyData;
+import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.policy.ResourceModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FmsHelper {
 
@@ -101,5 +105,57 @@ public class FmsHelper {
             String policyUpdateToken) {
 
         return convertCFNResourceModelToBuilder(resourceModel).policyUpdateToken(policyUpdateToken).build();
+    }
+
+    /**
+     * Convert a CFN tag map to an FMS tag list.
+     * @param cfnTags Tags from the CFN resource provider request.
+     * @return A list of FMS tag objects.
+     */
+    public static Set<Tag> convertCFNTagMapToFMSTagSet(Map<String, String> cfnTags) {
+
+        // construct a new list of FMS tags
+        Set<Tag> tags = new HashSet<>();
+        if (cfnTags != null) {
+            cfnTags.forEach((k, v) -> tags.add(Tag.builder().key(k).value(v).build()));
+        }
+        return tags;
+    }
+
+    /**
+     * Determine the tags that need to be removed from a policy.
+     * @param existingTagList The tags that currently exist on the policy.
+     * @param desiredTagList The tags that should exist on the policy.
+     * @return A list of tag keys to remove from the policy.
+     */
+    public static List<String> tagsToRemove(List<Tag> existingTagList, Map<String, String> desiredTagList) {
+
+        // format existing and new tags
+        final Set<Tag> existingTagSet = new HashSet<>(existingTagList);
+        final Set<Tag> updatedTagSet = convertCFNTagMapToFMSTagSet(desiredTagList);
+
+        // determine tags to remove
+        return existingTagSet.stream()
+                .filter(tag -> !updatedTagSet.contains(tag))
+                .map(Tag::key)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Determine the tags that need to be added to a policy.
+     * @param existingTagList The tags that currently exist on the policy.
+     * @param desiredTagList The tags that should exist on the policy.
+     * @return A list of tags to add to the policy.
+     */
+    public static List<Tag> tagsToAdd(List<Tag> existingTagList, Map<String, String> desiredTagList) {
+
+        // format existing and new tags
+        final Set<Tag> existingTagSet = new HashSet<>(existingTagList);
+        final Set<Tag> updatedTagSet = convertCFNTagMapToFMSTagSet(desiredTagList);
+
+        // determine tags to add
+        return updatedTagSet.stream()
+                .filter(tag -> !existingTagSet.contains(tag))
+                .collect(Collectors.toList());
     }
 }

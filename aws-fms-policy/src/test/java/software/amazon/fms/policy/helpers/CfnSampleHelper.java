@@ -13,9 +13,11 @@ public class CfnSampleHelper extends BaseSampleHelper {
     /**
      * Assembles a sample resource model builder with only the required read/write parameters.
      * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model builder.
      */
-    private static ResourceModel.ResourceModelBuilder sampleRequiredParametersResourceModelBuilder(boolean includeIdentifiers) {
+    private static ResourceModel.ResourceModelBuilder sampleRequiredParametersResourceModelBuilder(boolean includeIdentifiers, boolean includeTag1, boolean includeTag2) {
 
         // assemble sample security service policy data
         final SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
@@ -37,15 +39,37 @@ public class CfnSampleHelper extends BaseSampleHelper {
             builder.policyArn(samplePolicyArn);
         }
 
+        // optionally include the policy tags
+        List<ResourceTag> sampleTags = new ArrayList<>();
+        if (includeTag1) {
+            sampleTags.add(ResourceTag.builder()
+                    .key(String.format("%s%s", sampleTagKey, "1"))
+                    .value(sampleTagValue)
+                    .build());
+        }
+        if (includeTag2) {
+            sampleTags.add(ResourceTag.builder()
+                    .key(String.format("%s%s", sampleTagKey, "2"))
+                    .value(sampleTagValue)
+                    .build());
+        }
+
+        // dont include an empty tags list
+        if (includeTag1 || includeTag2) {
+            builder.tags(sampleTags);
+        }
+
         return builder;
     }
 
     /**
      * Assembles a sample resource model builder with all possible read/write parameters.
      * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model builder.
      */
-    private static ResourceModel.ResourceModelBuilder sampleAllParametersResourceModelBuilder(boolean includeIdentifiers) {
+    private static ResourceModel.ResourceModelBuilder sampleAllParametersResourceModelBuilder(boolean includeIdentifiers, boolean includeTag1, boolean includeTag2) {
 
         // assemble a sample account map
         List<String> accountList = new ArrayList<>();
@@ -58,8 +82,8 @@ public class CfnSampleHelper extends BaseSampleHelper {
         final List<ResourceTag> sampleResourceTags = new ArrayList<>();
         sampleResourceTags.add(
                 ResourceTag.builder()
-                        .key(sampleResourceTagKey)
-                        .value(sampleResourceTagValue)
+                        .key(sampleTagKey)
+                        .value(sampleTagValue)
                         .build()
         );
 
@@ -68,7 +92,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
         // assemble sample policy with all possible parameters
-        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers)
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2)
                 .excludeMap(sampleAccountMap)
                 .includeMap(sampleAccountMap)
                 .resourceTags(sampleResourceTags)
@@ -79,21 +103,25 @@ public class CfnSampleHelper extends BaseSampleHelper {
     /**
      * Assembles a sample resource model with only the required read/write parameters.
      * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model.
      */
-    public static ResourceModel sampleRequiredParametersResourceModel(boolean includeIdentifiers) {
+    public static ResourceModel sampleRequiredParametersResourceModel(boolean includeIdentifiers, boolean includeTag1, boolean includeTag2) {
 
-        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers).build();
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2).build();
     }
 
     /**
      * Assembles a sample resource model with all possible read/write parameters.
      * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model.
      */
-    public static ResourceModel sampleAllParametersResourceModel(boolean includeIdentifiers) {
+    public static ResourceModel sampleAllParametersResourceModel(boolean includeIdentifiers, boolean includeTag1, boolean includeTag2) {
 
-        return sampleAllParametersResourceModelBuilder(includeIdentifiers).build();
+        return sampleAllParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2).build();
     }
 
     /**

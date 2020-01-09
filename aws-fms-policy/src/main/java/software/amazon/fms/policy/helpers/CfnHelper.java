@@ -2,6 +2,7 @@ package software.amazon.fms.policy.helpers;
 
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
 import software.amazon.awssdk.services.fms.model.PolicySummary;
+import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.policy.AccountMap;
 import software.amazon.fms.policy.ResourceModel;
 import software.amazon.fms.policy.ResourceTag;
@@ -9,6 +10,7 @@ import software.amazon.fms.policy.SecurityServicePolicyData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CfnHelper {
 
@@ -16,9 +18,10 @@ public class CfnHelper {
      * Convert an FMS policy (from the FMS SDK) to a CFN resource model (from the resource provider).
      * @param policy FMS policy that was converted from.
      * @param policyArn Policy ARN to add to the resource model.
+     * @param tags FMS tags to add to the resource model.
      * @return CFN resource model that was converted to.
      */
-    public static ResourceModel convertFMSPolicyToCFNResourceModel(software.amazon.awssdk.services.fms.model.Policy policy, String policyArn) {
+    public static ResourceModel convertFMSPolicyToCFNResourceModel(software.amazon.awssdk.services.fms.model.Policy policy, String policyArn, Set<Tag> tags) {
         // assemble the security service policy data
         SecurityServicePolicyData.SecurityServicePolicyDataBuilder securityServicePolicyData = SecurityServicePolicyData.builder()
                 .type(policy.securityServicePolicyData().typeAsString());
@@ -60,6 +63,11 @@ public class CfnHelper {
         }
         if (!policy.resourceTypeList().isEmpty()) {
             resourceModelBuilder.resourceTypeList(policy.resourceTypeList());
+        }
+        if (!tags.isEmpty()) {
+            final List<ResourceTag> resourceTags = new ArrayList<>();
+            tags.forEach(tag -> resourceTags.add(new ResourceTag(tag.key(), tag.value())));
+            resourceModelBuilder.tags(resourceTags);
         }
 
         // build and return the resource model

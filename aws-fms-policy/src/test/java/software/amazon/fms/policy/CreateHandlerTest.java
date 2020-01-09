@@ -24,6 +24,8 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.FmsSampleHelper;
 import software.amazon.fms.policy.helpers.CfnSampleHelper;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -43,12 +45,14 @@ class CreateHandlerTest {
     @Captor
     private ArgumentCaptor<PutPolicyRequest> captor;
 
+    private Configuration configuration;
     private CreateHandler handler;
 
     @BeforeEach
     void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
+        configuration = new Configuration();
         handler = new CreateHandler();
     }
 
@@ -64,8 +68,8 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false);
-        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true);
+        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -80,7 +84,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false)
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -106,8 +110,8 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(false);
-        ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true);
+        ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(false, false, false);
+        ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -137,6 +141,52 @@ class CreateHandlerTest {
     }
 
     @Test
+    void handlerRequestPolicyTags() {
+        // stub the response for the create request
+        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersResponse();
+        doReturn(describeResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // model the pre-request and post-request resource state
+        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, true, false);
+        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
+
+        // create sample tags how cfn interprets them from the resource model
+        Map<String, String> tags = configuration.resourceDefinedTags(requestModel);
+
+        // create the create request and send it
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(requestModel)
+                .desiredResourceTags(tags)
+                .build();
+        final ProgressEvent<ResourceModel, CallbackContext> response =
+                handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, true, false)
+        );
+
+        // assertions
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getMessage()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
     void handleRequestResourceNotFoundException() {
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
@@ -147,7 +197,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false);
+        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -162,7 +212,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false)
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -187,7 +237,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false);
+        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -202,7 +252,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false)
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -227,7 +277,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false);
+        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -242,7 +292,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false)
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -267,7 +317,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false);
+        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -282,7 +332,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false)
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -307,7 +357,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false);
+        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -322,7 +372,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false)
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
         );
 
         // assertions

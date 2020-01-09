@@ -17,14 +17,20 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
         // make the create request
         final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
                 .policy(FmsHelper.convertCFNResourceModelToFMSPolicy(request.getDesiredResourceState()))
+                .tagList(FmsHelper.convertCFNTagMapToFMSTagSet(request.getDesiredResourceTags()))
                 .build();
         return proxy.injectCredentialsAndInvokeV2(putPolicyRequest, client::putPolicy);
     }
 
     @Override
-    protected ResourceModel constructSuccessResourceModel(final PutPolicyResponse response) {
+    protected ResourceModel constructSuccessResourceModel(
+            final PutPolicyResponse response,
+            ResourceHandlerRequest<ResourceModel> request) {
 
-        // convert the create request response to a resource model
-        return CfnHelper.convertFMSPolicyToCFNResourceModel(response.policy(), response.policyArn());
+        // convert the create request response to a resource model and add the tags in
+        return CfnHelper.convertFMSPolicyToCFNResourceModel(
+                response.policy(),
+                response.policyArn(),
+                FmsHelper.convertCFNTagMapToFMSTagSet(request.getDesiredResourceTags()));
     }
 }

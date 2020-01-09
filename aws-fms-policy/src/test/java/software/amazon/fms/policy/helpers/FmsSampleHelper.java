@@ -6,12 +6,19 @@ import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
 import software.amazon.awssdk.services.fms.model.ListPoliciesRequest;
 import software.amazon.awssdk.services.fms.model.ListPoliciesResponse;
+import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.fms.model.Policy;
 import software.amazon.awssdk.services.fms.model.PolicySummary;
 import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
 import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
 import software.amazon.awssdk.services.fms.model.SecurityServicePolicyData;
+import software.amazon.awssdk.services.fms.model.Tag;
+import software.amazon.awssdk.services.fms.model.TagResourceRequest;
+import software.amazon.awssdk.services.fms.model.TagResourceResponse;
+import software.amazon.awssdk.services.fms.model.UntagResourceRequest;
+import software.amazon.awssdk.services.fms.model.UntagResourceResponse;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +68,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         // assemble sample resource tags
         ResourceTag[] sampleResourceTags = {
-                ResourceTag.builder().key(sampleResourceTagKey).value(sampleResourceTagValue).build()
+                ResourceTag.builder().key(sampleTagKey).value(sampleTagValue).build()
         };
 
         // assemble a sample resource type list
@@ -104,11 +111,25 @@ public class FmsSampleHelper extends BaseSampleHelper {
     /**
      * Assembles a sample PutPolicy request with only the required readable parameters.
      * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should unique tag 1 be included.
+     * @param includeTag2 Should unique tag 2 be included.
      * @return The assembled request.
      */
-    public static PutPolicyRequest samplePutPolicyRequiredParametersRequest(boolean includeIdentifiers) {
+    public static PutPolicyRequest samplePutPolicyRequiredParametersRequest(boolean includeIdentifiers,
+                                                                            boolean includeTag1,
+                                                                            boolean includeTag2) {
+
+        // determine tags to list
+        List<Tag> addTags = new ArrayList<>();
+        if (includeTag1) {
+            addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "1")).value(sampleTagValue).build());
+        }
+        if (includeTag2) {
+            addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "2")).value(sampleTagValue).build());
+        }
 
         return PutPolicyRequest.builder()
+                .tagList(addTags)
                 .policy(sampleRequiredParametersPolicy(includeIdentifiers).build())
                 .build();
     }
@@ -210,6 +231,99 @@ public class FmsSampleHelper extends BaseSampleHelper {
         return DeletePolicyRequest.builder()
                 .policyId(samplePolicyId)
                 .deleteAllPolicyResources(true)
+                .build();
+    }
+
+    /**
+     * Assembles a sample ListTagsForResource response.
+     * @param includeTag1 Should unique tag 1 be added.
+     * @param includeTag2 Should unique tag 2 be added.
+     * @return The assembled response.
+     */
+    public static ListTagsForResourceResponse sampleListTagsForResourceResponse(boolean includeTag1, boolean includeTag2) {
+
+        // determine tags to list
+        List<Tag> listTags = new ArrayList<>();
+        if (includeTag1) {
+            listTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "1")).value(sampleTagValue).build());
+        }
+        if (includeTag2) {
+            listTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "2")).value(sampleTagValue).build());
+        }
+
+        return ListTagsForResourceResponse.builder().tagList(listTags).build();
+    }
+
+    /**
+     * Assembles a sample ListTagsForResource request.
+     * @return The assembled response.
+     */
+    public static ListTagsForResourceRequest sampleListTagsForResourceRequest() {
+
+        return ListTagsForResourceRequest.builder()
+                .resourceArn(samplePolicyArn)
+                .build();
+    }
+
+    /**
+     * Assembles a sample TagResource response.
+     * @return The assembled response.
+     */
+    public static TagResourceResponse sampleTagResourceResponse() {
+
+        return TagResourceResponse.builder().build();
+    }
+
+    /**
+     * Assembles a sample TagResource request.
+     * @param includeTag1 Should unique tag 1 be added.
+     * @param includeTag2 Should unique tag 2 be added.
+     * @return The assembled request.
+     */
+    public static TagResourceRequest sampleTagResourceRequest(boolean includeTag1, boolean includeTag2) {
+
+        // determine tags to add
+        List<Tag> addTags = new ArrayList<>();
+        if (includeTag1) {
+            addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "1")).value(sampleTagValue).build());
+        }
+        if (includeTag2) {
+            addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "2")).value(sampleTagValue).build());
+        }
+
+        return TagResourceRequest.builder()
+                .tagList(addTags)
+                .build();
+    }
+
+    /**
+     * Assembles a sample UntagResource response.
+     * @return The assembled response.
+     */
+    public static UntagResourceResponse sampleUntagResourceResponse() {
+
+        return UntagResourceResponse.builder().build();
+    }
+
+    /**
+     * Assembles a sample UntagResource request.
+     * @param includeTag1 Should unique tag 1 be removed.
+     * @param includeTag2 Should unique tag 2 be removed.
+     * @return The assembled request.
+     */
+    public static UntagResourceRequest sampleUntagResourceRequest(boolean includeTag1, boolean includeTag2) {
+
+        // determines tags to remove
+        List<String> deleteKeys = new ArrayList<>();
+        if (includeTag1) {
+            deleteKeys.add(String.format("%s%s", sampleTagKey, "1"));
+        }
+        if (includeTag2) {
+            deleteKeys.add(String.format("%s%s", sampleTagKey, "2"));
+        }
+
+        return UntagResourceRequest.builder()
+                .tagKeys(deleteKeys)
                 .build();
     }
 }

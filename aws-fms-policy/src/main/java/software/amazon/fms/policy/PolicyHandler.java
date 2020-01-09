@@ -39,9 +39,10 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
     /**
      * Hook called by handleRequest to build the resource state after a successful makeRequest call.
      * @param response Generic type request response from makeRequest call.
+     * @param request CloudFormation's handler request.
      * @return Post-action resource state or null.
      */
-    ResourceModel constructSuccessResourceModel(ResponseT response) {
+    ResourceModel constructSuccessResourceModel(ResponseT response, ResourceHandlerRequest<ResourceModel> request) {
 
         return null;
     }
@@ -86,7 +87,7 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
         // let each handler construct its own success resource model
         return ProgressEvent.<ResourceModel, CallbackContext>builder()
                 .status(OperationStatus.SUCCESS)
-                .resourceModel(constructSuccessResourceModel(response))
+                .resourceModel(constructSuccessResourceModel(response, request))
                 .resourceModels(constructSuccessResourceModels(response))
                 .callbackContext(callbackContext)
                 .build();

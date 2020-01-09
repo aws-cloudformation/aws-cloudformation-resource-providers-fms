@@ -21,7 +21,9 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
     }
 
     @Override
-    protected ResourceModel constructSuccessResourceModel(final DeletePolicyResponse response) {
+    protected ResourceModel constructSuccessResourceModel(
+            final DeletePolicyResponse response,
+            ResourceHandlerRequest<ResourceModel> request) {
 
         // create an empty resource model since the resource no longer exists
         return ResourceModel.builder().build();

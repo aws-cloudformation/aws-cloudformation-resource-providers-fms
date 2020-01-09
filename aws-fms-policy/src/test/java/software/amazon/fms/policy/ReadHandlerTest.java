@@ -63,7 +63,7 @@ class ReadHandlerTest {
 
         // model the pre-request and post-request resource state
         ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
-        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true);
+        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -105,7 +105,7 @@ class ReadHandlerTest {
 
         // model the pre-request and post-request resource state
         ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
-        ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true);
+        ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
