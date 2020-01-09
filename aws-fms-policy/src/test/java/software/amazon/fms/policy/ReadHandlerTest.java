@@ -61,13 +61,13 @@ class ReadHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
-        ResourceModel identifiedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true);
+        // model the pre-request and post-request resource state
+        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
+                .desiredResourceState(requestModel)
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
@@ -86,7 +86,7 @@ class ReadHandlerTest {
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(identifiedModel);
+        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
@@ -103,13 +103,13 @@ class ReadHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
-        ResourceModel identifiedModel = CfnSampleHelper.sampleAllParametersResourceModel(true);
+        // model the pre-request and post-request resource state
+        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
+                .desiredResourceState(requestModel)
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
@@ -128,7 +128,7 @@ class ReadHandlerTest {
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(identifiedModel);
+        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
@@ -144,12 +144,12 @@ class ReadHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
+        // model the pre-request resource state
+        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
+                .desiredResourceState(requestModel)
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
@@ -184,12 +184,12 @@ class ReadHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
+        // model the pre-request resource state
+        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
+                .desiredResourceState(requestModel)
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
@@ -224,12 +224,12 @@ class ReadHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // model the expected post-request resource state
-        ResourceModel model = CfnSampleHelper.sampleBareResourceModel(true);
+        // model the pre-request resource state
+        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
+                .desiredResourceState(requestModel)
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);

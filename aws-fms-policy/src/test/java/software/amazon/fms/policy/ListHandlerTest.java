@@ -63,8 +63,8 @@ class ListHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // model the expected post-request resource state
-        List<ResourceModel> models = CfnSampleHelper.samplePolicySummaryResourceModelList();
+        // model the post-request resource state
+        List<ResourceModel> expectedModels = CfnSampleHelper.samplePolicySummaryResourceModelList();
 
         // create the list request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder().build();
@@ -86,7 +86,7 @@ class ListHandlerTest {
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
         assertThat(response.getResourceModel()).isNull();
-        assertThat(response.getResourceModels()).isEqualTo(models);
+        assertThat(response.getResourceModels()).isEqualTo(expectedModels);
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }
