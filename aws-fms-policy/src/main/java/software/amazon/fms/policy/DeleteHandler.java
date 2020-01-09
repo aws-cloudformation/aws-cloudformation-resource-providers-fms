@@ -3,17 +3,18 @@ package software.amazon.fms.policy;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
 
     @Override
     protected DeletePolicyResponse makeRequest(
             final AmazonWebServicesClientProxy proxy,
-            final ResourceModel desiredResourceState) {
+            final ResourceHandlerRequest<ResourceModel> request) {
 
         // make the delete request
         final DeletePolicyRequest deletePolicyRequest = DeletePolicyRequest.builder()
-                .policyId(desiredResourceState.getPolicyId())
+                .policyId(request.getDesiredResourceState().getPolicyId())
                 .deleteAllPolicyResources(true)
                 .build();
         return proxy.injectCredentialsAndInvokeV2(deletePolicyRequest, client::deletePolicy);

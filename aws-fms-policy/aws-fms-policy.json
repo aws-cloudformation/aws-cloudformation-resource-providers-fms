@@ -26,7 +26,7 @@
             ]
         },
         "ResourceTag": {
-            "description": "An AWS tag.",
+            "description": "A resource tag.",
             "type": "object",
             "properties": {
                 "Key": {
@@ -37,7 +37,7 @@
                 },
                 "Value": {
                     "type": "string",
-                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]*)$",
                     "maxLength": 256
                 }
             },
@@ -127,6 +127,12 @@
         },
         "PolicyArn": {
             "$ref": "#/definitions/ResourceArn"
+        },
+        "Tags": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ResourceTag"
+            }
         }
     },
     "additionalProperties": false,

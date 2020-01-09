@@ -3,6 +3,7 @@ package software.amazon.fms.policy;
 import software.amazon.awssdk.services.fms.model.ListPoliciesRequest;
 import software.amazon.awssdk.services.fms.model.ListPoliciesResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.CfnHelper;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class ListHandler extends PolicyHandler<ListPoliciesResponse> {
     @Override
     protected ListPoliciesResponse makeRequest(
             final AmazonWebServicesClientProxy proxy,
-            final ResourceModel desiredResourceState) {
+            final ResourceHandlerRequest<ResourceModel> request) {
 
         // make the list request
         final ListPoliciesRequest listPoliciesRequest = ListPoliciesRequest.builder().build();
