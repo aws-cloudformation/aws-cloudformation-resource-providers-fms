@@ -29,12 +29,12 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
     /**
      * Hook called by handleRequest to make the primary action (create, read, etc..) request on the FMS API.
      * @param proxy AWS proxy to make requests.
-     * @param desiredResourceState CloudFormation's desired resource state.
+     * @param request CloudFormation's handler request.
      * @return Response from the FMS API.
      */
     protected abstract ResponseT makeRequest(
             final AmazonWebServicesClientProxy proxy,
-            final ResourceModel desiredResourceState);
+            final ResourceHandlerRequest<ResourceModel> request);
 
     /**
      * Hook called by handleRequest to build the resource state after a successful makeRequest call.
@@ -74,7 +74,7 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
         ResponseT response;
         try {
             // make the primary handler request
-            response = makeRequest(proxy, request.getDesiredResourceState());
+            response = makeRequest(proxy, request);
         } catch(ResourceNotFoundException e) {
             return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
         } catch(InvalidOperationException | InvalidInputException | InvalidTypeException e) {
