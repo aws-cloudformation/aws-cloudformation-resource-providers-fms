@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template creates an SNS topic and IAM policy compatible with FMS notification channels.
+Resources:
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: SnsTopic
+      TopicName: SnsTopic
+  TopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref Topic
+      PolicyDocument:
+        Id: __default_policy_ID
+        Version: '2008-10-17'
+        Statement:
+          - Sid: AWSFirewallManagerSNSPolicy
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS
+            Action:
+              - sns:GetTopicAttributes
+              - sns:SetTopicAttributes
+              - sns:AddPermission
+              - sns:RemovePermission
+              - sns:DeleteTopic
+              - sns:Subscribe
+              - sns:ListSubscriptionsByTopic
+              - sns:Publish
+              - sns:Receive
+            Resource: !Ref Topic
+Outputs:
+  Topic:
+    Description: The SNS topic to be used by the notification channel.
+    Value: !Ref Topic
+    Export:
+      Name: SnsTopicArn

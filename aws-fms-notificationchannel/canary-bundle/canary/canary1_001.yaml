@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: FMS notification channel test.
+Resources:
+  NotificationChannel:
+    Type: AWS::FMS::NotificationChannel
+    Properties:
+      SnsRoleName: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS
+      SnsTopicArn: !ImportValue SnsTopicArn

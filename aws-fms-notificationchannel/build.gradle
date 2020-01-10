@@ -75,7 +75,13 @@ task cfnPackage(type: Exec) {
 task rpdkPackage(type: Zip) {
   dependsOn cfnPackage
   from zipTree("aws-fms-notificationchannel.zip")
-
+  // Inject internal files
+  from (rootDir) {
+    include "settings.internal.json"
+  }
+  from ("${rootDir}/aws-fms-notificationchannel") {
+      include "canary-bundle/**/*"
+  }
   destinationDir = file("./build/rpdk")
   archiveName("aws-fms-notificationchannel.zip")
 }
