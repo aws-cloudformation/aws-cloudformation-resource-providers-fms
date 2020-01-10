@@ -1,0 +1,3 @@
+rootProject.name = 'fms'
+
+include 'aws-fms-notificationchannel'

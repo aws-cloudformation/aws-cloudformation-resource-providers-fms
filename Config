@@ -1,0 +1,51 @@
+# -*-perl-*-
+
+package.AWSCloudFormationResourceProvidersFMS = {
+    interfaces = (1.0);
+
+    deploy = {
+        generic = true;
+    };
+
+    build-environment = {
+        chroot = basic;
+        network-access = open;
+    };
+
+    build-system = brazil-gradle;
+    build-tools = {
+        1.0 = {
+            # CloudFormation RPDK build tool Packages
+            AWSCloudFormationRPDK = 1.1;
+            AWSCloudFormationRPDKJavaPluginTool = 1.1;
+
+            UluruBuild = 1.0;
+            BrazilGradle = 4.x;
+            JDK8 = 1.0;
+            BrazilPath = 1.1;
+        };
+    };
+
+    # Use runtime-dependencies for when you want to bring in additional
+    # packages when deploying.
+    # Use dependencies instead if you intend for these dependencies to
+    # be exported to other packages that build against you.
+    dependencies = {
+         1.0 = {
+               # CloudFormation RPDK Java Runtime
+               AWSCloudFormationRPDKJavaPlugin = 1.1;
+
+               # Your package dependencies
+               AwsJavaSdk-Fms = 2.0;
+         };
+    };
+
+    test-dependencies = {
+        1.0 = {
+            AssertJ = 3.12;
+            JUnit5 = 5.x;
+            Mockito = 2.22.x;
+            Mockito-junit-jupiter = 2.22.x;
+        };
+    };
+};
