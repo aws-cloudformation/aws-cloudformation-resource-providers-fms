@@ -8,6 +8,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.LimitExceededException;
 import software.amazon.awssdk.services.fms.model.ListPoliciesRequest;
@@ -41,7 +42,7 @@ class ListHandlerTest {
     private Logger logger;
 
     @Captor
-    private ArgumentCaptor<ListPoliciesRequest> captor;
+    private ArgumentCaptor<FmsRequest> captor;
 
     private ListHandler handler;
 

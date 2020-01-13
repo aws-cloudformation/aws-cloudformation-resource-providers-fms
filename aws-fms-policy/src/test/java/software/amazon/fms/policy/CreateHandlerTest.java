@@ -3,6 +3,7 @@ package software.amazon.fms.policy;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.InvalidTypeException;
@@ -43,7 +44,7 @@ class CreateHandlerTest {
     private Logger logger;
 
     @Captor
-    private ArgumentCaptor<PutPolicyRequest> captor;
+    private ArgumentCaptor<FmsRequest> captor;
 
     private Configuration configuration;
     private CreateHandler handler;

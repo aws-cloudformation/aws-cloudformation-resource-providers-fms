@@ -80,7 +80,8 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(
             final PutPolicyResponse response,
-            ResourceHandlerRequest<ResourceModel> request) {
+            final ResourceHandlerRequest<ResourceModel> request,
+            final AmazonWebServicesClientProxy proxy) {
 
         // convert the update request response to a resource model
         return CfnHelper.convertFMSPolicyToCFNResourceModel(

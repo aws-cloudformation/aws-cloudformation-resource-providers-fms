@@ -10,7 +10,6 @@ import software.amazon.fms.policy.SecurityServicePolicyData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class CfnHelper {
 
@@ -21,7 +20,7 @@ public class CfnHelper {
      * @param tags FMS tags to add to the resource model.
      * @return CFN resource model that was converted to.
      */
-    public static ResourceModel convertFMSPolicyToCFNResourceModel(software.amazon.awssdk.services.fms.model.Policy policy, String policyArn, Set<Tag> tags) {
+    public static ResourceModel convertFMSPolicyToCFNResourceModel(software.amazon.awssdk.services.fms.model.Policy policy, String policyArn, List<Tag> tags) {
         // assemble the security service policy data
         SecurityServicePolicyData.SecurityServicePolicyDataBuilder securityServicePolicyData = SecurityServicePolicyData.builder()
                 .type(policy.securityServicePolicyData().typeAsString());

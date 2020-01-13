@@ -3,6 +3,7 @@ package software.amazon.fms.policy;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
@@ -52,7 +53,7 @@ class UpdateHandlerTest {
     private Logger logger;
 
     @Captor
-    private ArgumentCaptor<PutPolicyRequest> captor;
+    private ArgumentCaptor<FmsRequest> captor;
 
     private Configuration configuration;
     private UpdateHandler handler;
