@@ -17,7 +17,10 @@ public class CfnSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model builder.
      */
-    private static ResourceModel.ResourceModelBuilder sampleRequiredParametersResourceModelBuilder(boolean includeIdentifiers, boolean includeTag1, boolean includeTag2) {
+    private static ResourceModel.ResourceModelBuilder sampleRequiredParametersResourceModelBuilder(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
 
         // assemble sample security service policy data
         final SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
@@ -26,7 +29,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
                 .build();
 
         // assemble a sample policy with only the required parameters
-        ResourceModel.ResourceModelBuilder builder = ResourceModel.builder()
+        final ResourceModel.ResourceModelBuilder builder = ResourceModel.builder()
                 .excludeResourceTags(sampleExcludeResourceTags)
                 .policyName(samplePolicyName)
                 .remediationEnabled(sampleRemediationEnabled)
@@ -69,10 +72,13 @@ public class CfnSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model builder.
      */
-    private static ResourceModel.ResourceModelBuilder sampleAllParametersResourceModelBuilder(boolean includeIdentifiers, boolean includeTag1, boolean includeTag2) {
+    private static ResourceModel.ResourceModelBuilder sampleAllParametersResourceModelBuilder(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
 
         // assemble a sample account map
-        List<String> accountList = new ArrayList<>();
+        final List<String> accountList = new ArrayList<>();
         accountList.add(sampleAccountId);
         final AccountMap sampleAccountMap = AccountMap.builder()
                 .aCCOUNT(accountList)
@@ -107,7 +113,10 @@ public class CfnSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model.
      */
-    public static ResourceModel sampleRequiredParametersResourceModel(boolean includeIdentifiers, boolean includeTag1, boolean includeTag2) {
+    public static ResourceModel sampleRequiredParametersResourceModel(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
 
         return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2).build();
     }
@@ -119,7 +128,10 @@ public class CfnSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model.
      */
-    public static ResourceModel sampleAllParametersResourceModel(boolean includeIdentifiers, boolean includeTag1, boolean includeTag2) {
+    public static ResourceModel sampleAllParametersResourceModel(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
 
         return sampleAllParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2).build();
     }
@@ -131,7 +143,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
     private static ResourceModel samplePolicySummaryResourceModel() {
 
         // assemble sample security service policy data
-        SecurityServicePolicyData sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
+        final SecurityServicePolicyData sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
                 .type(sampleResourceType)
                 .build();
 
@@ -152,7 +164,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
      */
     public static List<ResourceModel> samplePolicySummaryResourceModelList() {
 
-        List<ResourceModel> resourceModelList = new ArrayList<>();
+        final List<ResourceModel> resourceModelList = new ArrayList<>();
         resourceModelList.add(samplePolicySummaryResourceModel());
         resourceModelList.add(samplePolicySummaryResourceModel());
         return resourceModelList;
@@ -163,9 +175,9 @@ public class CfnSampleHelper extends BaseSampleHelper {
      * @param includeIdentifiers Should the policy identifiers be included.
      * @return The assembled resource model.
      */
-    public static ResourceModel sampleBareResourceModel(boolean includeIdentifiers) {
+    public static ResourceModel sampleBareResourceModel(final boolean includeIdentifiers) {
 
-        ResourceModel.ResourceModelBuilder builder = ResourceModel.builder();
+        final ResourceModel.ResourceModelBuilder builder = ResourceModel.builder();
 
         // optionally include the policy id
         if (includeIdentifiers) {

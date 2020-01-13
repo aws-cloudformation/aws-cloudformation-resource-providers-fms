@@ -48,6 +48,7 @@ class ListHandlerTest {
 
     @BeforeEach
     void setup() {
+
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new ListHandler();
@@ -55,8 +56,9 @@ class ListHandlerTest {
 
     @Test
     void handleRequestSuccess() {
+
         // stub the response for the list request
-        ListPoliciesResponse describeResponse = FmsSampleHelper.sampleListPoliciesResponse();
+        final ListPoliciesResponse describeResponse = FmsSampleHelper.sampleListPoliciesResponse();
         doReturn(describeResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
@@ -65,7 +67,7 @@ class ListHandlerTest {
                 );
 
         // model the post-request resource state
-        List<ResourceModel> expectedModels = CfnSampleHelper.samplePolicySummaryResourceModelList();
+        final List<ResourceModel> expectedModels = CfnSampleHelper.samplePolicySummaryResourceModelList();
 
         // create the list request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder().build();
@@ -94,6 +96,7 @@ class ListHandlerTest {
 
     @Test
     void handleRequestResourceNotFoundException() {
+
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
@@ -129,6 +132,7 @@ class ListHandlerTest {
 
     @Test
     void handleRequestInvalidOperationException() {
+
         // mock a InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
@@ -164,6 +168,7 @@ class ListHandlerTest {
 
     @Test
     void handleRequestLimitExceededException() {
+
         // mock a LimitExceededException from the FMS API
         doThrow(LimitExceededException.builder().build())
                 .when(proxy)

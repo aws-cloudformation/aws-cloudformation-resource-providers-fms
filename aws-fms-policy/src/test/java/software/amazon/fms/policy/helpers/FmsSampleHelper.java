@@ -31,15 +31,15 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeIdentifiers Should the policy identifiers be included in the sample policy.
      * @return The assembled policy builder.
      */
-    private static Policy.Builder sampleRequiredParametersPolicy(boolean includeIdentifiers) {
+    private static Policy.Builder sampleRequiredParametersPolicy(final boolean includeIdentifiers) {
 
         // assemble sample security service policy data
-        SecurityServicePolicyData sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
+        final SecurityServicePolicyData sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
                 .managedServiceData(sampleManagedServiceData)
                 .type(samplePolicyType)
                 .build();
         // assemble a sample policy with only the required parameters
-        Policy.Builder builder = Policy.builder()
+        final Policy.Builder builder = Policy.builder()
                 .excludeResourceTags(sampleExcludeResourceTags)
                 .policyName(samplePolicyName)
                 .remediationEnabled(sampleRemediationEnabled)
@@ -60,19 +60,19 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeIdentifiers Should the policy identifiers be included in the sample policy.
      * @return The assembled policy builder.
      */
-    private static Policy.Builder sampleAllParametersPolicy(boolean includeIdentifiers) {
+    private static Policy.Builder sampleAllParametersPolicy(final boolean includeIdentifiers) {
 
         // assemble a sample account map
-        List<String> sampleAccountMap = new ArrayList<>();
+        final List<String> sampleAccountMap = new ArrayList<>();
         sampleAccountMap.add(sampleAccountId);
 
         // assemble sample resource tags
-        ResourceTag[] sampleResourceTags = {
+        final ResourceTag[] sampleResourceTags = {
                 ResourceTag.builder().key(sampleTagKey).value(sampleTagValue).build()
         };
 
         // assemble a sample resource type list
-        Collection<String> sampleResourceTypeList = new ArrayList<>();
+        final Collection<String> sampleResourceTypeList = new ArrayList<>();
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
         // assemble sample policy with all possible parameters
@@ -115,12 +115,13 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should unique tag 2 be included.
      * @return The assembled request.
      */
-    public static PutPolicyRequest samplePutPolicyRequiredParametersRequest(boolean includeIdentifiers,
-                                                                            boolean includeTag1,
-                                                                            boolean includeTag2) {
+    public static PutPolicyRequest samplePutPolicyRequiredParametersRequest(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
 
         // determine tags to list
-        List<Tag> addTags = new ArrayList<>();
+        final List<Tag> addTags = new ArrayList<>();
         if (includeTag1) {
             addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "1")).value(sampleTagValue).build());
         }
@@ -139,7 +140,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeIdentifiers Should the policy identifiers be included.
      * @return The assembled request.
      */
-    public static PutPolicyRequest samplePutPolicyAllParametersRequest(boolean includeIdentifiers) {
+    public static PutPolicyRequest samplePutPolicyAllParametersRequest(final boolean includeIdentifiers) {
 
         return PutPolicyRequest.builder()
                 .policy(sampleAllParametersPolicy(includeIdentifiers).build())
@@ -175,6 +176,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @return The assembled request.
      */
     public static GetPolicyRequest sampleGetPolicyRequest() {
+
         return GetPolicyRequest.builder()
                 .policyId(samplePolicyId)
                 .build();
@@ -186,7 +188,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
      */
     public static ListPoliciesResponse sampleListPoliciesResponse() {
 
-        PolicySummary policySummary = PolicySummary.builder()
+        final PolicySummary policySummary = PolicySummary.builder()
                 .policyArn(samplePolicyArn)
                 .policyId(samplePolicyId)
                 .policyName(samplePolicyName)
@@ -195,7 +197,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
                 .remediationEnabled(sampleRemediationEnabled)
                 .build();
 
-        List<PolicySummary> policyList = new ArrayList<>();
+        final List<PolicySummary> policyList = new ArrayList<>();
         policyList.add(policySummary);
         policyList.add(policySummary);
 
@@ -240,10 +242,12 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should unique tag 2 be added.
      * @return The assembled response.
      */
-    public static ListTagsForResourceResponse sampleListTagsForResourceResponse(boolean includeTag1, boolean includeTag2) {
+    public static ListTagsForResourceResponse sampleListTagsForResourceResponse(
+            final boolean includeTag1,
+            final boolean includeTag2) {
 
         // determine tags to list
-        List<Tag> listTags = new ArrayList<>();
+        final List<Tag> listTags = new ArrayList<>();
         if (includeTag1) {
             listTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "1")).value(sampleTagValue).build());
         }
@@ -280,10 +284,12 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should unique tag 2 be added.
      * @return The assembled request.
      */
-    public static TagResourceRequest sampleTagResourceRequest(boolean includeTag1, boolean includeTag2) {
+    public static TagResourceRequest sampleTagResourceRequest(
+            final boolean includeTag1,
+            boolean includeTag2) {
 
         // determine tags to add
-        List<Tag> addTags = new ArrayList<>();
+        final List<Tag> addTags = new ArrayList<>();
         if (includeTag1) {
             addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "1")).value(sampleTagValue).build());
         }
@@ -311,10 +317,12 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should unique tag 2 be removed.
      * @return The assembled request.
      */
-    public static UntagResourceRequest sampleUntagResourceRequest(boolean includeTag1, boolean includeTag2) {
+    public static UntagResourceRequest sampleUntagResourceRequest(
+            final boolean includeTag1,
+            final boolean includeTag2) {
 
         // determines tags to remove
-        List<String> deleteKeys = new ArrayList<>();
+        final List<String> deleteKeys = new ArrayList<>();
         if (includeTag1) {
             deleteKeys.add(String.format("%s%s", sampleTagKey, "1"));
         }

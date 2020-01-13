@@ -11,7 +11,7 @@
             "maxLength": 1024
         },
         "AccountMap": {
-            "description": "An AWS account mappings.",
+            "description": "An AWS account mapping.",
             "type": "object",
             "properties": {
                 "ACCOUNT": {

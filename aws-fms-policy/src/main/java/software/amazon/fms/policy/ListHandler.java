@@ -25,8 +25,9 @@ public class ListHandler extends PolicyHandler<ListPoliciesResponse> {
     protected List<ResourceModel> constructSuccessResourceModels(final ListPoliciesResponse response) {
 
         // convert the list request response to resource models
-        List<ResourceModel> resourceModels = new ArrayList<>();
+        final List<ResourceModel> resourceModels = new ArrayList<>();
         response.policyList().forEach(p -> resourceModels.add(CfnHelper.convertFMSPolicySummaryToCFNResourceModel(p)));
+
         return resourceModels;
     }
 }

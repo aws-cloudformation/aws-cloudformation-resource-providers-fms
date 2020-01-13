@@ -45,6 +45,7 @@ class DeleteHandlerTest {
 
     @BeforeEach
     void setup() {
+
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new DeleteHandler();
@@ -52,8 +53,9 @@ class DeleteHandlerTest {
 
     @Test
     void handleRequestSuccess() {
+
         // stub the response for the delete request
-        DeletePolicyResponse describeResponse = FmsSampleHelper.sampleDeletePolicyResponse();
+        final DeletePolicyResponse describeResponse = FmsSampleHelper.sampleDeletePolicyResponse();
         doReturn(describeResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
@@ -62,8 +64,8 @@ class DeleteHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
-        ResourceModel expectedModel = CfnSampleHelper.sampleBareResourceModel(false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleBareResourceModel(false);
 
         // create the delete request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -94,6 +96,7 @@ class DeleteHandlerTest {
 
     @Test
     void handleRequestResourceNotFoundException() {
+
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
@@ -103,7 +106,7 @@ class DeleteHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the delete request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -134,6 +137,7 @@ class DeleteHandlerTest {
 
     @Test
     void handleRequestInvalidOperationException() {
+
         // mock an InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
@@ -143,7 +147,7 @@ class DeleteHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the delete request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()

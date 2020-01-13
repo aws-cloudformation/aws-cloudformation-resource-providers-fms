@@ -21,9 +21,10 @@ public class CfnHelper {
      * @return CFN resource model that was converted to.
      */
     public static ResourceModel convertFMSPolicyToCFNResourceModel(software.amazon.awssdk.services.fms.model.Policy policy, String policyArn, List<Tag> tags) {
+
         // assemble the security service policy data
-        SecurityServicePolicyData.SecurityServicePolicyDataBuilder securityServicePolicyData = SecurityServicePolicyData.builder()
-                .type(policy.securityServicePolicyData().typeAsString());
+        final SecurityServicePolicyData.SecurityServicePolicyDataBuilder securityServicePolicyData =
+                SecurityServicePolicyData.builder().type(policy.securityServicePolicyData().typeAsString());
 
         // add the managed service data if it exists
         if (!policy.securityServicePolicyData().managedServiceData().isEmpty()) {
@@ -31,7 +32,7 @@ public class CfnHelper {
         }
 
         // assemble the resource model with the required parameters
-        ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
+        final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
                 .excludeResourceTags(policy.excludeResourceTags())
                 .policyName(policy.policyName())
                 .remediationEnabled(policy.remediationEnabled())
@@ -81,7 +82,7 @@ public class CfnHelper {
     public static ResourceModel convertFMSPolicySummaryToCFNResourceModel(PolicySummary policySummary) {
 
         // assemble the security service policy data
-        SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
+        final SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
                 .type(policySummary.resourceType())
                 .build();
 

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 class Configuration extends BaseConfiguration {
 
     Configuration() {
+
         super("aws-fms-policy.json");
     }
 
@@ -15,6 +16,7 @@ class Configuration extends BaseConfiguration {
      * @return A map of key/value pairs representing tags from the request resource model.
      */
     public Map<String, String> resourceDefinedTags(final ResourceModel resourceModel) {
+
         if (resourceModel.getTags() == null) {
             return null;
         } else {
