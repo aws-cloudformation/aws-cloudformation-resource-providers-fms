@@ -10,10 +10,8 @@ import software.amazon.fms.policy.ResourceModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FmsHelper {
@@ -112,10 +110,10 @@ public class FmsHelper {
      * @param cfnTags Tags from the CFN resource provider request.
      * @return A list of FMS tag objects.
      */
-    public static Set<Tag> convertCFNTagMapToFMSTagSet(Map<String, String> cfnTags) {
+    public static List<Tag> convertCFNTagMapToFMSTagSet(Map<String, String> cfnTags) {
 
         // construct a new list of FMS tags
-        Set<Tag> tags = new HashSet<>();
+        List<Tag> tags = new ArrayList<>();
         if (cfnTags != null) {
             cfnTags.forEach((k, v) -> tags.add(Tag.builder().key(k).value(v).build()));
         }
@@ -131,12 +129,11 @@ public class FmsHelper {
     public static List<String> tagsToRemove(List<Tag> existingTagList, Map<String, String> desiredTagList) {
 
         // format existing and new tags
-        final Set<Tag> existingTagSet = new HashSet<>(existingTagList);
-        final Set<Tag> updatedTagSet = convertCFNTagMapToFMSTagSet(desiredTagList);
+        final List<Tag> desiredTagListFms = convertCFNTagMapToFMSTagSet(desiredTagList);
 
         // determine tags to remove
-        return existingTagSet.stream()
-                .filter(tag -> !updatedTagSet.contains(tag))
+        return existingTagList.stream()
+                .filter(tag -> !desiredTagListFms.contains(tag))
                 .map(Tag::key)
                 .collect(Collectors.toList());
     }
@@ -150,12 +147,11 @@ public class FmsHelper {
     public static List<Tag> tagsToAdd(List<Tag> existingTagList, Map<String, String> desiredTagList) {
 
         // format existing and new tags
-        final Set<Tag> existingTagSet = new HashSet<>(existingTagList);
-        final Set<Tag> updatedTagSet = convertCFNTagMapToFMSTagSet(desiredTagList);
+        final List<Tag> desiredTagListFms = convertCFNTagMapToFMSTagSet(desiredTagList);
 
         // determine tags to add
-        return updatedTagSet.stream()
-                .filter(tag -> !existingTagSet.contains(tag))
+        return desiredTagListFms.stream()
+                .filter(tag -> !existingTagList.contains(tag))
                 .collect(Collectors.toList());
     }
 }

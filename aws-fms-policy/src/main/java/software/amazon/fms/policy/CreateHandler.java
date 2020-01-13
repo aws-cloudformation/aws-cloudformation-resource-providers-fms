@@ -25,7 +25,8 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
     @Override
     protected ResourceModel constructSuccessResourceModel(
             final PutPolicyResponse response,
-            ResourceHandlerRequest<ResourceModel> request) {
+            final ResourceHandlerRequest<ResourceModel> request,
+            final AmazonWebServicesClientProxy proxy) {
 
         // convert the create request response to a resource model and add the tags in
         return CfnHelper.convertFMSPolicyToCFNResourceModel(

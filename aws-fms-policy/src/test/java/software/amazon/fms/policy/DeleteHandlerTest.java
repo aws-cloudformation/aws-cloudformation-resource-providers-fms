@@ -5,6 +5,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
+import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +39,7 @@ class DeleteHandlerTest {
     private Logger logger;
 
     @Captor
-    private ArgumentCaptor<DeletePolicyRequest> captor;
+    private ArgumentCaptor<FmsRequest> captor;
 
     private DeleteHandler handler;
 

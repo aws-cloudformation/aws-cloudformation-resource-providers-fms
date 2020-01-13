@@ -42,7 +42,10 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
      * @param request CloudFormation's handler request.
      * @return Post-action resource state or null.
      */
-    ResourceModel constructSuccessResourceModel(ResponseT response, ResourceHandlerRequest<ResourceModel> request) {
+    ResourceModel constructSuccessResourceModel(
+            final ResponseT response,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final AmazonWebServicesClientProxy proxy) {
 
         return null;
     }
@@ -87,7 +90,7 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
         // let each handler construct its own success resource model
         return ProgressEvent.<ResourceModel, CallbackContext>builder()
                 .status(OperationStatus.SUCCESS)
-                .resourceModel(constructSuccessResourceModel(response, request))
+                .resourceModel(constructSuccessResourceModel(response, request, proxy))
                 .resourceModels(constructSuccessResourceModels(response))
                 .callbackContext(callbackContext)
                 .build();

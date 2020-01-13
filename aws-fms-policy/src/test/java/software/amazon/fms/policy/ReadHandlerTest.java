@@ -3,10 +3,13 @@ package software.amazon.fms.policy;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.InvalidTypeException;
+import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,8 @@ import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.FmsSampleHelper;
 import software.amazon.fms.policy.helpers.CfnSampleHelper;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -39,7 +44,7 @@ class ReadHandlerTest {
     private Logger logger;
 
     @Captor
-    private ArgumentCaptor<GetPolicyRequest> captor;
+    private ArgumentCaptor<FmsRequest> captor;
 
     private ReadHandler handler;
 
@@ -53,11 +58,21 @@ class ReadHandlerTest {
     @Test
     void handleRequestRequiredParametersSuccess() {
         // stub the response for the read request
-        GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
+        final GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         ArgumentMatchers.isA(GetPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list tags request
+        final ListTagsForResourceResponse describeListResponse =
+                FmsSampleHelper.sampleListTagsForResourceResponse(false, false);
+        doReturn(describeListResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
                         ArgumentMatchers.any()
                 );
 
@@ -73,13 +88,14 @@ class ReadHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.sampleGetPolicyRequest()
-        );
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.sampleListTagsForResourceRequest()
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -95,11 +111,21 @@ class ReadHandlerTest {
     @Test
     void handleRequestAllParametersSuccess() {
         // stub the response for the read request
-        GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
+        final GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         ArgumentMatchers.isA(GetPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list tags request
+        final ListTagsForResourceResponse describeListResponse =
+                FmsSampleHelper.sampleListTagsForResourceResponse(false, false);
+        doReturn(describeListResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
                         ArgumentMatchers.any()
                 );
 
@@ -115,13 +141,66 @@ class ReadHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.sampleGetPolicyRequest()
-        );
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.sampleListTagsForResourceRequest()
+        ));
+
+        // assertions
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getMessage()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
+    void handleRequestRetrievePolicyTags() {
+        // stub the response for the read request
+        final GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
+        doReturn(describeResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(GetPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list tags request
+        final ListTagsForResourceResponse describeListResponse =
+                FmsSampleHelper.sampleListTagsForResourceResponse(true, false);
+        doReturn(describeListResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // model the pre-request and post-request resource state
+        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
+
+        // create the read request and send it
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(requestModel)
+                .build();
+        final ProgressEvent<ResourceModel, CallbackContext> response =
+                handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.sampleListTagsForResourceRequest()
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -145,7 +224,7 @@ class ReadHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -185,7 +264,7 @@ class ReadHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -225,7 +304,7 @@ class ReadHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
