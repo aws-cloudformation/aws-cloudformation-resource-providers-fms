@@ -75,7 +75,7 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
             final CallbackContext callbackContext,
             final Logger logger) {
 
-        ResponseT response;
+        final ResponseT response;
         try {
             // make the primary handler request
             response = makeRequest(proxy, request);

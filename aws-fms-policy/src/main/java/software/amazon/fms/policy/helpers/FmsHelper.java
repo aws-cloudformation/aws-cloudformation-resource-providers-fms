@@ -22,6 +22,7 @@ public class FmsHelper {
      * @return Map with one key, ACCOUNT, containing a list of account IDs.
      */
     static Map<CustomerPolicyScopeIdType, ? extends List<String>> mapAccounts(List<String> accounts) {
+
         return new HashMap<CustomerPolicyScopeIdType, List<String>>() {{
             put(CustomerPolicyScopeIdType.fromValue("ACCOUNT"), new ArrayList<>(accounts));
         }};
@@ -33,8 +34,9 @@ public class FmsHelper {
      * @return FMS policy builder that was converted to.
      */
     private static Policy.Builder convertCFNResourceModelToBuilder(ResourceModel resourceModel) {
+
         // assemble the security service policy data
-        SecurityServicePolicyData.Builder securityServicePolicyData = SecurityServicePolicyData.builder()
+        final SecurityServicePolicyData.Builder securityServicePolicyData = SecurityServicePolicyData.builder()
                 .type(resourceModel.getSecurityServicePolicyData().getType());
 
         // add the managed service data if it exists
@@ -43,7 +45,7 @@ public class FmsHelper {
         }
 
         // assemble the policy with the required parameters
-        Policy.Builder builder = Policy.builder()
+        final Policy.Builder builder = Policy.builder()
                 .policyName(resourceModel.getPolicyName())
                 .remediationEnabled(resourceModel.getRemediationEnabled())
                 .resourceType(resourceModel.getResourceType())
@@ -113,7 +115,7 @@ public class FmsHelper {
     public static List<Tag> convertCFNTagMapToFMSTagSet(Map<String, String> cfnTags) {
 
         // construct a new list of FMS tags
-        List<Tag> tags = new ArrayList<>();
+        final List<Tag> tags = new ArrayList<>();
         if (cfnTags != null) {
             cfnTags.forEach((k, v) -> tags.add(Tag.builder().key(k).value(v).build()));
         }

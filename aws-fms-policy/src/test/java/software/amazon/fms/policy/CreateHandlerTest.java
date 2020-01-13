@@ -51,6 +51,7 @@ class CreateHandlerTest {
 
     @BeforeEach
     void setup() {
+
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         configuration = new Configuration();
@@ -59,6 +60,7 @@ class CreateHandlerTest {
 
     @Test
     void handleRequestRequiredParametersSuccess() {
+
         // stub the response for the create request
         final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersResponse();
         doReturn(describeResponse)
@@ -69,8 +71,8 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
-        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -101,6 +103,7 @@ class CreateHandlerTest {
 
     @Test
     void handleRequestAllParametersSuccess() {
+
         // stub the response for the create request
         final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyAllParametersResponse();
         doReturn(describeResponse)
@@ -111,8 +114,8 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(false, false, false);
-        ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(false, false, false);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -143,6 +146,7 @@ class CreateHandlerTest {
 
     @Test
     void handlerRequestPolicyTags() {
+
         // stub the response for the create request
         final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersResponse();
         doReturn(describeResponse)
@@ -153,11 +157,11 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, true, false);
-        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, true, false);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
 
         // create sample tags how cfn interprets them from the resource model
-        Map<String, String> tags = configuration.resourceDefinedTags(requestModel);
+        final Map<String, String> tags = configuration.resourceDefinedTags(requestModel);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -189,6 +193,7 @@ class CreateHandlerTest {
 
     @Test
     void handleRequestResourceNotFoundException() {
+
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
@@ -198,7 +203,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -229,6 +234,7 @@ class CreateHandlerTest {
 
     @Test
     void handleRequestInvalidOperationException() {
+
         // mock an InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
@@ -238,7 +244,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -269,6 +275,7 @@ class CreateHandlerTest {
 
     @Test
     void handleRequestInvalidInputException() {
+
         // mock an InvalidInputException from the FMS API
         doThrow(InvalidInputException.builder().build())
                 .when(proxy)
@@ -278,7 +285,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -309,6 +316,7 @@ class CreateHandlerTest {
 
     @Test
     void handleRequestInvalidTypeException() {
+
         // mock an InvalidTypeException from the FMS API
         doThrow(InvalidTypeException.builder().build())
                 .when(proxy)
@@ -318,7 +326,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -349,6 +357,7 @@ class CreateHandlerTest {
 
     @Test
     void handleRequestLimitExceededException() {
+
         // mock a LimitExceededException from the FMS API
         doThrow(LimitExceededException.builder().build())
                 .when(proxy)
@@ -358,7 +367,7 @@ class CreateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()

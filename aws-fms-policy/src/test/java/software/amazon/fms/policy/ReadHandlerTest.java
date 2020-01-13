@@ -50,6 +50,7 @@ class ReadHandlerTest {
 
     @BeforeEach
     void setup() {
+
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         handler = new ReadHandler();
@@ -57,6 +58,7 @@ class ReadHandlerTest {
 
     @Test
     void handleRequestRequiredParametersSuccess() {
+
         // stub the response for the read request
         final GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeResponse)
@@ -77,8 +79,8 @@ class ReadHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
-        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -110,6 +112,7 @@ class ReadHandlerTest {
 
     @Test
     void handleRequestAllParametersSuccess() {
+
         // stub the response for the read request
         final GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeResponse)
@@ -130,8 +133,8 @@ class ReadHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
-        ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -163,6 +166,7 @@ class ReadHandlerTest {
 
     @Test
     void handleRequestRetrievePolicyTags() {
+
         // stub the response for the read request
         final GetPolicyResponse describeResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeResponse)
@@ -183,8 +187,8 @@ class ReadHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
-        ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
 
         // create the read request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -196,7 +200,8 @@ class ReadHandlerTest {
         // verify stub calls
         verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.sampleListTagsForResourceRequest()
@@ -215,6 +220,7 @@ class ReadHandlerTest {
 
     @Test
     void handleRequestResourceNotFoundException() {
+
         // mock a ResourceNotFoundException from the FMS API
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
@@ -255,6 +261,7 @@ class ReadHandlerTest {
 
     @Test
     void handleRequestInvalidOperationException() {
+
         // mock an InvalidOperationException from the FMS API
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
@@ -295,6 +302,7 @@ class ReadHandlerTest {
 
     @Test
     void handleRequestInvalidTypeException() {
+
         // mock an InvalidTypeException from the FMS API
         doThrow(InvalidTypeException.builder().build())
                 .when(proxy)

@@ -60,6 +60,7 @@ class UpdateHandlerTest {
 
     @BeforeEach
     void setup() {
+
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         configuration = new Configuration();
@@ -68,6 +69,7 @@ class UpdateHandlerTest {
 
     @Test
     void handleRequestRequiredParametersSuccess() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeGetResponse)
@@ -97,7 +99,7 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -109,7 +111,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(3)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false),
@@ -129,6 +132,7 @@ class UpdateHandlerTest {
 
     @Test
     void handleRequestAllParametersSuccess() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -158,8 +162,8 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
-        ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -171,7 +175,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(3)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyAllParametersRequest(true),
@@ -191,6 +196,7 @@ class UpdateHandlerTest {
 
     @Test
     void handlerRequestDeletePolicyTags() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeGetResponse)
@@ -229,7 +235,7 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -241,7 +247,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(4)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false),
@@ -262,6 +269,7 @@ class UpdateHandlerTest {
 
     @Test
     void handlerRequestAddPolicyTags() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeGetResponse)
@@ -300,10 +308,10 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
+        final ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
 
         // create sample tags how cfn interprets them from the resource model
-        Map<String, String> tags = configuration.resourceDefinedTags(requestExpectedModel);
+        final Map<String, String> tags = configuration.resourceDefinedTags(requestExpectedModel);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -316,7 +324,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(4)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false),
@@ -337,6 +346,7 @@ class UpdateHandlerTest {
 
     @Test
     void handlerRequestAddDeletePolicyTags() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyRequiredParametersResponse();
         doReturn(describeGetResponse)
@@ -384,10 +394,10 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request and post-request resource state
-        ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, true);
+        final ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, true);
 
         // create sample tags how cfn interprets them from the resource model
-        Map<String, String> tags = configuration.resourceDefinedTags(requestExpectedModel);
+        final Map<String, String> tags = configuration.resourceDefinedTags(requestExpectedModel);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -400,7 +410,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(5)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false),
@@ -422,6 +433,7 @@ class UpdateHandlerTest {
 
     @Test
     void handleRequestResourceNotFoundException() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -440,7 +452,7 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -452,7 +464,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false)
@@ -471,6 +484,7 @@ class UpdateHandlerTest {
 
     @Test
     void handleRequestInvalidOperationException() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -489,7 +503,7 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -501,7 +515,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false)
@@ -520,6 +535,7 @@ class UpdateHandlerTest {
 
     @Test
     void handleRequestInvalidInputException() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -538,7 +554,7 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -550,7 +566,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false)
@@ -569,6 +586,7 @@ class UpdateHandlerTest {
 
     @Test
     void handleRequestInvalidTypeException() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -587,7 +605,7 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -599,7 +617,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false)
@@ -618,6 +637,7 @@ class UpdateHandlerTest {
 
     @Test
     void handleRequestLimitExceededException() {
+
         // stub the response for the read request
         final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
         doReturn(describeGetResponse)
@@ -636,7 +656,7 @@ class UpdateHandlerTest {
                 );
 
         // model the pre-request resource state
-        ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -648,7 +668,8 @@ class UpdateHandlerTest {
         // verify stub calls
         verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
-                ArgumentMatchers.any());
+                ArgumentMatchers.any()
+        );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false)
