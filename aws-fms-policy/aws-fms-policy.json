@@ -157,6 +157,7 @@
         "create": {
             "permissions": [
                 "fms:PutPolicy",
+                "fms:TagResource",
                 "iam:PassRole",
                 "waf-regional:ListRuleGroups"
             ]
@@ -165,6 +166,9 @@
             "permissions": [
                 "fms:PutPolicy",
                 "fms:GetPolicy",
+                "fms:TagResource",
+                "fms:UntagResource",
+                "fms:ListTagsForResource",
                 "iam:PassRole",
                 "waf-regional:ListRuleGroups"
             ]
@@ -176,7 +180,8 @@
         },
         "read": {
             "permissions": [
-                "fms:GetPolicy"
+                "fms:GetPolicy",
+                "fms:ListTagsForResource"
             ]
         },
         "delete": {

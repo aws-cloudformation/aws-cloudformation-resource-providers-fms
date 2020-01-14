@@ -60,6 +60,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
         // make an untag request
         if (!removeTags.isEmpty()) {
             final UntagResourceRequest untagResourceRequest = UntagResourceRequest.builder()
+                    .resourceArn(getPolicyResponse.policyArn())
                     .tagKeys(removeTags)
                     .build();
             proxy.injectCredentialsAndInvokeV2(untagResourceRequest, client::untagResource);
@@ -68,6 +69,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
         // make a tag request
         if (!addTags.isEmpty()) {
             final TagResourceRequest tagResourceRequest = TagResourceRequest.builder()
+                    .resourceArn(getPolicyResponse.policyArn())
                     .tagList(addTags)
                     .build();
             proxy.injectCredentialsAndInvokeV2(tagResourceRequest, client::tagResource);
