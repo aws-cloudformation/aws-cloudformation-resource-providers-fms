@@ -298,6 +298,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
         }
 
         return TagResourceRequest.builder()
+                .resourceArn(samplePolicyArn)
                 .tagList(addTags)
                 .build();
     }
@@ -331,6 +332,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
         }
 
         return UntagResourceRequest.builder()
+                .resourceArn(samplePolicyArn)
                 .tagKeys(deleteKeys)
                 .build();
     }
