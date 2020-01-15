@@ -5,6 +5,7 @@ import software.amazon.awssdk.services.fms.model.PolicySummary;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.policy.AccountMap;
 import software.amazon.fms.policy.Policy;
+import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
 import software.amazon.fms.policy.ResourceTag;
 import software.amazon.fms.policy.SecurityServicePolicyData;
@@ -70,9 +71,9 @@ public class CfnHelper {
         final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
                 .policy(policyBuilder.build());
         if (!tags.isEmpty()) {
-            final List<ResourceTag> resourceTags = new ArrayList<>();
-            tags.forEach(tag -> resourceTags.add(new ResourceTag(tag.key(), tag.value())));
-            resourceModelBuilder.tags(resourceTags);
+            final List<PolicyTag> policyTags = new ArrayList<>();
+            tags.forEach(tag -> policyTags.add(new PolicyTag(tag.key(), tag.value())));
+            resourceModelBuilder.tags(policyTags);
         }
 
         // build and return the resource model

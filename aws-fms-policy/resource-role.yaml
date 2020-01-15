@@ -30,7 +30,6 @@ Resources:
                 - "fms:PutPolicy"
                 - "fms:TagResource"
                 - "fms:UntagResource"
-                - "iam:PassRole"
                 - "waf-regional:ListRuleGroups"
                 Resource: "*"
 Outputs:
