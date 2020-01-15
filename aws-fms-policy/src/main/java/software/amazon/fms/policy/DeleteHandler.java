@@ -14,7 +14,7 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
 
         // make the delete request
         final DeletePolicyRequest deletePolicyRequest = DeletePolicyRequest.builder()
-                .policyId(request.getDesiredResourceState().getPolicyId())
+                .policyId(request.getDesiredResourceState().getPolicy().getPolicyId())
                 .deleteAllPolicyResources(true)
                 .build();
         return proxy.injectCredentialsAndInvokeV2(deletePolicyRequest, client::deletePolicy);

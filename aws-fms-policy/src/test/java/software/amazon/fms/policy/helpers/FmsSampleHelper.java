@@ -39,7 +39,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
                 .type(samplePolicyType)
                 .build();
         // assemble a sample policy with only the required parameters
-        final Policy.Builder builder = Policy.builder()
+        final Policy.Builder policyBuilder = Policy.builder()
                 .excludeResourceTags(sampleExcludeResourceTags)
                 .policyName(samplePolicyName)
                 .remediationEnabled(sampleRemediationEnabled)
@@ -48,11 +48,11 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         // optionally include the policy id
         if (includeIdentifiers) {
-            builder.policyId(samplePolicyId)
+            policyBuilder.policyId(samplePolicyId)
                     .policyUpdateToken(samplePolicyUpdateToken);
         }
 
-        return builder;
+        return policyBuilder;
     }
 
     /**

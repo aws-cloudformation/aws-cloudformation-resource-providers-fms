@@ -1,6 +1,7 @@
 package software.amazon.fms.policy.helpers;
 
 import software.amazon.fms.policy.AccountMap;
+import software.amazon.fms.policy.Policy;
 import software.amazon.fms.policy.ResourceModel;
 import software.amazon.fms.policy.ResourceTag;
 import software.amazon.fms.policy.SecurityServicePolicyData;
@@ -17,10 +18,11 @@ public class CfnSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model builder.
      */
-    private static ResourceModel.ResourceModelBuilder sampleRequiredParametersResourceModelBuilder(
+    private static ResourceModel sampleRequiredParametersResourceModelBuilder(
             final boolean includeIdentifiers,
             final boolean includeTag1,
             final boolean includeTag2) {
+
 
         // assemble sample security service policy data
         final SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
@@ -28,8 +30,9 @@ public class CfnSampleHelper extends BaseSampleHelper {
                 .type(samplePolicyType)
                 .build();
 
-        // assemble a sample policy with only the required parameters
-        final ResourceModel.ResourceModelBuilder builder = ResourceModel.builder()
+        // assemble a sample resource model with only the required parameters
+        final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder();
+        final Policy.PolicyBuilder policyBuilder = Policy.builder()
                 .excludeResourceTags(sampleExcludeResourceTags)
                 .policyName(samplePolicyName)
                 .remediationEnabled(sampleRemediationEnabled)
@@ -38,8 +41,8 @@ public class CfnSampleHelper extends BaseSampleHelper {
 
         // optionally include the policy id
         if (includeIdentifiers) {
-            builder.policyId(samplePolicyId);
-            builder.policyArn(samplePolicyArn);
+            policyBuilder.policyId(samplePolicyId);
+            policyBuilder.policyArn(samplePolicyArn);
         }
 
         // optionally include the policy tags
@@ -59,10 +62,13 @@ public class CfnSampleHelper extends BaseSampleHelper {
 
         // dont include an empty tags list
         if (includeTag1 || includeTag2) {
-            builder.tags(sampleTags);
+            resourceModelBuilder.tags(sampleTags);
         }
 
-        return builder;
+        // add the policy to the resource model
+        resourceModelBuilder.policy(policyBuilder.build());
+
+        return resourceModelBuilder.build();
     }
 
     /**
@@ -72,7 +78,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
      * @param includeTag2 Should the policy have unique tag 2.
      * @return The assembled resource model builder.
      */
-    private static ResourceModel.ResourceModelBuilder sampleAllParametersResourceModelBuilder(
+    private static ResourceModel sampleAllParametersResourceModelBuilder(
             final boolean includeIdentifiers,
             final boolean includeTag1,
             final boolean includeTag2) {
@@ -97,13 +103,18 @@ public class CfnSampleHelper extends BaseSampleHelper {
         final List<String> sampleResourceTypeList = new ArrayList<>();
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
-        // assemble sample policy with all possible parameters
-        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2)
-                .excludeMap(sampleAccountMap)
-                .includeMap(sampleAccountMap)
-                .resourceTags(sampleResourceTags)
-                .resourceType(sampleResourceType)
-                .resourceTypeList(sampleResourceTypeList);
+        // assemble sample resource model with all possible policy parameters
+        final ResourceModel resourceModel =
+                sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2);
+        final Policy policy = resourceModel.getPolicy();
+        policy.setExcludeMap(sampleAccountMap);
+        policy.setIncludeMap(sampleAccountMap);
+        policy.setResourceTags(sampleResourceTags);
+        policy.setResourceType(sampleResourceType);
+        policy.setResourceTypeList(sampleResourceTypeList);
+        resourceModel.setPolicy(policy);
+
+        return resourceModel;
     }
 
     /**
@@ -118,7 +129,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeTag1,
             final boolean includeTag2) {
 
-        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2).build();
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2);
     }
 
     /**
@@ -133,7 +144,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeTag1,
             final boolean includeTag2) {
 
-        return sampleAllParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2).build();
+        return sampleAllParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2);
     }
 
     /**
@@ -148,7 +159,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
                 .build();
 
         // assemble the sample policy with the required parameters
-        return ResourceModel.builder()
+        final Policy policy = Policy.builder()
                 .policyId(samplePolicyId)
                 .policyName(samplePolicyName)
                 .resourceType(sampleResourceType)
@@ -156,6 +167,8 @@ public class CfnSampleHelper extends BaseSampleHelper {
                 .remediationEnabled(sampleRemediationEnabled)
                 .policyArn(samplePolicyArn)
                 .build();
+
+        return ResourceModel.builder().policy(policy).build();
     }
 
     /**
@@ -177,13 +190,12 @@ public class CfnSampleHelper extends BaseSampleHelper {
      */
     public static ResourceModel sampleBareResourceModel(final boolean includeIdentifiers) {
 
-        final ResourceModel.ResourceModelBuilder builder = ResourceModel.builder();
-
         // optionally include the policy id
+        final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder();
         if (includeIdentifiers) {
-            builder.policyId(samplePolicyId);
+            resourceModelBuilder.policy(Policy.builder().policyId(samplePolicyId).build());
         }
 
-        return builder.build();
+        return resourceModelBuilder.build();
     }
 }
