@@ -62,71 +62,83 @@
         }
     },
     "properties": {
-        "ExcludeMap": {
-            "$ref": "#/definitions/AccountMap"
-        },
-        "ExcludeResourceTags": {
-            "type": "boolean"
-        },
-        "IncludeMap": {
-            "$ref": "#/definitions/AccountMap"
-        },
-        "PolicyId": {
-            "type": "string",
-            "pattern": "^[a-z0-9A-Z-]{36}$",
-            "minLength": 36,
-            "maxLength": 36
-        },
-        "PolicyName": {
-            "type": "string",
-            "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
-            "minLength": 1,
-            "maxLength": 1024
-        },
-        "RemediationEnabled": {
-            "type": "boolean"
-        },
-        "ResourceTags": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/ResourceTag"
-            },
-            "maxLength": 8
-        },
-        "ResourceType": {
-            "$ref": "#/definitions/ResourceType"
-        },
-        "ResourceTypeList": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/ResourceType"
-            }
-        },
-        "SecurityServicePolicyData": {
+        "Policy": {
             "type": "object",
             "properties": {
-                "ManagedServiceData": {
+                "ExcludeMap": {
+                    "$ref": "#/definitions/AccountMap"
+                },
+                "ExcludeResourceTags": {
+                    "type": "boolean"
+                },
+                "IncludeMap": {
+                    "$ref": "#/definitions/AccountMap"
+                },
+                "PolicyId": {
                     "type": "string",
+                    "pattern": "^[a-z0-9A-Z-]{36}$",
+                    "minLength": 36,
+                    "maxLength": 36
+                },
+                "PolicyName": {
+                    "type": "string",
+                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
                     "minLength": 1,
                     "maxLength": 1024
                 },
-                "Type": {
-                    "type": "string",
-                    "enum": [
-                        "WAF",
-                        "SHIELD_ADVANCED",
-                        "SECURITY_GROUPS_COMMON",
-                        "SECURITY_GROUPS_CONTENT_AUDIT",
-                        "SECURITY_GROUPS_USAGE_AUDIT"
+                "RemediationEnabled": {
+                    "type": "boolean"
+                },
+                "ResourceTags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ResourceTag"
+                    },
+                    "maxLength": 8
+                },
+                "ResourceType": {
+                    "$ref": "#/definitions/ResourceType"
+                },
+                "ResourceTypeList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ResourceType"
+                    }
+                },
+                "SecurityServicePolicyData": {
+                    "type": "object",
+                    "properties": {
+                        "ManagedServiceData": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1024
+                        },
+                        "Type": {
+                            "type": "string",
+                            "enum": [
+                                "WAF",
+                                "SHIELD_ADVANCED",
+                                "SECURITY_GROUPS_COMMON",
+                                "SECURITY_GROUPS_CONTENT_AUDIT",
+                                "SECURITY_GROUPS_USAGE_AUDIT"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "Type"
                     ]
+                },
+                "PolicyArn": {
+                    "$ref": "#/definitions/ResourceArn"
                 }
             },
             "required": [
-                "Type"
+                "ExcludeResourceTags",
+                "PolicyName",
+                "RemediationEnabled",
+                "ResourceType",
+                "SecurityServicePolicyData"
             ]
-        },
-        "PolicyArn": {
-            "$ref": "#/definitions/ResourceArn"
         },
         "Tags": {
             "type": "array",
@@ -137,21 +149,17 @@
     },
     "additionalProperties": false,
     "required": [
-        "ExcludeResourceTags",
-        "PolicyName",
-        "RemediationEnabled",
-        "ResourceType",
-        "SecurityServicePolicyData"
+        "Policy"
     ],
     "readOnlyProperties": [
-        "/properties/PolicyArn",
-        "/properties/PolicyId"
+        "/properties/Policy/PolicyArn",
+        "/properties/Policy/PolicyId"
     ],
     "createOnlyProperties": [
-        "/properties/PolicyId"
+        "/properties/Policy/PolicyId"
     ],
     "primaryIdentifier": [
-        "/properties/PolicyId"
+        "/properties/Policy/PolicyId"
     ],
     "handlers": {
         "create": {

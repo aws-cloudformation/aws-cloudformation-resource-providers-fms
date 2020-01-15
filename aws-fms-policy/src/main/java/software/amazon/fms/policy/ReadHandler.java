@@ -17,7 +17,7 @@ public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
 
         // make the read request
         final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
-                .policyId(request.getDesiredResourceState().getPolicyId())
+                .policyId(request.getDesiredResourceState().getPolicy().getPolicyId())
                 .build();
         return proxy.injectCredentialsAndInvokeV2(
                 getPolicyRequest,

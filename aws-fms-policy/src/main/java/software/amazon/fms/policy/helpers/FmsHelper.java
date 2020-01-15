@@ -35,52 +35,55 @@ public class FmsHelper {
      */
     private static Policy.Builder convertCFNResourceModelToBuilder(ResourceModel resourceModel) {
 
+        // get the policy from the resource model
+        final software.amazon.fms.policy.Policy policy = resourceModel.getPolicy();
+
         // assemble the security service policy data
         final SecurityServicePolicyData.Builder securityServicePolicyData = SecurityServicePolicyData.builder()
-                .type(resourceModel.getSecurityServicePolicyData().getType());
+                .type(policy.getSecurityServicePolicyData().getType());
 
         // add the managed service data if it exists
-        if (resourceModel.getSecurityServicePolicyData().getManagedServiceData() != null) {
-                securityServicePolicyData.managedServiceData(resourceModel.getSecurityServicePolicyData().getManagedServiceData());
+        if (policy.getSecurityServicePolicyData().getManagedServiceData() != null) {
+                securityServicePolicyData.managedServiceData(policy.getSecurityServicePolicyData().getManagedServiceData());
         }
 
         // assemble the policy with the required parameters
-        final Policy.Builder builder = Policy.builder()
-                .policyName(resourceModel.getPolicyName())
-                .remediationEnabled(resourceModel.getRemediationEnabled())
-                .resourceType(resourceModel.getResourceType())
+        final Policy.Builder policyBuilder = Policy.builder()
+                .policyName(policy.getPolicyName())
+                .remediationEnabled(policy.getRemediationEnabled())
+                .resourceType(policy.getResourceType())
                 .securityServicePolicyData(securityServicePolicyData.build());
 
         // check each optional parameter and add it if it exists
-        if (resourceModel.getExcludeMap() != null) {
-            builder.excludeMap(mapAccounts(resourceModel.getExcludeMap().getACCOUNT()));
+        if (policy.getExcludeMap() != null) {
+            policyBuilder.excludeMap(mapAccounts(policy.getExcludeMap().getACCOUNT()));
         }
-        if (resourceModel.getExcludeResourceTags() != null) {
-            builder.excludeResourceTags(resourceModel.getExcludeResourceTags());
+        if (policy.getExcludeResourceTags() != null) {
+            policyBuilder.excludeResourceTags(policy.getExcludeResourceTags());
         }
-        if (resourceModel.getIncludeMap() != null) {
-            builder.includeMap(mapAccounts(resourceModel.getIncludeMap().getACCOUNT()));
+        if (policy.getIncludeMap() != null) {
+            policyBuilder.includeMap(mapAccounts(policy.getIncludeMap().getACCOUNT()));
         }
-        if (resourceModel.getPolicyId() != null) {
-            builder.policyId(resourceModel.getPolicyId());
+        if (policy.getPolicyId() != null) {
+            policyBuilder.policyId(policy.getPolicyId());
         }
-        if (resourceModel.getResourceTags() != null) {
-            Collection<ResourceTag> resourceTags = new ArrayList<>();
-            resourceModel.getResourceTags().forEach(rt -> resourceTags.add(
+        if (policy.getResourceTags() != null) {
+            final Collection<ResourceTag> resourceTags = new ArrayList<>();
+            policy.getResourceTags().forEach(rt -> resourceTags.add(
                     software.amazon.awssdk.services.fms.model.ResourceTag.builder()
                             .key(rt.getKey())
                             .value(rt.getValue())
                             .build()
             ));
-            builder.resourceTags(resourceTags);
+            policyBuilder.resourceTags(resourceTags);
         }
-        if (resourceModel.getResourceTypeList() != null) {
-            Collection<String> resourceTypeList = new ArrayList<>(resourceModel.getResourceTypeList());
-            builder.resourceTypeList(resourceTypeList);
+        if (policy.getResourceTypeList() != null) {
+            final Collection<String> resourceTypeList = new ArrayList<>(policy.getResourceTypeList());
+            policyBuilder.resourceTypeList(resourceTypeList);
         }
 
         // return the policy builder
-        return builder;
+        return policyBuilder;
     }
 
     /**

@@ -25,7 +25,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
 
         // make a read request to retrieve an up-to-date PolicyUpdateToken
         final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
-                .policyId(request.getDesiredResourceState().getPolicyId())
+                .policyId(request.getDesiredResourceState().getPolicy().getPolicyId())
                 .build();
         final GetPolicyResponse getPolicyResponse = proxy.injectCredentialsAndInvokeV2(
                 getPolicyRequest,
