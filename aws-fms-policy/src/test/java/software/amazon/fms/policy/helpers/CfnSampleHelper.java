@@ -2,6 +2,7 @@ package software.amazon.fms.policy.helpers;
 
 import software.amazon.fms.policy.AccountMap;
 import software.amazon.fms.policy.Policy;
+import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
 import software.amazon.fms.policy.ResourceTag;
 import software.amazon.fms.policy.SecurityServicePolicyData;
@@ -46,15 +47,15 @@ public class CfnSampleHelper extends BaseSampleHelper {
         }
 
         // optionally include the policy tags
-        List<ResourceTag> sampleTags = new ArrayList<>();
+        List<PolicyTag> sampleTags = new ArrayList<>();
         if (includeTag1) {
-            sampleTags.add(ResourceTag.builder()
+            sampleTags.add(PolicyTag.builder()
                     .key(String.format("%s%s", sampleTagKey, "1"))
                     .value(sampleTagValue)
                     .build());
         }
         if (includeTag2) {
-            sampleTags.add(ResourceTag.builder()
+            sampleTags.add(PolicyTag.builder()
                     .key(String.format("%s%s", sampleTagKey, "2"))
                     .value(sampleTagValue)
                     .build());

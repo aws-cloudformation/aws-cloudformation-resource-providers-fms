@@ -20,7 +20,7 @@ class Configuration extends BaseConfiguration {
         if (resourceModel.getTags() == null) {
             return null;
         } else {
-            return resourceModel.getTags().stream().collect(Collectors.toMap(ResourceTag::getKey, ResourceTag::getValue));
+            return resourceModel.getTags().stream().collect(Collectors.toMap(PolicyTag::getKey, PolicyTag::getValue));
         }
     }
 }
