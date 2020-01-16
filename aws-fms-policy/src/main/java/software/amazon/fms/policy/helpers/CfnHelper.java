@@ -3,7 +3,7 @@ package software.amazon.fms.policy.helpers;
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
 import software.amazon.awssdk.services.fms.model.PolicySummary;
 import software.amazon.awssdk.services.fms.model.Tag;
-import software.amazon.fms.policy.AccountMap;
+import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.Policy;
 import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
@@ -46,14 +46,14 @@ public class CfnHelper {
         // check each optional parameter and add it if it exists
         if (!policy.excludeMap().isEmpty()) {
             policyBuilder.excludeMap(
-                    AccountMap.builder()
+                    IEMap.builder()
                             .aCCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
                             .build()
             );
         }
         if (!policy.includeMap().isEmpty()) {
             policyBuilder.includeMap(
-                    AccountMap.builder()
+                    IEMap.builder()
                             .aCCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
                             .build()
             );

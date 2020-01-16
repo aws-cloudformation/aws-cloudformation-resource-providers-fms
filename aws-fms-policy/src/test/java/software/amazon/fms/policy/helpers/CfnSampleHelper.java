@@ -1,6 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
-import software.amazon.fms.policy.AccountMap;
+import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.Policy;
 import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
@@ -84,10 +84,10 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeTag1,
             final boolean includeTag2) {
 
-        // assemble a sample account map
+        // assemble a sample include/exclude map
         final List<String> accountList = new ArrayList<>();
         accountList.add(sampleAccountId);
-        final AccountMap sampleAccountMap = AccountMap.builder()
+        final IEMap sampleIEMap = IEMap.builder()
                 .aCCOUNT(accountList)
                 .build();
 
@@ -108,8 +108,8 @@ public class CfnSampleHelper extends BaseSampleHelper {
         final ResourceModel resourceModel =
                 sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2);
         final Policy policy = resourceModel.getPolicy();
-        policy.setExcludeMap(sampleAccountMap);
-        policy.setIncludeMap(sampleAccountMap);
+        policy.setExcludeMap(sampleIEMap);
+        policy.setIncludeMap(sampleIEMap);
         policy.setResourceTags(sampleResourceTags);
         policy.setResourceType(sampleResourceType);
         policy.setResourceTypeList(sampleResourceTypeList);

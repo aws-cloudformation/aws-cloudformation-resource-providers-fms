@@ -5,6 +5,7 @@ import software.amazon.awssdk.services.fms.model.Policy;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
 import software.amazon.awssdk.services.fms.model.SecurityServicePolicyData;
 import software.amazon.awssdk.services.fms.model.Tag;
+import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.ResourceModel;
 
 import java.util.ArrayList;
@@ -17,14 +18,14 @@ import java.util.stream.Collectors;
 public class FmsHelper {
 
     /**
-     * Helper method to assign accounts to the ACCOUNT key within a map.
-     * @param accounts Account list to map.
-     * @return Map with one key, ACCOUNT, containing a list of account IDs.
+     * Helper method to assign values in an include/exclude map.
+     * @param accounts CFN IEMap to covert,
+     * @return The converted include/exclude map.
      */
-    static Map<CustomerPolicyScopeIdType, ? extends List<String>> mapAccounts(List<String> accounts) {
+    static Map<CustomerPolicyScopeIdType, ? extends List<String>> convertCFNIEMapToFMSIEMap(IEMap accounts) {
 
         return new HashMap<CustomerPolicyScopeIdType, List<String>>() {{
-            put(CustomerPolicyScopeIdType.fromValue("ACCOUNT"), new ArrayList<>(accounts));
+            put(CustomerPolicyScopeIdType.fromValue("ACCOUNT"), new ArrayList<>(accounts.getACCOUNT()));
         }};
     }
 
@@ -54,19 +55,27 @@ public class FmsHelper {
                 .resourceType(policy.getResourceType())
                 .securityServicePolicyData(securityServicePolicyData.build());
 
-        // check each optional parameter and add it if it exists
+        // add exclude map if present
         if (policy.getExcludeMap() != null) {
-            policyBuilder.excludeMap(mapAccounts(policy.getExcludeMap().getACCOUNT()));
+            policyBuilder.excludeMap(convertCFNIEMapToFMSIEMap(policy.getExcludeMap()));
         }
+
+        // add exclude resource tags if present
         if (policy.getExcludeResourceTags() != null) {
             policyBuilder.excludeResourceTags(policy.getExcludeResourceTags());
         }
+
+        // add include map if present
         if (policy.getIncludeMap() != null) {
-            policyBuilder.includeMap(mapAccounts(policy.getIncludeMap().getACCOUNT()));
+            policyBuilder.includeMap(convertCFNIEMapToFMSIEMap(policy.getIncludeMap()));
         }
+
+        // add policy id if present
         if (policy.getPolicyId() != null) {
             policyBuilder.policyId(policy.getPolicyId());
         }
+
+        // add resource tags if present
         if (policy.getResourceTags() != null) {
             final Collection<ResourceTag> resourceTags = new ArrayList<>();
             policy.getResourceTags().forEach(rt -> resourceTags.add(
@@ -77,6 +86,8 @@ public class FmsHelper {
             ));
             policyBuilder.resourceTags(resourceTags);
         }
+
+        // add resource type list if present
         if (policy.getResourceTypeList() != null) {
             final Collection<String> resourceTypeList = new ArrayList<>(policy.getResourceTypeList());
             policyBuilder.resourceTypeList(resourceTypeList);
