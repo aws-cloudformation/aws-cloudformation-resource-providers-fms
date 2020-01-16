@@ -165,6 +165,9 @@
             "items": {
                 "$ref": "#/definitions/PolicyTag"
             }
+        },
+        "DeleteAllPolicyResources": {
+            "type": "boolean"
         }
     },
     "additionalProperties": false,
@@ -174,6 +177,9 @@
     "readOnlyProperties": [
         "/properties/Policy/PolicyArn",
         "/properties/Policy/PolicyId"
+    ],
+    "writeOnlyProperties": [
+        "/properties/DeleteAllPolicyResources"
     ],
     "primaryIdentifier": [
         "/properties/Policy/PolicyId"
