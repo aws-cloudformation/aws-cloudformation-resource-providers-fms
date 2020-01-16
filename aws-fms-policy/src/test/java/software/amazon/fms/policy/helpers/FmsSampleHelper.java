@@ -19,6 +19,7 @@ import software.amazon.awssdk.services.fms.model.TagResourceRequest;
 import software.amazon.awssdk.services.fms.model.TagResourceResponse;
 import software.amazon.awssdk.services.fms.model.UntagResourceRequest;
 import software.amazon.awssdk.services.fms.model.UntagResourceResponse;
+import software.amazon.fms.policy.IEMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,9 +63,10 @@ public class FmsSampleHelper extends BaseSampleHelper {
      */
     private static Policy.Builder sampleAllParametersPolicy(final boolean includeIdentifiers) {
 
-        // assemble a sample account map
-        final List<String> sampleAccountMap = new ArrayList<>();
-        sampleAccountMap.add(sampleAccountId);
+        // assemble a sample include/exclude map
+        final List<String> sampleAccountList = new ArrayList<>();
+        sampleAccountList.add(sampleAccountId);
+        final IEMap sampleIEMap = IEMap.builder().aCCOUNT(sampleAccountList).build();
 
         // assemble sample resource tags
         final ResourceTag[] sampleResourceTags = {
@@ -77,8 +79,8 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         // assemble sample policy with all possible parameters
         return sampleRequiredParametersPolicy(includeIdentifiers)
-                .excludeMap(FmsHelper.mapAccounts(sampleAccountMap))
-                .includeMap(FmsHelper.mapAccounts(sampleAccountMap))
+                .excludeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
+                .includeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
                 .resourceTypeList(sampleResourceTypeList);

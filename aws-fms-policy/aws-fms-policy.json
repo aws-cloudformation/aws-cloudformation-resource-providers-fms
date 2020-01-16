@@ -10,8 +10,8 @@
             "minLength": 1,
             "maxLength": 1024
         },
-        "AccountMap": {
-            "description": "An AWS account mapping.",
+        "IEMap": {
+            "description": "An FMS includeMap or excludeMap.",
             "type": "object",
             "properties": {
                 "ACCOUNT": {
@@ -20,10 +20,7 @@
                         "$ref": "#/definitions/AccountId"
                     }
                 }
-            },
-            "required": [
-                "ACCOUNT"
-            ]
+            }
         },
         "PolicyTag": {
             "description": "A policy tag.",
@@ -86,13 +83,13 @@
             "type": "object",
             "properties": {
                 "ExcludeMap": {
-                    "$ref": "#/definitions/AccountMap"
+                    "$ref": "#/definitions/IEMap"
                 },
                 "ExcludeResourceTags": {
                     "type": "boolean"
                 },
                 "IncludeMap": {
-                    "$ref": "#/definitions/AccountMap"
+                    "$ref": "#/definitions/IEMap"
                 },
                 "PolicyId": {
                     "type": "string",
