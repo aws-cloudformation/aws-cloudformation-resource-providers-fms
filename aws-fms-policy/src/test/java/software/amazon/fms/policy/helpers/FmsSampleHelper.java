@@ -232,7 +232,19 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         return DeletePolicyRequest.builder()
                 .policyId(samplePolicyId)
-                .deleteAllPolicyResources(true)
+                .build();
+    }
+
+    /**
+     * Assembles a sample DeletePolicy request with the deleteAllPolicyResources option.
+     * @param deleteAllPolicyResources Should all the policy resources be deleted.
+     * @return The assembled request.
+     */
+    public static DeletePolicyRequest sampleDeletePolicyRequest(final boolean deleteAllPolicyResources) {
+
+        return DeletePolicyRequest.builder()
+                .policyId(samplePolicyId)
+                .deleteAllPolicyResources(deleteAllPolicyResources)
                 .build();
     }
 

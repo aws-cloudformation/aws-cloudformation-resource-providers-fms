@@ -199,4 +199,19 @@ public class CfnSampleHelper extends BaseSampleHelper {
 
         return resourceModelBuilder.build();
     }
+
+    /**
+     * Assembles a sample resource model with the SamplePolicyId parameter and DeleteAllPolicyResources parameter.
+     * @param includeIdentifiers Should the policy identifiers be included.
+     * @param deleteAllPolicyResources Should all the policy resources be deleted.
+     * @return The assembled resource model.
+     */
+    public static ResourceModel sampleBareResourceModel(
+            final boolean includeIdentifiers,
+            final boolean deleteAllPolicyResources) {
+
+        final ResourceModel resourceModel = sampleBareResourceModel(includeIdentifiers);
+        resourceModel.setDeleteAllPolicyResources(deleteAllPolicyResources);
+        return resourceModel;
+    }
 }
