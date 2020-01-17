@@ -83,10 +83,13 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
             // make the primary handler request
             response = makeRequest(proxy, request, logger);
         } catch(ResourceNotFoundException e) {
+            logger.log("ERROR: Resource not found");
             return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
         } catch(InvalidOperationException | InvalidInputException | InvalidTypeException e) {
+            logger.log("ERROR: Invalid operation/input/type");
             return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.InvalidRequest, null);
         } catch(LimitExceededException e) {
+            logger.log("ERROR: Limit exceeded");
             return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.ServiceLimitExceeded, null);
         }
 
