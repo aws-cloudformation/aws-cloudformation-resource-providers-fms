@@ -26,14 +26,17 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
             final Logger logger) {
 
         // make a read request to retrieve an up-to-date PolicyUpdateToken
+        logger.log("Retrieving existing policy");
         final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
                 .policyId(request.getDesiredResourceState().getPolicy().getPolicyId())
                 .build();
         final GetPolicyResponse getPolicyResponse = proxy.injectCredentialsAndInvokeV2(
                 getPolicyRequest,
                 client::getPolicy);
+        logger.log("Policy retrieved successfully");
 
         // make the update request
+        logger.log("Updating existing policy");
         final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
                 .policy(FmsHelper.convertCFNResourceModelToFMSPolicy(
                         request.getDesiredResourceState(),
@@ -42,14 +45,17 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
         final PutPolicyResponse putPolicyResponse = proxy.injectCredentialsAndInvokeV2(
                 putPolicyRequest,
                 client::putPolicy);
+        logger.log("Policy updated successfully");
 
         // make a list request to get the current tags on the policy
+        logger.log("Retrieving policy tags");
         final ListTagsForResourceRequest listTagsForResourceRequest = ListTagsForResourceRequest.builder()
                 .resourceArn(getPolicyResponse.policyArn())
                 .build();
         final ListTagsForResourceResponse listTagsForResourceResponse = proxy.injectCredentialsAndInvokeV2(
                 listTagsForResourceRequest,
                 client::listTagsForResource);
+        logger.log("Policy tags retrieved successfully");
 
         // determine tags to remove and add
         final List<String> removeTags = FmsHelper.tagsToRemove(
@@ -61,20 +67,28 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
 
         // make an untag request
         if (!removeTags.isEmpty()) {
+            logger.log(String.format("Removing %s tag/s", removeTags.size()));
             final UntagResourceRequest untagResourceRequest = UntagResourceRequest.builder()
                     .resourceArn(getPolicyResponse.policyArn())
                     .tagKeys(removeTags)
                     .build();
             proxy.injectCredentialsAndInvokeV2(untagResourceRequest, client::untagResource);
+            logger.log("Tags removed successfully");
+        } else {
+            logger.log("No tags to remove");
         }
 
         // make a tag request
         if (!addTags.isEmpty()) {
+            logger.log(String.format("Adding %s tag/s", removeTags.size()));
             final TagResourceRequest tagResourceRequest = TagResourceRequest.builder()
                     .resourceArn(getPolicyResponse.policyArn())
                     .tagList(addTags)
                     .build();
             proxy.injectCredentialsAndInvokeV2(tagResourceRequest, client::tagResource);
+            logger.log("Tags added successfully");
+        } else {
+            logger.log("No tags to add");
         }
 
         // return the status of the policy update
