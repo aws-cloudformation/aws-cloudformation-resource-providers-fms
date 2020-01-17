@@ -67,7 +67,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
 
         // make an untag request
         if (!removeTags.isEmpty()) {
-            logger.log(String.format("Removing %s tag/s", removeTags.size()));
+            logger.log(String.format("Removing %d tag/s", removeTags.size()));
             final UntagResourceRequest untagResourceRequest = UntagResourceRequest.builder()
                     .resourceArn(getPolicyResponse.policyArn())
                     .tagKeys(removeTags)
@@ -80,7 +80,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
 
         // make a tag request
         if (!addTags.isEmpty()) {
-            logger.log(String.format("Adding %s tag/s", removeTags.size()));
+            logger.log(String.format("Adding %d tag/s", addTags.size()));
             final TagResourceRequest tagResourceRequest = TagResourceRequest.builder()
                     .resourceArn(getPolicyResponse.policyArn())
                     .tagList(addTags)
