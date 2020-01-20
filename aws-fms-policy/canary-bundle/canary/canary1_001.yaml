@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: FMS Shield policy create test.
+Resources:
+  PolicyShield:
+    Type: AWS::FMS::Policy
+    Properties:
+      ExcludeResourceTags: false
+      PolicyName: PolicyShield
+      RemediationEnabled: false
+      ResourceType: AWS::ElasticLoadBalancingV2::LoadBalancer
+      SecurityServicePolicyData:
+        Type: SHIELD_ADVANCED
