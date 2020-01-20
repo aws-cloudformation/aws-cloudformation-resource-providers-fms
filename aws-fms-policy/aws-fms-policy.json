@@ -1,0 +1,217 @@
+{
+    "typeName": "AWS::FMS::Policy",
+    "description": "Creates an AWS Firewall Manager policy.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-fms.git",
+    "definitions": {
+        "AccountId": {
+            "description": "An AWS account ID.",
+            "type": "string",
+            "pattern": "^([0-9]{12})$",
+            "minLength": 1,
+            "maxLength": 1024
+        },
+        "IEMap": {
+            "description": "An FMS includeMap or excludeMap.",
+            "type": "object",
+            "properties": {
+                "ACCOUNT": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AccountId"
+                    }
+                }
+            }
+        },
+        "PolicyTag": {
+            "description": "A policy tag.",
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "pattern": "^([^\\s]*)$",
+                    "minLength": 1,
+                    "maxLength": 128
+                },
+                "Value": {
+                    "type": "string",
+                    "pattern": "^([^\\s]*)$",
+                    "maxLength": 256
+                }
+            },
+            "required": [
+                "Key",
+                "Value"
+            ]
+        },
+        "ResourceTag": {
+            "description": "A resource tag.",
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                },
+                "Value": {
+                    "type": "string",
+                    "maxLength": 256
+                }
+            },
+            "required": [
+                "Key"
+            ]
+        },
+        "ResourceType": {
+            "description": "An AWS resource type",
+            "type": "string",
+            "pattern": "^([^\\s]*)$",
+            "minLength": 1,
+            "maxLength": 128
+        },
+        "ResourceArn": {
+            "description": "A resource ARN.",
+            "type": "string",
+            "pattern": "^([^\\s]*)$",
+            "minLength": 1,
+            "maxLength": 1024
+        }
+    },
+    "properties": {
+        "Policy": {
+            "type": "object",
+            "properties": {
+                "ExcludeMap": {
+                    "$ref": "#/definitions/IEMap"
+                },
+                "ExcludeResourceTags": {
+                    "type": "boolean"
+                },
+                "IncludeMap": {
+                    "$ref": "#/definitions/IEMap"
+                },
+                "PolicyId": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9A-Z-]{36}$",
+                    "minLength": 36,
+                    "maxLength": 36
+                },
+                "PolicyName": {
+                    "type": "string",
+                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+                    "minLength": 1,
+                    "maxLength": 1024
+                },
+                "RemediationEnabled": {
+                    "type": "boolean"
+                },
+                "ResourceTags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ResourceTag"
+                    },
+                    "maxLength": 8
+                },
+                "ResourceType": {
+                    "$ref": "#/definitions/ResourceType"
+                },
+                "ResourceTypeList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ResourceType"
+                    }
+                },
+                "SecurityServicePolicyData": {
+                    "type": "object",
+                    "properties": {
+                        "ManagedServiceData": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1024
+                        },
+                        "Type": {
+                            "type": "string",
+                            "enum": [
+                                "WAF",
+                                "SHIELD_ADVANCED",
+                                "SECURITY_GROUPS_COMMON",
+                                "SECURITY_GROUPS_CONTENT_AUDIT",
+                                "SECURITY_GROUPS_USAGE_AUDIT"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "Type"
+                    ]
+                },
+                "PolicyArn": {
+                    "$ref": "#/definitions/ResourceArn"
+                }
+            },
+            "required": [
+                "ExcludeResourceTags",
+                "PolicyName",
+                "RemediationEnabled",
+                "ResourceType",
+                "SecurityServicePolicyData"
+            ]
+        },
+        "Tags": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/PolicyTag"
+            }
+        },
+        "DeleteAllPolicyResources": {
+            "type": "boolean"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "Policy"
+    ],
+    "readOnlyProperties": [
+        "/properties/Policy/PolicyArn",
+        "/properties/Policy/PolicyId"
+    ],
+    "writeOnlyProperties": [
+        "/properties/DeleteAllPolicyResources"
+    ],
+    "primaryIdentifier": [
+        "/properties/Policy/PolicyId"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "fms:PutPolicy",
+                "fms:TagResource",
+                "waf-regional:ListRuleGroups"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "fms:PutPolicy",
+                "fms:GetPolicy",
+                "fms:TagResource",
+                "fms:UntagResource",
+                "fms:ListTagsForResource",
+                "waf-regional:ListRuleGroups"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "fms:ListPolicies"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "fms:GetPolicy",
+                "fms:ListTagsForResource"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "fms:DeletePolicy"
+            ]
+        }
+    }
+}
