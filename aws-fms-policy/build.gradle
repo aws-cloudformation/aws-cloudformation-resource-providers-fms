@@ -1,0 +1,95 @@
+plugins {
+    id "java"
+    id "jacoco"
+
+    // To build a shadow jar of this resource provider
+    id 'com.github.johnrengelman.shadow' version '4.0.2'
+}
+
+description "CloudFormation Resource Provider - AWS::FMS::Policy"
+
+// Include RPDK generated source by `cfn generate`
+sourceSets.main.java.srcDirs += ['target/generated-sources/rpdk']
+
+// Inlcude schema into jar
+sourceSets.main.resources {
+  srcDir '.'
+  include 'aws-fms-policy.json'
+}
+
+dependencies {
+    compile brazilGradle.build()
+
+    testCompile brazilGradle.testbuild()
+}
+
+test {
+    useJUnitPlatform()
+
+}
+
+check.dependsOn jacocoTestCoverageVerification
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                counter = 'LINE'
+                minimum = 0.8
+            }
+            excludes = [
+                    // CFN generated
+                    '*Configuration*',
+                    '*BaseHandler*',
+                    '*HandlerWrapper*',
+                    '*ResourceModel*'
+            ]
+        }
+    }
+}
+
+// Generate RPDK wrapper source before compile
+task rpdkGenerateSource(type: Exec) {
+  workingDir "."
+  executable = "${brazilGradle.path('tool.runtimefarm')}/bin/cfn"
+  args = ["generate"]
+}
+
+compileJava.dependsOn(rpdkGenerateSource)
+
+// Build a shadow jar for resource provider
+shadowJar {
+    // cfn-cli requires the artifact under target and suffixed with SNAPSHOT.jar
+    classifier = null
+    destinationDir = file("./target")
+}
+
+// Use `cfn` to build a RPDK package include resource provider shadow jar, schema etc.
+task cfnPackage(type: Exec) {
+  dependsOn shadowJar
+  workingDir "."
+  executable = "${brazilGradle.path('tool.runtimefarm')}/bin/cfn"
+  args = ["submit", "--dry-run"]
+}
+
+task rpdkPackage(type: Zip) {
+  dependsOn cfnPackage
+  from zipTree("aws-fms-policy.zip")
+  // Inject internal files
+  from (rootDir) {
+    include "settings.internal.json"
+  }
+  from ("${rootDir}/aws-fms-policy") {
+      include "canary-bundle/**/*"
+  }
+  destinationDir = file("./build/rpdk")
+  archiveName("aws-fms-policy.zip")
+}
+
+assemble.dependsOn(rpdkPackage)
+
+// Delete target folder for clean
+clean.doLast {
+  file("./target").deleteDir()
+  file("aws-fms-policy.zip").delete()
+}
