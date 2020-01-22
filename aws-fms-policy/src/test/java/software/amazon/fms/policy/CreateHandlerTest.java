@@ -1,8 +1,12 @@
 package software.amazon.fms.policy;
 
+import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import org.mockito.Mockito;
+import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
+import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
@@ -16,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.cloudformation.exceptions.CfnInternalFailureException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.HandlerErrorCode;
 import software.amazon.cloudformation.proxy.Logger;
@@ -25,6 +30,7 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.FmsSampleHelper;
 import software.amazon.fms.policy.helpers.CfnSampleHelper;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +39,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateHandlerTest {
@@ -394,5 +401,60 @@ class CreateHandlerTest {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.ServiceLimitExceeded);
+    }
+
+    @Test
+    void handlePostPolicyCreationException() {
+
+        // stub the response for the create request
+        final PutPolicyResponse describePutResponse = FmsSampleHelper.samplePutPolicyRequiredParametersResponse();
+        doReturn(describePutResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the delete request
+        final DeletePolicyResponse describeDeleteResponse = FmsSampleHelper.sampleDeletePolicyResponse();
+        doReturn(describeDeleteResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(DeletePolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // model the pre-request and post-request resource state
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+
+        // create the create request and send it
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(requestModel)
+                .build();
+
+        // spy the request to throw an exception during constructSuccessResourceModel(). the exception handling being
+        // tested is primarily guarding against possible errors in convertFMSPolicyToCFNResourceModel.
+        // getDesiredResourceTags() is being used to throw an exception since it is not static and can be accessed
+        // from this test. this ends up testing exception handling logic the same way as an exception in
+        // constructSuccessResourceModel() would.
+        final ResourceHandlerRequest<ResourceModel> spyRequest = Mockito.spy(request);
+        when(spyRequest.getDesiredResourceTags())
+                .thenReturn(request.getDesiredResourceTags())
+                .thenThrow(new NullPointerException());
+
+        // assertions
+        Assertions.assertThrows(CfnInternalFailureException.class, () -> {
+            handler.handleRequest(proxy, spyRequest, null, logger);
+
+            // verify stub calls
+            verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                    captor.capture(),
+                    ArgumentMatchers.any()
+            );
+            assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                    FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false),
+                    FmsSampleHelper.sampleDeletePolicyRequest()
+            ));
+        });
     }
 }
