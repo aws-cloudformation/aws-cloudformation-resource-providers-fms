@@ -4,9 +4,11 @@ Resources:
   PolicyShield:
     Type: AWS::FMS::Policy
     Properties:
-      ExcludeResourceTags: false
-      PolicyName: PolicyShieldChanged
-      RemediationEnabled: false
-      ResourceType: AWS::ElasticLoadBalancingV2::LoadBalancer
-      SecurityServicePolicyData:
-        Type: SHIELD_ADVANCED
+      Policy:
+        ExcludeResourceTags: false
+        PolicyName: PolicyShieldChanged
+        RemediationEnabled: false
+        ResourceType: AWS::ElasticLoadBalancingV2::LoadBalancer
+        SecurityServicePolicyData:
+          Type: SHIELD_ADVANCED
+      DeleteAllPolicyResources: true
