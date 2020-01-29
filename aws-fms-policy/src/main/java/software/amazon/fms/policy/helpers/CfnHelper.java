@@ -1,7 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
-import software.amazon.awssdk.services.fms.model.PolicySummary;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.PolicyTag;
@@ -73,28 +72,5 @@ public class CfnHelper {
 
         // build and return the resource model
         return resourceModelBuilder.build();
-    }
-
-    /**
-     * Convert an FMS policy summary (from the FMS SDK) to a CFN resource model (from the resource provider).
-     * @param policySummary FMS policy summary that was converted from.
-     * @return CFN resource model that was converted to.
-     */
-    public static ResourceModel convertFMSPolicySummaryToCFNResourceModel(PolicySummary policySummary) {
-
-        // assemble the security service policy data
-        final SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
-                .type(policySummary.resourceType())
-                .build();
-
-        // assemble the policy with the required parameters
-        return ResourceModel.builder()
-                .id(policySummary.policyId())
-                .policyName(policySummary.policyName())
-                .resourceType(policySummary.resourceType())
-                .securityServicePolicyData(securityServicePolicyData)
-                .remediationEnabled(policySummary.remediationEnabled())
-                .arn(policySummary.policyArn())
-                .build();
     }
 }
