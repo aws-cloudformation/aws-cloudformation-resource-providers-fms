@@ -9,7 +9,7 @@
         "clientRequestToken": "00000000-0000-0000-0000-000000000000",
         "desiredResourceState": {
             "ExcludeResourceTags": false,
-            "PolicyId": "REAL POLICY ID",
+            "Id": "REAL POLICY ID",
             "PolicyName": "CHANGED",
             "RemediationEnabled": false,
             "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",

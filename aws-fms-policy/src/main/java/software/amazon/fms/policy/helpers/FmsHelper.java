@@ -36,49 +36,46 @@ public class FmsHelper {
      */
     private static Policy.Builder convertCFNResourceModelToBuilder(ResourceModel resourceModel) {
 
-        // get the policy from the resource model
-        final software.amazon.fms.policy.Policy policy = resourceModel.getPolicy();
-
         // assemble the security service policy data
         final SecurityServicePolicyData.Builder securityServicePolicyData = SecurityServicePolicyData.builder()
-                .type(policy.getSecurityServicePolicyData().getType());
+                .type(resourceModel.getSecurityServicePolicyData().getType());
 
         // add the managed service data if it exists
-        if (policy.getSecurityServicePolicyData().getManagedServiceData() != null) {
-                securityServicePolicyData.managedServiceData(policy.getSecurityServicePolicyData().getManagedServiceData());
+        if (resourceModel.getSecurityServicePolicyData().getManagedServiceData() != null) {
+                securityServicePolicyData.managedServiceData(resourceModel.getSecurityServicePolicyData().getManagedServiceData());
         }
 
         // assemble the policy with the required parameters
         final Policy.Builder policyBuilder = Policy.builder()
-                .policyName(policy.getPolicyName())
-                .remediationEnabled(policy.getRemediationEnabled())
-                .resourceType(policy.getResourceType())
+                .policyName(resourceModel.getPolicyName())
+                .remediationEnabled(resourceModel.getRemediationEnabled())
+                .resourceType(resourceModel.getResourceType())
                 .securityServicePolicyData(securityServicePolicyData.build());
 
         // add exclude map if present
-        if (policy.getExcludeMap() != null) {
-            policyBuilder.excludeMap(convertCFNIEMapToFMSIEMap(policy.getExcludeMap()));
+        if (resourceModel.getExcludeMap() != null) {
+            policyBuilder.excludeMap(convertCFNIEMapToFMSIEMap(resourceModel.getExcludeMap()));
         }
 
         // add exclude resource tags if present
-        if (policy.getExcludeResourceTags() != null) {
-            policyBuilder.excludeResourceTags(policy.getExcludeResourceTags());
+        if (resourceModel.getExcludeResourceTags() != null) {
+            policyBuilder.excludeResourceTags(resourceModel.getExcludeResourceTags());
         }
 
         // add include map if present
-        if (policy.getIncludeMap() != null) {
-            policyBuilder.includeMap(convertCFNIEMapToFMSIEMap(policy.getIncludeMap()));
+        if (resourceModel.getIncludeMap() != null) {
+            policyBuilder.includeMap(convertCFNIEMapToFMSIEMap(resourceModel.getIncludeMap()));
         }
 
         // add policy id if present
-        if (policy.getPolicyId() != null) {
-            policyBuilder.policyId(policy.getPolicyId());
+        if (resourceModel.getId() != null) {
+            policyBuilder.policyId(resourceModel.getId());
         }
 
         // add resource tags if present
-        if (policy.getResourceTags() != null) {
+        if (resourceModel.getResourceTags() != null) {
             final Collection<ResourceTag> resourceTags = new ArrayList<>();
-            policy.getResourceTags().forEach(rt -> resourceTags.add(
+            resourceModel.getResourceTags().forEach(rt -> resourceTags.add(
                     software.amazon.awssdk.services.fms.model.ResourceTag.builder()
                             .key(rt.getKey())
                             .value(rt.getValue())
@@ -88,8 +85,8 @@ public class FmsHelper {
         }
 
         // add resource type list if present
-        if (policy.getResourceTypeList() != null) {
-            final Collection<String> resourceTypeList = new ArrayList<>(policy.getResourceTypeList());
+        if (resourceModel.getResourceTypeList() != null) {
+            final Collection<String> resourceTypeList = new ArrayList<>(resourceModel.getResourceTypeList());
             policyBuilder.resourceTypeList(resourceTypeList);
         }
 
