@@ -8,7 +8,7 @@
     "request": {
         "clientRequestToken": "00000000-0000-0000-0000-000000000000",
         "desiredResourceState": {
-            "PolicyId": "REAL POLICY ID"
+            "Id": "REAL POLICY ID"
         },
         "logicalResourceIdentifier": "MyResource"
     },

@@ -4,7 +4,6 @@ import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
 import software.amazon.awssdk.services.fms.model.PolicySummary;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.policy.IEMap;
-import software.amazon.fms.policy.Policy;
 import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
 import software.amazon.fms.policy.ResourceTag;
@@ -34,25 +33,25 @@ public class CfnHelper {
         }
 
         // assemble the resource model with the required parameters
-        final Policy.PolicyBuilder policyBuilder = Policy.builder()
+        final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
                 .excludeResourceTags(policy.excludeResourceTags())
                 .policyName(policy.policyName())
                 .remediationEnabled(policy.remediationEnabled())
                 .resourceType(policy.resourceType())
                 .securityServicePolicyData(securityServicePolicyData.build())
-                .policyId(policy.policyId())
-                .policyArn(policyArn);
+                .id(policy.policyId())
+                .arn(policyArn);
 
         // check each optional parameter and add it if it exists
         if (!policy.excludeMap().isEmpty()) {
-            policyBuilder.excludeMap(
+            resourceModelBuilder.excludeMap(
                     IEMap.builder()
                             .aCCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
                             .build()
             );
         }
         if (!policy.includeMap().isEmpty()) {
-            policyBuilder.includeMap(
+            resourceModelBuilder.includeMap(
                     IEMap.builder()
                             .aCCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
                             .build()
@@ -61,15 +60,11 @@ public class CfnHelper {
         if (!policy.resourceTags().isEmpty()) {
             final List<ResourceTag> resourceTags = new ArrayList<>();
             policy.resourceTags().forEach(rt -> resourceTags.add(new ResourceTag(rt.key(), rt.value())));
-            policyBuilder.resourceTags(resourceTags);
+            resourceModelBuilder.resourceTags(resourceTags);
         }
         if (!policy.resourceTypeList().isEmpty()) {
-            policyBuilder.resourceTypeList(policy.resourceTypeList());
+            resourceModelBuilder.resourceTypeList(policy.resourceTypeList());
         }
-
-        // add tags to the resource model
-        final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
-                .policy(policyBuilder.build());
         if (!tags.isEmpty()) {
             final List<PolicyTag> policyTags = new ArrayList<>();
             tags.forEach(tag -> policyTags.add(new PolicyTag(tag.key(), tag.value())));
@@ -93,16 +88,13 @@ public class CfnHelper {
                 .build();
 
         // assemble the policy with the required parameters
-        final Policy policy = Policy.builder()
-                .policyId(policySummary.policyId())
+        return ResourceModel.builder()
+                .id(policySummary.policyId())
                 .policyName(policySummary.policyName())
                 .resourceType(policySummary.resourceType())
                 .securityServicePolicyData(securityServicePolicyData)
                 .remediationEnabled(policySummary.remediationEnabled())
-                .policyArn(policySummary.policyArn())
-                .build();
-        return ResourceModel.builder()
-                .policy(policy)
+                .arn(policySummary.policyArn())
                 .build();
     }
 }

@@ -49,8 +49,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         // optionally include the policy id
         if (includeIdentifiers) {
-            policyBuilder.policyId(samplePolicyId)
-                    .policyUpdateToken(samplePolicyUpdateToken);
+            policyBuilder.policyId(samplePolicyId).policyUpdateToken(samplePolicyUpdateToken);
         }
 
         return policyBuilder;

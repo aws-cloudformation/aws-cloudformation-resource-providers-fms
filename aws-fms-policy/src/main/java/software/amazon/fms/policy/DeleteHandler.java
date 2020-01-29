@@ -16,7 +16,7 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
 
         // build the delete request
         final DeletePolicyRequest.Builder deletePolicyRequest = DeletePolicyRequest.builder()
-                .policyId(request.getDesiredResourceState().getPolicy().getPolicyId())
+                .policyId(request.getDesiredResourceState().getId())
                 .deleteAllPolicyResources(request.getDesiredResourceState().getDeleteAllPolicyResources());
 
         // determine if resource cleanup should be performed
