@@ -1,6 +1,7 @@
 package software.amazon.fms.policy;
 
 import software.amazon.awssdk.services.fms.FmsClient;
+import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.InvalidTypeException;
@@ -9,7 +10,6 @@ import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.HandlerErrorCode;
 import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
@@ -69,20 +69,19 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
             response = makeRequest(proxy, request, logger);
         } catch(ResourceNotFoundException e) {
             logger.log(e.toString());
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.NotFound);
         } catch(InvalidOperationException | InvalidInputException | InvalidTypeException e) {
             logger.log(e.toString());
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.InvalidRequest, null);
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.InvalidRequest);
         } catch(LimitExceededException e) {
             logger.log(e.toString());
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.ServiceLimitExceeded, null);
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.ServiceLimitExceeded);
+        } catch(InternalErrorException e) {
+            logger.log(e.toString());
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.ServiceInternalError);
         }
 
         // let each handler construct its own success resource model
-        return ProgressEvent.<ResourceModel, CallbackContext>builder()
-                .status(OperationStatus.SUCCESS)
-                .resourceModel(constructSuccessResourceModel(response, request, proxy))
-                .callbackContext(callbackContext)
-                .build();
+        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceModel(response, request, proxy));
     }
 }
