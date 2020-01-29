@@ -189,11 +189,6 @@
                 "waf-regional:ListRuleGroups"
             ]
         },
-        "list": {
-            "permissions": [
-                "fms:ListPolicies"
-            ]
-        },
         "read": {
             "permissions": [
                 "fms:GetPolicy",

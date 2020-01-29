@@ -138,40 +138,6 @@ public class CfnSampleHelper extends BaseSampleHelper {
     }
 
     /**
-     * Assembles a sample resource model with policy summary parameters.
-     * @return The assembled resource model.
-     */
-    private static ResourceModel samplePolicySummaryResourceModel() {
-
-        // assemble sample security service policy data
-        final SecurityServicePolicyData sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
-                .type(sampleResourceType)
-                .build();
-
-        // assemble the sample policy with the required parameters
-        return ResourceModel.builder()
-                .id(samplePolicyId)
-                .policyName(samplePolicyName)
-                .resourceType(sampleResourceType)
-                .securityServicePolicyData(sampleSecurityServicePolicyData)
-                .remediationEnabled(sampleRemediationEnabled)
-                .arn(samplePolicyArn)
-                .build();
-    }
-
-    /**
-     * Assembles a list of sample resource models.
-     * @return The assembled resource model list.
-     */
-    public static List<ResourceModel> samplePolicySummaryResourceModelList() {
-
-        final List<ResourceModel> resourceModelList = new ArrayList<>();
-        resourceModelList.add(samplePolicySummaryResourceModel());
-        resourceModelList.add(samplePolicySummaryResourceModel());
-        return resourceModelList;
-    }
-
-    /**
      * Assembles a sample resource model with only the SamplePolicyId parameter.
      * @param includeIdentifiers Should the policy identifiers be included.
      * @return The assembled resource model.
