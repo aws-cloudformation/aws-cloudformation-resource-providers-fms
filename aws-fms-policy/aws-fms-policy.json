@@ -6,9 +6,9 @@
         "AccountId": {
             "description": "An AWS account ID.",
             "type": "string",
-            "pattern": "^([0-9]{12})$",
-            "minLength": 1,
-            "maxLength": 1024
+            "pattern": "^([0-9])$",
+            "minLength": 12,
+            "maxLength": 12
         },
         "IEMap": {
             "description": "An FMS includeMap or excludeMap.",
@@ -77,107 +77,99 @@
         }
     },
     "properties": {
-        "Policy": {
+        "ExcludeMap": {
+            "$ref": "#/definitions/IEMap"
+        },
+        "ExcludeResourceTags": {
+            "type": "boolean"
+        },
+        "IncludeMap": {
+            "$ref": "#/definitions/IEMap"
+        },
+        "Id": {
+            "type": "string",
+            "pattern": "^[a-z0-9A-Z-]{36}$",
+            "minLength": 36,
+            "maxLength": 36
+        },
+        "PolicyName": {
+            "type": "string",
+            "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
+            "minLength": 1,
+            "maxLength": 1024
+        },
+        "RemediationEnabled": {
+            "type": "boolean"
+        },
+        "ResourceTags": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ResourceTag"
+            },
+            "maxLength": 8
+        },
+        "ResourceType": {
+            "$ref": "#/definitions/ResourceType"
+        },
+        "ResourceTypeList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ResourceType"
+            }
+        },
+        "SecurityServicePolicyData": {
             "type": "object",
             "properties": {
-                "ExcludeMap": {
-                    "$ref": "#/definitions/IEMap"
-                },
-                "ExcludeResourceTags": {
-                    "type": "boolean"
-                },
-                "IncludeMap": {
-                    "$ref": "#/definitions/IEMap"
-                },
-                "PolicyId": {
+                "ManagedServiceData": {
                     "type": "string",
-                    "pattern": "^[a-z0-9A-Z-]{36}$",
-                    "minLength": 36,
-                    "maxLength": 36
-                },
-                "PolicyName": {
-                    "type": "string",
-                    "pattern": "^([a-zA-Z0-9_.:/=+\\-@]+)$",
                     "minLength": 1,
                     "maxLength": 1024
                 },
-                "RemediationEnabled": {
-                    "type": "boolean"
-                },
-                "ResourceTags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ResourceTag"
-                    },
-                    "maxLength": 8
-                },
-                "ResourceType": {
-                    "$ref": "#/definitions/ResourceType"
-                },
-                "ResourceTypeList": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ResourceType"
-                    }
-                },
-                "SecurityServicePolicyData": {
-                    "type": "object",
-                    "properties": {
-                        "ManagedServiceData": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 1024
-                        },
-                        "Type": {
-                            "type": "string",
-                            "enum": [
-                                "WAF",
-                                "SHIELD_ADVANCED",
-                                "SECURITY_GROUPS_COMMON",
-                                "SECURITY_GROUPS_CONTENT_AUDIT",
-                                "SECURITY_GROUPS_USAGE_AUDIT"
-                            ]
-                        }
-                    },
-                    "required": [
-                        "Type"
+                "Type": {
+                    "type": "string",
+                    "enum": [
+                        "WAF",
+                        "SHIELD_ADVANCED",
+                        "SECURITY_GROUPS_COMMON",
+                        "SECURITY_GROUPS_CONTENT_AUDIT",
+                        "SECURITY_GROUPS_USAGE_AUDIT"
                     ]
-                },
-                "PolicyArn": {
-                    "$ref": "#/definitions/ResourceArn"
                 }
             },
             "required": [
-                "ExcludeResourceTags",
-                "PolicyName",
-                "RemediationEnabled",
-                "ResourceType",
-                "SecurityServicePolicyData"
+                "Type"
             ]
+        },
+        "Arn": {
+            "$ref": "#/definitions/ResourceArn"
+        },
+        "DeleteAllPolicyResources": {
+            "type": "boolean"
         },
         "Tags": {
             "type": "array",
             "items": {
                 "$ref": "#/definitions/PolicyTag"
             }
-        },
-        "DeleteAllPolicyResources": {
-            "type": "boolean"
         }
     },
     "additionalProperties": false,
     "required": [
-        "Policy"
+        "ExcludeResourceTags",
+        "PolicyName",
+        "RemediationEnabled",
+        "ResourceType",
+        "SecurityServicePolicyData"
     ],
     "readOnlyProperties": [
-        "/properties/Policy/PolicyArn",
-        "/properties/Policy/PolicyId"
+        "/properties/Arn",
+        "/properties/Id"
     ],
     "writeOnlyProperties": [
         "/properties/DeleteAllPolicyResources"
     ],
     "primaryIdentifier": [
-        "/properties/Policy/PolicyId"
+        "/properties/Id"
     ],
     "handlers": {
         "create": {
@@ -195,11 +187,6 @@
                 "fms:UntagResource",
                 "fms:ListTagsForResource",
                 "waf-regional:ListRuleGroups"
-            ]
-        },
-        "list": {
-            "permissions": [
-                "fms:ListPolicies"
             ]
         },
         "read": {

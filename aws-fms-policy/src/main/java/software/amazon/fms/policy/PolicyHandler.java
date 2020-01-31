@@ -1,6 +1,7 @@
 package software.amazon.fms.policy;
 
 import software.amazon.awssdk.services.fms.FmsClient;
+import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.InvalidTypeException;
@@ -9,11 +10,8 @@ import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.HandlerErrorCode;
 import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
-
-import java.util.List;
 
 abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
 
@@ -45,23 +43,10 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
      * @param proxy AWS proxy to make requests.
      * @return Post-action resource state or null.
      */
-    ResourceModel constructSuccessResourceModel(
+    abstract ResourceModel constructSuccessResourceModel(
             final ResponseT response,
             final ResourceHandlerRequest<ResourceModel> request,
-            final AmazonWebServicesClientProxy proxy) {
-
-        return null;
-    }
-
-    /**
-     * Hook called by handleRequest to build the multi-resource state after a successful makeRequest call.
-     * @param response Generic type request response from makeRequest call.
-     * @return Post-action multi-resource state or null.
-     */
-    List<ResourceModel> constructSuccessResourceModels(ResponseT response) {
-
-        return null;
-    }
+            final AmazonWebServicesClientProxy proxy);
 
     /**
      * Hook called by CloudFormation to run resource management actions.
@@ -84,21 +69,19 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
             response = makeRequest(proxy, request, logger);
         } catch(ResourceNotFoundException e) {
             logger.log(e.toString());
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.NotFound);
         } catch(InvalidOperationException | InvalidInputException | InvalidTypeException e) {
             logger.log(e.toString());
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.InvalidRequest, null);
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.InvalidRequest);
         } catch(LimitExceededException e) {
             logger.log(e.toString());
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.ServiceLimitExceeded, null);
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.ServiceLimitExceeded);
+        } catch(InternalErrorException e) {
+            logger.log(e.toString());
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.ServiceInternalError);
         }
 
         // let each handler construct its own success resource model
-        return ProgressEvent.<ResourceModel, CallbackContext>builder()
-                .status(OperationStatus.SUCCESS)
-                .resourceModel(constructSuccessResourceModel(response, request, proxy))
-                .resourceModels(constructSuccessResourceModels(response))
-                .callbackContext(callbackContext)
-                .build();
+        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceModel(response, request, proxy));
     }
 }

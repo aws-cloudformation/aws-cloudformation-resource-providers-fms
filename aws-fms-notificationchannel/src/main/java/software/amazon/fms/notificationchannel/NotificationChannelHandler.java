@@ -4,6 +4,7 @@ import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.FmsResponse;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
+import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -97,12 +98,16 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
             // make the primary handler request
             makeRequest(proxy, request.getDesiredResourceState(), getNotificationChannelResponse);
         } catch(ResourceNotFoundException e) {
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.NotFound);
         } catch(InvalidOperationException e) {
-            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.InvalidRequest, null);
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.InvalidRequest);
+        } catch(InternalErrorException e) {
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.ServiceInternalError);
         }
 
         // let each handler construct its own success resource model
-        return ProgressEvent.success(constructSuccessResourceState(request.getDesiredResourceState(), getNotificationChannelResponse), callbackContext);
+        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceState(
+                request.getDesiredResourceState(), getNotificationChannelResponse
+        ));
     }
 }

@@ -4,12 +4,9 @@ import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
-import software.amazon.awssdk.services.fms.model.ListPoliciesRequest;
-import software.amazon.awssdk.services.fms.model.ListPoliciesResponse;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.fms.model.Policy;
-import software.amazon.awssdk.services.fms.model.PolicySummary;
 import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
 import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
@@ -49,8 +46,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         // optionally include the policy id
         if (includeIdentifiers) {
-            policyBuilder.policyId(samplePolicyId)
-                    .policyUpdateToken(samplePolicyUpdateToken);
+            policyBuilder.policyId(samplePolicyId).policyUpdateToken(samplePolicyUpdateToken);
         }
 
         return policyBuilder;
@@ -182,39 +178,6 @@ public class FmsSampleHelper extends BaseSampleHelper {
         return GetPolicyRequest.builder()
                 .policyId(samplePolicyId)
                 .build();
-    }
-
-    /**
-     * Assembles a sample ListPolicy response.
-     * @return The assembled response.
-     */
-    public static ListPoliciesResponse sampleListPoliciesResponse() {
-
-        final PolicySummary policySummary = PolicySummary.builder()
-                .policyArn(samplePolicyArn)
-                .policyId(samplePolicyId)
-                .policyName(samplePolicyName)
-                .resourceType(sampleResourceType)
-                .securityServiceType(samplePolicyType)
-                .remediationEnabled(sampleRemediationEnabled)
-                .build();
-
-        final List<PolicySummary> policyList = new ArrayList<>();
-        policyList.add(policySummary);
-        policyList.add(policySummary);
-
-        return ListPoliciesResponse.builder()
-                .policyList(policyList)
-                .build();
-    }
-
-    /**
-     * Assembles a sample ListPolicy request.
-     * @return The assembled request.
-     */
-    public static ListPoliciesRequest sampleListPoliciesRequest() {
-
-        return ListPoliciesRequest.builder().build();
     }
 
     /**
