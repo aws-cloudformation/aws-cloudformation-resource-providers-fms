@@ -30,9 +30,31 @@ Resources:
               - sns:Publish
               - sns:Receive
             Resource: !Ref Topic
+  LambdaWaiter:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.handler"
+      Runtime: "nodejs12.x"
+      Timeout: 900
+      Role: !ImportValue LambdaExecutionRole
+      Code:
+        ZipFile:
+          !Sub |
+            exports.handler = function(e,r) {
+              var response = require('cfn-response');
+              var waitTimeSeconds = e.ResourceProperties.WaitSeconds;
+              var waitTime = waitTimeSeconds * 1000;
+              setTimeout(function(){
+                response.send(e, r, response.SUCCESS, {}, "Waiter-" + waitTimeSeconds + "-Seconds")
+              }, waitTime);
+            };
 Outputs:
   Topic:
     Description: The SNS topic to be used by the notification channel.
     Value: !Ref Topic
     Export:
       Name: SnsTopicArn
+  LambdaWaiter:
+    Value: !GetAtt LambdaWaiter.Arn
+    Export:
+      Name: LambdaWaiter

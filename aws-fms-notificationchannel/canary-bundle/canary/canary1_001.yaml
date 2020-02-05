@@ -6,3 +6,9 @@ Resources:
     Properties:
       SnsRoleName: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS
       SnsTopicArn: !ImportValue SnsTopicArn
+  WaiterCustomResource:
+    Type: "AWS::CloudFormation::CustomResource"
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 600

@@ -11,3 +11,9 @@ Resources:
       SecurityServicePolicyData:
         Type: SHIELD_ADVANCED
       DeleteAllPolicyResources: true
+  WaiterCustomResource:
+    Type: "AWS::CloudFormation::CustomResource"
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 600
