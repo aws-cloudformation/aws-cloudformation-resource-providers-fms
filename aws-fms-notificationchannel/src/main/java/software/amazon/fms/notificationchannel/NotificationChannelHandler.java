@@ -69,10 +69,9 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
     /**
      * Logs the requestId of an FmsResponse.
      * @param response FmsResponse to get the requestId from.
-     * @param requestName Name of the type of request made.
      * @param logger CloudWatch logger.
      */
-    static void logRequestId(final FmsResponse response, final String requestName, Logger logger) {
+    static void logRequest(final FmsResponse response, Logger logger) {
 
         String requestId;
         try {
@@ -80,7 +79,7 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
         } catch (NullPointerException e) {
             requestId = "null";
         }
-        logger.log(String.format("%s RequestId: %s", requestName, requestId));
+        logger.log(String.format("%s Id: %s", response.getClass().getSimpleName(), requestId));
     }
 
     /**
@@ -103,7 +102,7 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
             // attempt to get an existing notification channel
             getNotificationChannelResponse =
                     proxy.injectCredentialsAndInvokeV2(getNotificationChannelRequest, client::getNotificationChannel);
-            logRequestId(getNotificationChannelResponse, "GetNotificationChannel", logger);
+            logRequest(getNotificationChannelResponse, logger);
 
             // handlers fail differently based on the result of the notification channel get request
             // allow for failing based on notification channel existence or non-existence

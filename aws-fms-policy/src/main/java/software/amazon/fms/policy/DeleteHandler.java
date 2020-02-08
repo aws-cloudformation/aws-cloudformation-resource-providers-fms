@@ -36,7 +36,7 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
         final DeletePolicyResponse response = proxy.injectCredentialsAndInvokeV2(
                 deletePolicyRequest.build(),
                 client::deletePolicy);
-        logRequestId(response, "DeletePolicy", logger);
+        logRequest(response, logger);
         return response;
     }
 

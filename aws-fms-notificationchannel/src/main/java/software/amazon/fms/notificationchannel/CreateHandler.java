@@ -27,7 +27,7 @@ public class CreateHandler extends NotificationChannelHandler {
                 .build();
         final PutNotificationChannelResponse response =
                 proxy.injectCredentialsAndInvokeV2(putNotificationChannelRequest, client::putNotificationChannel);
-        logRequestId(response, "PutNotificationChannel", logger);
+        logRequest(response, logger);
         return response;
     }
 

@@ -25,7 +25,7 @@ public class DeleteHandler extends NotificationChannelHandler {
                 DeleteNotificationChannelRequest.builder().build();
         final DeleteNotificationChannelResponse response =
                 proxy.injectCredentialsAndInvokeV2(deleteNotificationChannelRequest, client::deleteNotificationChannel);
-        logRequestId(response, "DeleteNotificationChannel", logger);
+        logRequest(response, logger);
         return response;
     }
 

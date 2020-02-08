@@ -24,7 +24,7 @@ public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
         final GetPolicyResponse response = proxy.injectCredentialsAndInvokeV2(
                 getPolicyRequest,
                 client::getPolicy);
-        logRequestId(response, "GetPolicy", logger);
+        logRequest(response, logger);
         return response;
     }
 
