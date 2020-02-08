@@ -8,7 +8,9 @@ import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
 import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.awssdk.services.fms.model.TagResourceRequest;
+import software.amazon.awssdk.services.fms.model.TagResourceResponse;
 import software.amazon.awssdk.services.fms.model.UntagResourceRequest;
+import software.amazon.awssdk.services.fms.model.UntagResourceResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
@@ -34,6 +36,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                 getPolicyRequest,
                 client::getPolicy);
         logger.log("Policy retrieved successfully");
+        logRequestId(getPolicyResponse, "GetPolicy", logger);
 
         // make the update request
         logger.log("Updating existing policy");
@@ -46,6 +49,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                 putPolicyRequest,
                 client::putPolicy);
         logger.log("Policy updated successfully");
+        logRequestId(putPolicyResponse, "PutPolicy", logger);
 
         // make a list request to get the current tags on the policy
         logger.log("Retrieving policy tags");
@@ -56,6 +60,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                 listTagsForResourceRequest,
                 client::listTagsForResource);
         logger.log("Policy tags retrieved successfully");
+        logRequestId(listTagsForResourceResponse, "ListTagsForResource", logger);
 
         // determine tags to remove and add
         final List<String> removeTags = FmsHelper.tagsToRemove(
@@ -72,8 +77,11 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                     .resourceArn(getPolicyResponse.policyArn())
                     .tagKeys(removeTags)
                     .build();
-            proxy.injectCredentialsAndInvokeV2(untagResourceRequest, client::untagResource);
+            final UntagResourceResponse untagResourceResponse = proxy.injectCredentialsAndInvokeV2(
+                    untagResourceRequest,
+                    client::untagResource);
             logger.log("Tags removed successfully");
+            logRequestId(untagResourceResponse, "UntagResource", logger);
         } else {
             logger.log("No tags to remove");
         }
@@ -85,8 +93,11 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                     .resourceArn(getPolicyResponse.policyArn())
                     .tagList(addTags)
                     .build();
-            proxy.injectCredentialsAndInvokeV2(tagResourceRequest, client::tagResource);
+            final TagResourceResponse tagResourceResponse = proxy.injectCredentialsAndInvokeV2(
+                    tagResourceRequest,
+                    client::tagResource);
             logger.log("Tags added successfully");
+            logRequestId(tagResourceResponse, "TagResource", logger);
         } else {
             logger.log("No tags to add");
         }

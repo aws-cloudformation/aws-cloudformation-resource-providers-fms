@@ -21,9 +21,11 @@ public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
         final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
                 .policyId(request.getDesiredResourceState().getId())
                 .build();
-        return proxy.injectCredentialsAndInvokeV2(
+        final GetPolicyResponse response = proxy.injectCredentialsAndInvokeV2(
                 getPolicyRequest,
                 client::getPolicy);
+        logRequestId(response, "GetPolicy", logger);
+        return response;
     }
 
     @Override

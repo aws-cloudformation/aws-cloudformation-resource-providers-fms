@@ -23,7 +23,11 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
                 .policy(FmsHelper.convertCFNResourceModelToFMSPolicy(request.getDesiredResourceState()))
                 .tagList(FmsHelper.convertCFNTagMapToFMSTagSet(request.getDesiredResourceTags()))
                 .build();
-        return proxy.injectCredentialsAndInvokeV2(putPolicyRequest, client::putPolicy);
+        final PutPolicyResponse response = proxy.injectCredentialsAndInvokeV2(
+                putPolicyRequest,
+                client::putPolicy);
+        logRequestId(response, "PutPolicy", logger);
+        return response;
     }
 
     @Override
