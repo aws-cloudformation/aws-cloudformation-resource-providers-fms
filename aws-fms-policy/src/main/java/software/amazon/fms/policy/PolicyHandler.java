@@ -52,10 +52,9 @@ abstract class PolicyHandler<ResponseT extends FmsResponse> extends BaseHandler<
     /**
      * Logs the requestId of an FmsResponse.
      * @param response FmsResponse to get the requestId from.
-     * @param requestName Name of the type of request made.
      * @param logger CloudWatch logger.
      */
-    static void logRequestId(final FmsResponse response, final String requestName, Logger logger) {
+    static void logRequest(final FmsResponse response, Logger logger) {
 
         String requestId;
         try {
@@ -63,7 +62,7 @@ abstract class PolicyHandler<ResponseT extends FmsResponse> extends BaseHandler<
         } catch (NullPointerException e) {
             requestId = "null";
         }
-        logger.log(String.format("%s RequestId: %s", requestName, requestId));
+        logger.log(String.format("%s Id: %s", response.getClass().getSimpleName(), requestId));
     }
 
     /**

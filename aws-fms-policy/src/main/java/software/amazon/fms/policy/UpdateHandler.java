@@ -36,7 +36,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                 getPolicyRequest,
                 client::getPolicy);
         logger.log("Policy retrieved successfully");
-        logRequestId(getPolicyResponse, "GetPolicy", logger);
+        logRequest(getPolicyResponse, logger);
 
         // make the update request
         logger.log("Updating existing policy");
@@ -49,7 +49,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                 putPolicyRequest,
                 client::putPolicy);
         logger.log("Policy updated successfully");
-        logRequestId(putPolicyResponse, "PutPolicy", logger);
+        logRequest(putPolicyResponse, logger);
 
         // make a list request to get the current tags on the policy
         logger.log("Retrieving policy tags");
@@ -60,7 +60,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                 listTagsForResourceRequest,
                 client::listTagsForResource);
         logger.log("Policy tags retrieved successfully");
-        logRequestId(listTagsForResourceResponse, "ListTagsForResource", logger);
+        logRequest(listTagsForResourceResponse, logger);
 
         // determine tags to remove and add
         final List<String> removeTags = FmsHelper.tagsToRemove(
@@ -81,7 +81,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                     untagResourceRequest,
                     client::untagResource);
             logger.log("Tags removed successfully");
-            logRequestId(untagResourceResponse, "UntagResource", logger);
+            logRequest(untagResourceResponse, logger);
         } else {
             logger.log("No tags to remove");
         }
@@ -97,7 +97,7 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
                     tagResourceRequest,
                     client::tagResource);
             logger.log("Tags added successfully");
-            logRequestId(tagResourceResponse, "TagResource", logger);
+            logRequest(tagResourceResponse, logger);
         } else {
             logger.log("No tags to add");
         }

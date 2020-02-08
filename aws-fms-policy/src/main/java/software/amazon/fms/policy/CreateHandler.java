@@ -26,7 +26,7 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
         final PutPolicyResponse response = proxy.injectCredentialsAndInvokeV2(
                 putPolicyRequest,
                 client::putPolicy);
-        logRequestId(response, "PutPolicy", logger);
+        logRequest(response, logger);
         return response;
     }
 
