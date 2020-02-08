@@ -1,6 +1,7 @@
 package software.amazon.fms.policy;
 
 import software.amazon.awssdk.services.fms.FmsClient;
+import software.amazon.awssdk.services.fms.model.FmsResponse;
 import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
@@ -13,7 +14,7 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
-abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
+abstract class PolicyHandler<ResponseT extends FmsResponse> extends BaseHandler<CallbackContext> {
 
     /** FMS client instance to make requests on behalf of CloudFormation. */
     protected final FmsClient client;
@@ -47,6 +48,22 @@ abstract class PolicyHandler<ResponseT> extends BaseHandler<CallbackContext> {
             final ResponseT response,
             final ResourceHandlerRequest<ResourceModel> request,
             final AmazonWebServicesClientProxy proxy);
+
+    /**
+     * Logs the requestId of an FmsResponse.
+     * @param response FmsResponse to get the requestId from.
+     * @param logger CloudWatch logger.
+     */
+    static void logRequest(final FmsResponse response, Logger logger) {
+
+        String requestId;
+        try {
+             requestId = response.responseMetadata().requestId();
+        } catch (NullPointerException e) {
+            requestId = "null";
+        }
+        logger.log(String.format("%s Id: %s", response.getClass().getSimpleName(), requestId));
+    }
 
     /**
      * Hook called by CloudFormation to run resource management actions.

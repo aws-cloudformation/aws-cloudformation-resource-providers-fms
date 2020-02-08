@@ -4,6 +4,7 @@ import software.amazon.awssdk.services.fms.model.DeleteNotificationChannelReques
 import software.amazon.awssdk.services.fms.model.DeleteNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.Logger;
 
 public class DeleteHandler extends NotificationChannelHandler {
 
@@ -16,12 +17,16 @@ public class DeleteHandler extends NotificationChannelHandler {
     protected DeleteNotificationChannelResponse makeRequest(
             final AmazonWebServicesClientProxy proxy,
             final ResourceModel desiredResourceState,
-            final GetNotificationChannelResponse getNotificationChannelResponse) {
+            final GetNotificationChannelResponse getNotificationChannelResponse,
+            final Logger logger) {
 
         // send the delete request
         final DeleteNotificationChannelRequest deleteNotificationChannelRequest =
                 DeleteNotificationChannelRequest.builder().build();
-        return proxy.injectCredentialsAndInvokeV2(deleteNotificationChannelRequest, client::deleteNotificationChannel);
+        final DeleteNotificationChannelResponse response =
+                proxy.injectCredentialsAndInvokeV2(deleteNotificationChannelRequest, client::deleteNotificationChannel);
+        logRequest(response, logger);
+        return response;
     }
 
     @Override

@@ -2,6 +2,7 @@ package software.amazon.fms.notificationchannel;
 
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.Logger;
 
 public class ReadHandler extends NotificationChannelHandler {
 
@@ -14,7 +15,8 @@ public class ReadHandler extends NotificationChannelHandler {
     protected GetNotificationChannelResponse makeRequest(
             final AmazonWebServicesClientProxy proxy,
             final ResourceModel desiredResourceState,
-            final GetNotificationChannelResponse getNotificationChannelResponse) {
+            final GetNotificationChannelResponse getNotificationChannelResponse,
+            final Logger logger) {
 
         // the read request has already been made as a check in the NotificationChannelHandler, use its results
         return getNotificationChannelResponse;

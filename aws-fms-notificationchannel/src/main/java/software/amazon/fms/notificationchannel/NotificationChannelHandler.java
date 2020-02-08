@@ -53,7 +53,8 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
     protected abstract FmsResponse makeRequest(
             final AmazonWebServicesClientProxy proxy,
             final ResourceModel desiredResourceState,
-            final GetNotificationChannelResponse getNotificationChannelResponse);
+            final GetNotificationChannelResponse getNotificationChannelResponse,
+            final Logger logger);
 
     /**
      * Hook called by handleRequest to build the resource's state after successful makeRequest call.
@@ -64,6 +65,22 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
     protected abstract ResourceModel constructSuccessResourceState(
             final ResourceModel desiredResourceState,
             final GetNotificationChannelResponse getNotificationChannelResponse);
+
+    /**
+     * Logs the requestId of an FmsResponse.
+     * @param response FmsResponse to get the requestId from.
+     * @param logger CloudWatch logger.
+     */
+    static void logRequest(final FmsResponse response, Logger logger) {
+
+        String requestId;
+        try {
+             requestId = response.responseMetadata().requestId();
+        } catch (NullPointerException e) {
+            requestId = "null";
+        }
+        logger.log(String.format("%s Id: %s", response.getClass().getSimpleName(), requestId));
+    }
 
     /**
      * Hook called by CloudFormation to run resource management actions.
@@ -85,18 +102,27 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
             // attempt to get an existing notification channel
             getNotificationChannelResponse =
                     proxy.injectCredentialsAndInvokeV2(getNotificationChannelRequest, client::getNotificationChannel);
+            logRequest(getNotificationChannelResponse, logger);
 
             // handlers fail differently based on the result of the notification channel get request
             // allow for failing based on notification channel existence or non-existence
             if (throwAlreadyExistsException() && getNotificationChannelResponse.snsTopicArn() != null) {
-                return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.AlreadyExists, null);
+                return ProgressEvent.failed(
+                        null,
+                        callbackContext,
+                        HandlerErrorCode.AlreadyExists,
+                        "Notification Channel already exists");
             }
             if (throwNotFoundException() && getNotificationChannelResponse.snsTopicArn() == null) {
-                return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.NotFound, null);
+                return ProgressEvent.failed(
+                        null,
+                        callbackContext,
+                        HandlerErrorCode.NotFound,
+                        "Notification Channel not found");
             }
 
             // make the primary handler request
-            makeRequest(proxy, request.getDesiredResourceState(), getNotificationChannelResponse);
+            makeRequest(proxy, request.getDesiredResourceState(), getNotificationChannelResponse, logger);
         } catch(ResourceNotFoundException e) {
             return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.NotFound);
         } catch(InvalidOperationException e) {

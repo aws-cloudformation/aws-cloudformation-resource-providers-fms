@@ -4,6 +4,7 @@ import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.PutNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.PutNotificationChannelResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.Logger;
 
 public class CreateHandler extends NotificationChannelHandler {
 
@@ -16,14 +17,18 @@ public class CreateHandler extends NotificationChannelHandler {
     protected PutNotificationChannelResponse makeRequest(
             final AmazonWebServicesClientProxy proxy,
             final ResourceModel desiredResourceState,
-            final GetNotificationChannelResponse getNotificationChannelResponse) {
+            final GetNotificationChannelResponse getNotificationChannelResponse,
+            final Logger logger) {
 
         // send the create request based on the desired resource state
         final PutNotificationChannelRequest putNotificationChannelRequest = PutNotificationChannelRequest.builder()
                 .snsTopicArn(desiredResourceState.getSnsTopicArn())
                 .snsRoleName(desiredResourceState.getSnsRoleName())
                 .build();
-        return proxy.injectCredentialsAndInvokeV2(putNotificationChannelRequest, client::putNotificationChannel);
+        final PutNotificationChannelResponse response =
+                proxy.injectCredentialsAndInvokeV2(putNotificationChannelRequest, client::putNotificationChannel);
+        logRequest(response, logger);
+        return response;
     }
 
     @Override
