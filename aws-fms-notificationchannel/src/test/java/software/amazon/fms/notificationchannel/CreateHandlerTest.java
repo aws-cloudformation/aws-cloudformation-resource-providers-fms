@@ -6,6 +6,7 @@ import org.mockito.Captor;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
+import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.PutNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.PutNotificationChannelResponse;
@@ -231,5 +232,51 @@ class CreateHandlerTest {
         assertThat(response.getResourceModel()).isNull();
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.InvalidRequest);
+    }
+
+    @Test
+    void handleRequestCreateInternalErrorException() {
+        // stub the response for the read request
+        final GetNotificationChannelResponse describeGetResponse = GetNotificationChannelResponse.builder().build();
+        doReturn(describeGetResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(GetNotificationChannelRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // mock a InvalidOperationException from the FMS API
+        doThrow(InternalErrorException.builder().build())
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(PutNotificationChannelRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // create the create request and send it
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
+        final ProgressEvent<ResourceModel, CallbackContext> response =
+                handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(captor.capture(), any());
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                GetNotificationChannelRequest.builder().build(),
+                PutNotificationChannelRequest.builder()
+                        .snsTopicArn(sampleSnsTopicArn)
+                        .snsRoleName(sampleSnsRoleName)
+                        .build()
+        ));
+
+        // assertions
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isNull();
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.ServiceInternalError);
     }
 }

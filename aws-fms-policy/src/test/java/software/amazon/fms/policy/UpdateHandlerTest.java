@@ -6,6 +6,7 @@ import org.mockito.Captor;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
+import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.InvalidTypeException;
@@ -674,5 +675,55 @@ class UpdateHandlerTest {
         assertThat(response.getResourceModel()).isNull();
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.ServiceLimitExceeded);
+    }
+
+    @Test
+    void handleRequestInternalErrorException() {
+
+        // stub the response for the read request
+        final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse();
+        doReturn(describeGetResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(GetPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // mock a LimitExceededException from the FMS API
+        doThrow(InternalErrorException.builder().build())
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // model the pre-request resource state
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+
+        // create the update request and send it
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(requestModel)
+                .build();
+        final ProgressEvent<ResourceModel, CallbackContext> response =
+                handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(true, false, false)
+        ));
+
+        // assertions
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isNull();
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.ServiceInternalError);
     }
 }
