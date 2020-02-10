@@ -6,6 +6,7 @@ import org.mockito.Captor;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
+import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -255,5 +256,45 @@ class DeleteHandlerTest {
         assertThat(response.getResourceModel()).isNull();
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.InvalidRequest);
+    }
+
+    @Test
+    void handleRequestInternalErrorException() {
+
+        // mock an InvalidOperationException from the FMS API
+        doThrow(InternalErrorException.builder().build())
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(DeletePolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // model the pre-request resource state
+        final ResourceModel requestModel = CfnSampleHelper.sampleBareResourceModel(true);
+
+        // create the delete request and send it
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(requestModel)
+                .build();
+        final ProgressEvent<ResourceModel, CallbackContext> response =
+                handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.sampleDeletePolicyRequest()
+        );
+
+        // assertions
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isNull();
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.ServiceInternalError);
     }
 }
