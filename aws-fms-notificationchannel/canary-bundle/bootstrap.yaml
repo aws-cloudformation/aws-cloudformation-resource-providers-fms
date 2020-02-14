@@ -40,13 +40,23 @@ Resources:
       Code:
         ZipFile:
           !Sub |
-            exports.handler = function(e,r) {
+            exports.handler = async function(event, context) {
               var response = require('cfn-response');
-              var waitTimeSeconds = e.ResourceProperties.WaitSeconds;
+              var waitTimeSeconds = event.ResourceProperties.WaitSeconds;
               var waitTime = waitTimeSeconds * 1000;
-              setTimeout(function(){
-                response.send(e, r, response.SUCCESS, {}, "Waiter-" + waitTimeSeconds + "-Seconds")
-              }, waitTime);
+              var attmeptCount = 3;
+              var fakeContext = {
+                logStreamName: context.logStreamName,
+                done: function() {}
+              }
+              console.log("Starting initial wait period");
+              await new Promise(resolve => setTimeout(resolve, waitTime));
+              for (var i = 1; i <= attmeptCount; i++) {
+                console.log("Attempt " + i);
+                response.send(event, fakeContext, response.SUCCESS, {}, "Waiter-" + waitTimeSeconds + "-Seconds");
+                await new Promise(resolve => setTimeout(resolve, 10 * 1000));
+              }
+              context.done();
             };
 Outputs:
   Topic:
