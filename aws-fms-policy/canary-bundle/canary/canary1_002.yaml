@@ -1,16 +1,20 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: FMS Shield policy update test.
+Description: FMS Security Groups usage audit policy update test.
 Resources:
-  PolicyShield:
+  PolicySGUsageAudit:
     Type: AWS::FMS::Policy
     Properties:
       ExcludeResourceTags: false
-      PolicyName: PolicyShieldChanged
+      PolicyName: PoicySGUsageAuditChanged
       RemediationEnabled: false
-      ResourceType: AWS::ElasticLoadBalancingV2::LoadBalancer
+      ResourceType: AWS::EC2::SecurityGroup
       SecurityServicePolicyData:
-        Type: SHIELD_ADVANCED
-      DeleteAllPolicyResources: true
+        Type: SECURITY_GROUPS_USAGE_AUDIT
+        ManagedServiceData: !Sub '{"type":"SECURITY_GROUPS_USAGE_AUDIT",
+                                  "deleteUnusedSecurityGroups":false,
+                                  "coalesceRedundantSecurityGroups":false,
+                                  "optionalDelayForUnusedInMinutes":null}'
+      DeleteAllPolicyResources: false
   WaiterCustomResource:
     Type: "AWS::CloudFormation::CustomResource"
     DeletionPolicy: Retain
