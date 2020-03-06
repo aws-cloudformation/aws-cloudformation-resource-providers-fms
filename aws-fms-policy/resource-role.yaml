@@ -30,6 +30,9 @@ Resources:
                 - "fms:TagResource"
                 - "fms:UntagResource"
                 - "waf-regional:ListRuleGroups"
+                - "wafv2:CheckCapacity"
+                - "wafv2:ListAvailableManagedRuleGroups"
+                - "wafv2:ListRuleGroups"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:
