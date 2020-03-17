@@ -123,12 +123,13 @@
                 "ManagedServiceData": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1024
+                    "maxLength": 4096
                 },
                 "Type": {
                     "type": "string",
                     "enum": [
                         "WAF",
+                        "WAFV2",
                         "SHIELD_ADVANCED",
                         "SECURITY_GROUPS_COMMON",
                         "SECURITY_GROUPS_CONTENT_AUDIT",
@@ -176,7 +177,10 @@
             "permissions": [
                 "fms:PutPolicy",
                 "fms:TagResource",
-                "waf-regional:ListRuleGroups"
+                "waf-regional:ListRuleGroups",
+                "wafv2:CheckCapacity",
+                "wafv2:ListRuleGroups",
+                "wafv2:ListAvailableManagedRuleGroups"
             ]
         },
         "update": {
@@ -186,7 +190,10 @@
                 "fms:TagResource",
                 "fms:UntagResource",
                 "fms:ListTagsForResource",
-                "waf-regional:ListRuleGroups"
+                "waf-regional:ListRuleGroups",
+                "wafv2:CheckCapacity",
+                "wafv2:ListRuleGroups",
+                "wafv2:ListAvailableManagedRuleGroups"
             ]
         },
         "read": {
