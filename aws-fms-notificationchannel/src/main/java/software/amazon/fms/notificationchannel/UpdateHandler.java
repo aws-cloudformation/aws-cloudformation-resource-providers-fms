@@ -1,8 +1,8 @@
 package software.amazon.fms.notificationchannel;
 
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
-import software.amazon.awssdk.services.fms.model.PutNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.PutNotificationChannelResponse;
+import software.amazon.cloudformation.exceptions.CfnAlreadyExistsException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 
@@ -20,15 +20,9 @@ public class UpdateHandler extends NotificationChannelHandler {
             final GetNotificationChannelResponse getNotificationChannelResponse,
             final Logger logger) {
 
-        // send the update request based on the desired resource state
-        final PutNotificationChannelRequest putNotificationChannelRequest = PutNotificationChannelRequest.builder()
-                .snsTopicArn(desiredResourceState.getSnsTopicArn())
-                .snsRoleName(desiredResourceState.getSnsRoleName())
-                .build();
-        final PutNotificationChannelResponse response =
-                proxy.injectCredentialsAndInvokeV2(putNotificationChannelRequest, client::putNotificationChannel);
-        logRequest(response, logger);
-        return response;
+        // there was a change to how Uluru handles stack updates that broke the update functionality
+        // this is a temporary change to give customers a more descriptive error when they try to make a stack update
+        throw new CfnAlreadyExistsException(null);
     }
 
     @Override

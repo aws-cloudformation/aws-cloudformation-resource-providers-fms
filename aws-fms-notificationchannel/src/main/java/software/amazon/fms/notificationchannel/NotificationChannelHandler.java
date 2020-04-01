@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
+import software.amazon.cloudformation.exceptions.CfnAlreadyExistsException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.HandlerErrorCode;
 import software.amazon.cloudformation.proxy.Logger;
@@ -123,6 +124,9 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
 
             // make the primary handler request
             makeRequest(proxy, request.getDesiredResourceState(), getNotificationChannelResponse, logger);
+        } catch(CfnAlreadyExistsException e) {
+            return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.AlreadyExists,
+                    "The resource cannot be updated. Please delete and recreate the CloudFormation resource.");
         } catch(ResourceNotFoundException e) {
             return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.NotFound);
         } catch(InvalidOperationException e) {
