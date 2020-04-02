@@ -35,7 +35,7 @@ jacocoTestCoverageVerification {
             element = 'CLASS'
             limit {
                 counter = 'LINE'
-                minimum = 0.8
+                minimum = 0.7
             }
             excludes = [
                     // CFN generated
