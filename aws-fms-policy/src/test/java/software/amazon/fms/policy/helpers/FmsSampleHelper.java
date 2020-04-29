@@ -62,7 +62,12 @@ public class FmsSampleHelper extends BaseSampleHelper {
         // assemble a sample include/exclude map
         final List<String> sampleAccountList = new ArrayList<>();
         sampleAccountList.add(sampleAccountId);
-        final IEMap sampleIEMap = IEMap.builder().aCCOUNT(sampleAccountList).build();
+        final List<String> ouList = new ArrayList<>();
+        ouList.add(sampleOUId);
+        final IEMap sampleIEMap = IEMap.builder()
+                .aCCOUNT(sampleAccountList)
+                .orgUnit(ouList)
+                .build();
 
         // assemble sample resource tags
         final ResourceTag[] sampleResourceTags = {

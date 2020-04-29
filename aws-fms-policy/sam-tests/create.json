@@ -15,6 +15,11 @@
             "SecurityServicePolicyData": {
                 "ManagedServiceData": "{\"type\":\"SHIELD_ADVANCED\"}",
                 "Type": "SHIELD_ADVANCED"
+            },
+            "IncludeMap": {
+                "OrgUnit": [
+                    "REAL OU ID"
+                ]
             }
         },
         "logicalResourceIdentifier": "MyResource"
