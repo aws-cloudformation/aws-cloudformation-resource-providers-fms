@@ -81,8 +81,11 @@ public class CfnSampleHelper extends BaseSampleHelper {
         // assemble a sample include/exclude map
         final List<String> accountList = new ArrayList<>();
         accountList.add(sampleAccountId);
+        final List<String> ouList = new ArrayList<>();
+        ouList.add(sampleOUId);
         final IEMap sampleIEMap = IEMap.builder()
                 .aCCOUNT(accountList)
+                .orgUnit(ouList)
                 .build();
 
         // assemble sample resource tags
