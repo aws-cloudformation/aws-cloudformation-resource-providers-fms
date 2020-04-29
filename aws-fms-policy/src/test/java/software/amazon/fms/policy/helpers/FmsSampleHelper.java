@@ -1,5 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
+import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
@@ -20,6 +21,7 @@ import software.amazon.fms.policy.IEMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class FmsSampleHelper extends BaseSampleHelper {
@@ -57,17 +59,23 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeIdentifiers Should the policy identifiers be included in the sample policy.
      * @return The assembled policy builder.
      */
-    private static Policy.Builder sampleAllParametersPolicy(final boolean includeIdentifiers) {
+    private static Policy.Builder sampleAllParametersPolicy(final boolean includeIdentifiers,
+                                                            final List<String> ouList) {
 
         // assemble a sample include/exclude map
         final List<String> sampleAccountList = new ArrayList<>();
         sampleAccountList.add(sampleAccountId);
-        final List<String> ouList = new ArrayList<>();
-        ouList.add(sampleOUId);
-        final IEMap sampleIEMap = IEMap.builder()
-                .aCCOUNT(sampleAccountList)
-                .orgUnit(ouList)
-                .build();
+        final IEMap sampleIEMap;
+        if (CollectionUtils.isNotEmpty(ouList)) {
+            sampleIEMap = IEMap.builder()
+                    .aCCOUNT(sampleAccountList)
+                    .orgUnit(ouList)
+                    .build();
+        } else {
+            sampleIEMap = IEMap.builder()
+                    .aCCOUNT(sampleAccountList)
+                    .build();
+        }
 
         // assemble sample resource tags
         final ResourceTag[] sampleResourceTags = {
@@ -85,6 +93,16 @@ public class FmsSampleHelper extends BaseSampleHelper {
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
                 .resourceTypeList(sampleResourceTypeList);
+    }
+
+    /**
+     * Assembles a sample FMS policy with all possible readable parameters.
+     * @param includeIdentifiers Should the policy identifiers be included in the sample policy.
+     * @return The assembled policy builder.
+     */
+    private static Policy.Builder sampleAllParametersPolicy(final boolean includeIdentifiers) {
+
+        return sampleAllParametersPolicy(includeIdentifiers, Collections.emptyList());
     }
 
     /**
@@ -107,6 +125,14 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         return PutPolicyResponse.builder()
                 .policy(sampleAllParametersPolicy(true).build())
+                .policyArn(samplePolicyArn)
+                .build();
+    }
+
+    public static PutPolicyResponse samplePutPolicyAllParametersResponse(final List<String> ouList) {
+
+        return PutPolicyResponse.builder()
+                .policy(sampleAllParametersPolicy(true, ouList).build())
                 .policyArn(samplePolicyArn)
                 .build();
     }
@@ -150,6 +176,14 @@ public class FmsSampleHelper extends BaseSampleHelper {
                 .build();
     }
 
+    public static PutPolicyRequest samplePutPolicyAllParametersRequest(final boolean includeIdentifiers,
+                                                                       final List<String> ouList) {
+
+        return PutPolicyRequest.builder()
+                .policy(sampleAllParametersPolicy(includeIdentifiers, ouList).build())
+                .build();
+    }
+
     /**
      * Assembles a sample GetPolicy response with only the required readable parameters.
      * @return The assembled response.
@@ -170,6 +204,14 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         return GetPolicyResponse.builder()
                 .policy(sampleAllParametersPolicy(true).build())
+                .policyArn(samplePolicyArn)
+                .build();
+    }
+
+    public static GetPolicyResponse sampleGetPolicyAllParametersResponse(final List<String> ouList) {
+
+        return GetPolicyResponse.builder()
+                .policy(sampleAllParametersPolicy(true, ouList).build())
                 .policyArn(samplePolicyArn)
                 .build();
     }

@@ -1,5 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
+import org.apache.commons.collections.CollectionUtils;
 import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
@@ -7,6 +8,7 @@ import software.amazon.fms.policy.ResourceTag;
 import software.amazon.fms.policy.SecurityServicePolicyData;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CfnSampleHelper extends BaseSampleHelper {
@@ -77,16 +79,37 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeIdentifiers,
             final boolean includeTag1,
             final boolean includeTag2) {
+        return sampleAllParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2, Collections.emptyList());
+    }
+
+    /**
+     * Assembles a sample resource model builder with all possible read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
+     * @param ouList List of OUs to be included.
+     * @return The assembled resource model builder.
+     */
+    private static ResourceModel.ResourceModelBuilder sampleAllParametersResourceModelBuilder(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2,
+            final List<String> ouList) {
 
         // assemble a sample include/exclude map
         final List<String> accountList = new ArrayList<>();
         accountList.add(sampleAccountId);
-        final List<String> ouList = new ArrayList<>();
-        ouList.add(sampleOUId);
-        final IEMap sampleIEMap = IEMap.builder()
-                .aCCOUNT(accountList)
-                .orgUnit(ouList)
-                .build();
+        final IEMap sampleIEMap;
+        if (CollectionUtils.isNotEmpty(ouList)) {
+            sampleIEMap = IEMap.builder()
+                    .aCCOUNT(accountList)
+                    .orgUnit(ouList)
+                    .build();
+        } else {
+            sampleIEMap = IEMap.builder()
+                    .aCCOUNT(accountList)
+                    .build();
+        }
 
         // assemble sample resource tags
         final List<ResourceTag> sampleResourceTags = new ArrayList<>();
@@ -138,6 +161,22 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeTag2) {
 
         return sampleAllParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2).build();
+    }
+
+    /**
+     * Assembles a sample resource model with all possible read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
+     * @return The assembled resource model.
+     */
+    public static ResourceModel sampleAllParametersResourceModel(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2,
+            final List<String> ouList) {
+
+        return sampleAllParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2, ouList).build();
     }
 
     /**
