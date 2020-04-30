@@ -49,7 +49,7 @@ public class CfnHelper {
                 cfnIEMap.setACCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
             }
             if (CollectionUtils.isNotEmpty(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT))) {
-                cfnIEMap.setOrgUnit(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
+                cfnIEMap.setORGUNIT(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
             }
             resourceModelBuilder.excludeMap(cfnIEMap);
         }
@@ -59,7 +59,7 @@ public class CfnHelper {
                 cfnIEMap.setACCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
             }
             if (CollectionUtils.isNotEmpty(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT))) {
-                cfnIEMap.setOrgUnit(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
+                cfnIEMap.setORGUNIT(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
             }
             resourceModelBuilder.includeMap(cfnIEMap);
         }

@@ -28,8 +28,8 @@ public class FmsHelper {
         if (CollectionUtils.isNotEmpty(cfnIEMap.getACCOUNT())) {
             fmsIEMap.put(CustomerPolicyScopeIdType.ACCOUNT, new ArrayList<>(cfnIEMap.getACCOUNT()));
         }
-        if (CollectionUtils.isNotEmpty(cfnIEMap.getOrgUnit())) {
-            fmsIEMap.put(CustomerPolicyScopeIdType.ORG_UNIT, new ArrayList<>(cfnIEMap.getOrgUnit()));
+        if (CollectionUtils.isNotEmpty(cfnIEMap.getORGUNIT())) {
+            fmsIEMap.put(CustomerPolicyScopeIdType.ORG_UNIT, new ArrayList<>(cfnIEMap.getORGUNIT()));
         }
         return fmsIEMap;
     }

@@ -17,7 +17,7 @@
                 "Type": "SHIELD_ADVANCED"
             },
             "IncludeMap": {
-                "OrgUnit": [
+                "ORGUNIT": [
                     "REAL OU ID"
                 ]
             }

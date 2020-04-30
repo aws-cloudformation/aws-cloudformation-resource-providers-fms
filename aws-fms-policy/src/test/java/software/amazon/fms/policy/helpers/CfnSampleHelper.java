@@ -103,7 +103,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
         if (CollectionUtils.isNotEmpty(ouList)) {
             sampleIEMap = IEMap.builder()
                     .aCCOUNT(accountList)
-                    .orgUnit(ouList)
+                    .oRGUNIT(ouList)
                     .build();
         } else {
             sampleIEMap = IEMap.builder()

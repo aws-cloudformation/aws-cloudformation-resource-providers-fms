@@ -69,7 +69,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
         if (CollectionUtils.isNotEmpty(ouList)) {
             sampleIEMap = IEMap.builder()
                     .aCCOUNT(sampleAccountList)
-                    .orgUnit(ouList)
+                    .oRGUNIT(ouList)
                     .build();
         } else {
             sampleIEMap = IEMap.builder()

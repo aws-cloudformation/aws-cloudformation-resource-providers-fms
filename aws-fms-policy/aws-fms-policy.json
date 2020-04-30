@@ -27,7 +27,7 @@
                         "$ref": "#/definitions/AccountId"
                     }
                 },
-                "OrgUnit": {
+                "ORGUNIT": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/OrganizationalUnitId"
