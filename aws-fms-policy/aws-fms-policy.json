@@ -14,8 +14,8 @@
             "description": "An Organizational Unit ID.",
             "type": "string",
             "pattern": "^(ou-[0-9a-z]{4,32}-[a-z0-9]{8,32})$",
-            "minLength": 3,
-            "maxLength": 16
+            "minLength": 16,
+            "maxLength": 68
         },
         "IEMap": {
             "description": "An FMS includeMap or excludeMap.",
