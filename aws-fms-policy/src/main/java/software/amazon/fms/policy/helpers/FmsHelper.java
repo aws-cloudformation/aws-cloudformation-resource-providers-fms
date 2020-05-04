@@ -1,5 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
+import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
 import software.amazon.awssdk.services.fms.model.Policy;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
@@ -19,14 +20,18 @@ public class FmsHelper {
 
     /**
      * Helper method to assign values in an include/exclude map.
-     * @param accounts CFN IEMap to covert,
+     * @param cfnIEMap CFN IEMap to covert,
      * @return The converted include/exclude map.
      */
-    static Map<CustomerPolicyScopeIdType, ? extends List<String>> convertCFNIEMapToFMSIEMap(IEMap accounts) {
-
-        return new HashMap<CustomerPolicyScopeIdType, List<String>>() {{
-            put(CustomerPolicyScopeIdType.fromValue("ACCOUNT"), new ArrayList<>(accounts.getACCOUNT()));
-        }};
+    static Map<CustomerPolicyScopeIdType, ? extends List<String>> convertCFNIEMapToFMSIEMap(IEMap cfnIEMap) {
+        HashMap<CustomerPolicyScopeIdType, List<String>> fmsIEMap = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(cfnIEMap.getACCOUNT())) {
+            fmsIEMap.put(CustomerPolicyScopeIdType.ACCOUNT, new ArrayList<>(cfnIEMap.getACCOUNT()));
+        }
+        if (CollectionUtils.isNotEmpty(cfnIEMap.getORGUNIT())) {
+            fmsIEMap.put(CustomerPolicyScopeIdType.ORG_UNIT, new ArrayList<>(cfnIEMap.getORGUNIT()));
+        }
+        return fmsIEMap;
     }
 
     /**

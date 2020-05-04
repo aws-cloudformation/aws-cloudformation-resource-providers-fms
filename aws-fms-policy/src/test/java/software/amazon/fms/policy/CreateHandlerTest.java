@@ -31,7 +31,9 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.FmsSampleHelper;
 import software.amazon.fms.policy.helpers.CfnSampleHelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,6 +58,7 @@ class CreateHandlerTest {
 
     private Configuration configuration;
     private CreateHandler handler;
+    public final static String sampleOUId = "ou-0000-88888888";
 
     @BeforeEach
     void setup() {
@@ -138,6 +141,50 @@ class CreateHandlerTest {
         );
         assertThat(captor.getValue()).isEqualTo(
                 FmsSampleHelper.samplePutPolicyAllParametersRequest(false)
+        );
+
+        // assertions
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
+    void handleRequestAllParametersWithOUScopeSuccess() {
+        final List<String> ouList = new ArrayList<>();
+        ouList.add(sampleOUId);
+
+        // stub the response for the create request
+        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyAllParametersResponse(ouList);
+        doReturn(describeResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // model the pre-request and post-request resource state
+        final ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(false, false, false, ouList);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false, ouList);
+
+        // create the create request and send it
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(requestModel)
+                .build();
+        final ProgressEvent<ResourceModel, CallbackContext> response =
+                handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getValue()).isEqualTo(
+                FmsSampleHelper.samplePutPolicyAllParametersRequest(false, ouList)
         );
 
         // assertions

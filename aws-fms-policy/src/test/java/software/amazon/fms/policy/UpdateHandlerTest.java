@@ -34,7 +34,9 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.FmsSampleHelper;
 import software.amazon.fms.policy.helpers.CfnSampleHelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,6 +60,7 @@ class UpdateHandlerTest {
 
     private Configuration configuration;
     private UpdateHandler handler;
+    public final static String sampleOUId = "ou-0000-88888888";
 
     @BeforeEach
     void setup() {
@@ -180,6 +183,71 @@ class UpdateHandlerTest {
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetPolicyRequest(),
                 FmsSampleHelper.samplePutPolicyAllParametersRequest(true),
+                FmsSampleHelper.sampleListTagsForResourceRequest()
+        ));
+
+        // assertions
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
+    void handleRequestAllParametersWithOUScopeSuccess() {
+        final List<String> ouList = new ArrayList<>();
+        ouList.add(sampleOUId);
+
+        // stub the response for the read request
+        final GetPolicyResponse describeGetResponse = FmsSampleHelper.sampleGetPolicyAllParametersResponse(ouList);
+        doReturn(describeGetResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(GetPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the update request
+        final PutPolicyResponse describePutResponse = FmsSampleHelper.samplePutPolicyAllParametersResponse(ouList);
+        doReturn(describePutResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list tags request
+        final ListTagsForResourceResponse describeListResponse =
+                FmsSampleHelper.sampleListTagsForResourceResponse(false, false);
+        doReturn(describeListResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // model the pre-request and post-request resource state
+        final ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false, ouList);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false, ouList);
+
+        // create the update request and send it
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(requestModel)
+                .build();
+        final ProgressEvent<ResourceModel, CallbackContext> response =
+                handler.handleRequest(proxy, request, null, logger);
+
+        // verify stub calls
+        verify(proxy, times(3)).injectCredentialsAndInvokeV2(
+                captor.capture(),
+                ArgumentMatchers.any()
+        );
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.sampleGetPolicyRequest(),
+                FmsSampleHelper.samplePutPolicyAllParametersRequest(true, ouList),
                 FmsSampleHelper.sampleListTagsForResourceRequest()
         ));
 
