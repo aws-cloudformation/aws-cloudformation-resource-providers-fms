@@ -1,5 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
+import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.policy.IEMap;
@@ -43,18 +44,24 @@ public class CfnHelper {
 
         // check each optional parameter and add it if it exists
         if (!policy.excludeMap().isEmpty()) {
-            resourceModelBuilder.excludeMap(
-                    IEMap.builder()
-                            .aCCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
-                            .build()
-            );
+            IEMap cfnIEMap = new IEMap();
+            if (CollectionUtils.isNotEmpty(policy.excludeMap().get(CustomerPolicyScopeIdType.ACCOUNT))) {
+                cfnIEMap.setACCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
+            }
+            if (CollectionUtils.isNotEmpty(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT))) {
+                cfnIEMap.setORGUNIT(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
+            }
+            resourceModelBuilder.excludeMap(cfnIEMap);
         }
         if (!policy.includeMap().isEmpty()) {
-            resourceModelBuilder.includeMap(
-                    IEMap.builder()
-                            .aCCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.fromValue("ACCOUNT")))
-                            .build()
-            );
+            IEMap cfnIEMap = new IEMap();
+            if (CollectionUtils.isNotEmpty(policy.includeMap().get(CustomerPolicyScopeIdType.ACCOUNT))) {
+                cfnIEMap.setACCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
+            }
+            if (CollectionUtils.isNotEmpty(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT))) {
+                cfnIEMap.setORGUNIT(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
+            }
+            resourceModelBuilder.includeMap(cfnIEMap);
         }
         if (!policy.resourceTags().isEmpty()) {
             final List<ResourceTag> resourceTags = new ArrayList<>();
