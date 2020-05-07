@@ -9,7 +9,7 @@ package.AWSCloudFormationResourceProvidersFMS = {
 
     build-environment = {
         chroot = basic;
-        network-access = open;
+        network-access = blocked;
     };
 
     build-system = brazil-gradle;
