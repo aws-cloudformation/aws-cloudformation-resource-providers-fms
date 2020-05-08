@@ -9,7 +9,9 @@ package.AWSCloudFormationResourceProvidersFMS = {
 
     build-environment = {
         chroot = basic;
-        network-access = blocked;
+        # fetching the appropriate schemas requires open network access for now
+        # https://github.com/aws-cloudformation/cloudformation-cli/issues/228
+        network-access = open;
     };
 
     build-system = brazil-gradle;
