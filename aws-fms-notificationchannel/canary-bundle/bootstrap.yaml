@@ -6,6 +6,7 @@ Resources:
     Properties:
       DisplayName: SnsTopic
       TopicName: SnsTopic
+      KmsMasterKeyId: SNSKMSEncryptionKey
   TopicPolicy:
     Type: AWS::SNS::TopicPolicy
     Properties:
@@ -30,6 +31,21 @@ Resources:
               - sns:Publish
               - sns:Receive
             Resource: !Ref Topic
+  SNSKMSEncryptionKey:
+    Type: AWS::KMS::Key
+      Properties:
+        KeyPolicy:
+          Version: '2008-10-17'
+          Id: 'SNSKMSEncryptionKey'
+          Statement:
+            - Sid: AWSFirewallManagerKMSPolicy
+              Effect: Allow
+              Principal:
+                AWS: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS
+              Action:
+                - kms:Decrypt
+                - kms:GenerateDataKey
+              Resource: '*'
   LambdaWaiter:
     Type: "AWS::Lambda::Function"
     Properties:
