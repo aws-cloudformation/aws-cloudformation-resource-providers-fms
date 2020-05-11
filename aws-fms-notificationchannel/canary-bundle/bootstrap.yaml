@@ -33,19 +33,18 @@ Resources:
             Resource: !Ref Topic
   SNSKMSEncryptionKey:
     Type: AWS::KMS::Key
-      Properties:
-        KeyPolicy:
-          Version: '2008-10-17'
-          Id: 'SNSKMSEncryptionKey'
-          Statement:
-            - Sid: AWSFirewallManagerKMSPolicy
-              Effect: Allow
-              Principal:
-                AWS: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS
-              Action:
-                - kms:Decrypt
-                - kms:GenerateDataKey
-              Resource: '*'
+    Properties:
+      KeyPolicy:
+        Version: '2008-10-17'
+        Id: 'SNSKMSEncryptionKey'
+        Statement:
+          - Sid: AWSFirewallManagerKMSPolicy
+            Effect: Allow
+            Principal:
+              AWS: !Ref AWS::AccountId
+            Action:
+              - kms:*
+            Resource: '*'
   LambdaWaiter:
     Type: "AWS::Lambda::Function"
     Properties:
@@ -84,3 +83,8 @@ Outputs:
     Value: !GetAtt LambdaWaiter.Arn
     Export:
       Name: LambdaWaiter
+  SNSKMSEncryptionKey:
+    Description: The KMS encryption key used to enable SSE on SNS topic.
+    Value: !Ref SNSKMSEncryptionKey
+    Export:
+      Name: SNSKMSEncryptionKey
