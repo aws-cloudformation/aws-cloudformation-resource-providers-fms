@@ -6,7 +6,7 @@ Resources:
     Properties:
       DisplayName: SnsTopic
       TopicName: SnsTopic
-      KmsMasterKeyId: SNSKMSEncryptionKey
+      KmsMasterKeyId: !GetAtt SNSKMSEncryptionKey.Arn
   TopicPolicy:
     Type: AWS::SNS::TopicPolicy
     Properties:
@@ -35,15 +35,24 @@ Resources:
     Type: AWS::KMS::Key
     Properties:
       KeyPolicy:
-        Version: '2008-10-17'
+        Version: '2012-10-17'
         Id: 'SNSKMSEncryptionKey'
         Statement:
-          - Sid: AWSFirewallManagerKMSPolicy
+          - Sid: "Allow admin account to use the key"
             Effect: Allow
             Principal:
               AWS: !Ref AWS::AccountId
             Action:
               - kms:*
+            Resource: '*'
+          - Sid: "Allow AWS SNS to use key"
+            Effect: Allow
+            Principal:
+              Service:
+                - "sns.amazonaws.com"
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey
             Resource: '*'
   LambdaWaiter:
     Type: "AWS::Lambda::Function"
@@ -85,6 +94,6 @@ Outputs:
       Name: LambdaWaiter
   SNSKMSEncryptionKey:
     Description: The KMS encryption key used to enable SSE on SNS topic.
-    Value: !Ref SNSKMSEncryptionKey
+    Value: !GetAtt SNSKMSEncryptionKey.Arn
     Export:
       Name: SNSKMSEncryptionKey
