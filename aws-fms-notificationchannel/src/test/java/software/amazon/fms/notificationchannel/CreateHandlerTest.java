@@ -3,6 +3,7 @@ package software.amazon.fms.notificationchannel;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
@@ -35,6 +36,9 @@ class CreateHandlerTest {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
+    private FmsClient client;
+
+    @Mock
     private Logger logger;
 
     @Captor
@@ -49,7 +53,7 @@ class CreateHandlerTest {
     void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
-        handler = new CreateHandler();
+        handler = new CreateHandler(client);
         sampleSnsTopicArn = "arn:aws:sns:us-east-1:012345678901:test-topic";
         sampleSnsRoleName = "arn:aws:iam::012345678901:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS";
 

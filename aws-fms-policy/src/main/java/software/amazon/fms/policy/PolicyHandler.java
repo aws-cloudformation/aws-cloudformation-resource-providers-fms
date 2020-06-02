@@ -19,10 +19,19 @@ abstract class PolicyHandler<ResponseT extends FmsResponse> extends BaseHandler<
     /** FMS client instance to make requests on behalf of CloudFormation. */
     protected final FmsClient client;
 
-    /** Constructor. */
+    /** Constructor for use by CloudFormation, uses default FMS client. */
     PolicyHandler() {
 
         client = FmsClient.create();
+    }
+
+    /**
+     * Constructor for use in tests, allows for a mocked client.
+     * @param client The FmsClient to use.
+     */
+    PolicyHandler(final FmsClient client) {
+
+        this.client = client;
     }
 
     /**
