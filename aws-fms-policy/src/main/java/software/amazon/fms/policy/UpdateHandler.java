@@ -1,5 +1,6 @@
 package software.amazon.fms.policy;
 
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
@@ -20,6 +21,14 @@ import software.amazon.fms.policy.helpers.FmsHelper;
 import java.util.List;
 
 public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
+
+    UpdateHandler() {
+        super();
+    }
+
+    UpdateHandler(final FmsClient client) {
+        super(client);
+    }
 
     @Override
     protected PutPolicyResponse makeRequest(

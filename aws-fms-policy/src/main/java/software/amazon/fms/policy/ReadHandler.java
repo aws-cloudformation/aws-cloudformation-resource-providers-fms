@@ -1,5 +1,6 @@
 package software.amazon.fms.policy;
 
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
@@ -10,6 +11,14 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.CfnHelper;
 
 public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
+
+    ReadHandler() {
+        super();
+    }
+
+    ReadHandler(final FmsClient client) {
+        super(client);
+    }
 
     @Override
     protected GetPolicyResponse makeRequest(

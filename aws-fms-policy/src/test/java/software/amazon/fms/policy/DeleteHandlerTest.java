@@ -3,6 +3,7 @@ package software.amazon.fms.policy;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
@@ -37,6 +38,9 @@ class DeleteHandlerTest {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
+    private FmsClient client;
+
+    @Mock
     private Logger logger;
 
     @Captor
@@ -49,7 +53,7 @@ class DeleteHandlerTest {
 
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
-        handler = new DeleteHandler();
+        handler = new DeleteHandler(client);
     }
 
     @Test

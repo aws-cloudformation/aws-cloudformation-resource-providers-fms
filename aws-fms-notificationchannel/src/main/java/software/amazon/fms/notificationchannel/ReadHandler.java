@@ -1,10 +1,19 @@
 package software.amazon.fms.notificationchannel;
 
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 
 public class ReadHandler extends NotificationChannelHandler {
+
+    ReadHandler() {
+        super();
+    }
+
+    ReadHandler(final FmsClient client) {
+        super(client);
+    }
 
     @Override
     protected boolean throwNotFoundException() {

@@ -5,6 +5,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mockito;
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
@@ -51,6 +52,9 @@ class CreateHandlerTest {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
+    private FmsClient client;
+
+    @Mock
     private Logger logger;
 
     @Captor
@@ -66,7 +70,7 @@ class CreateHandlerTest {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         configuration = new Configuration();
-        handler = new CreateHandler();
+        handler = new CreateHandler(client);
     }
 
     @Test

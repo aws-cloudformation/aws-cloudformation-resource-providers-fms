@@ -1,5 +1,6 @@
 package software.amazon.fms.notificationchannel;
 
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.DeleteNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.DeleteNotificationChannelResponse;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
@@ -7,6 +8,14 @@ import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 
 public class DeleteHandler extends NotificationChannelHandler {
+
+    DeleteHandler() {
+        super();
+    }
+
+    DeleteHandler(final FmsClient client) {
+        super(client);
+    }
 
     @Override
     protected boolean throwNotFoundException() {
