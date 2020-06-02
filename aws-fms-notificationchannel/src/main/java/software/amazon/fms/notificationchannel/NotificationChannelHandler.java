@@ -22,9 +22,18 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
     /** Standard read request to check pre-action resource state. */
     private final GetNotificationChannelRequest getNotificationChannelRequest;
 
-    /** Constructor. */
+    /** Constructor for use by CloudFormation, uses default FMS client. */
     NotificationChannelHandler() {
         client = FmsClient.create();
+        getNotificationChannelRequest = GetNotificationChannelRequest.builder().build();
+    }
+
+    /**
+     * Constructor for use in tests, allows for a mocked client.
+     * @param client The FmsClient to use.
+     */
+    NotificationChannelHandler(final FmsClient client) {
+        this.client = client;
         getNotificationChannelRequest = GetNotificationChannelRequest.builder().build();
     }
 

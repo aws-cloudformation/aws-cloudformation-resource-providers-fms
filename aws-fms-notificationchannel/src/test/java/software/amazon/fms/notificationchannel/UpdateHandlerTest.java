@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelRequest;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
@@ -32,6 +33,9 @@ class UpdateHandlerTest {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
+    private FmsClient client;
+
+    @Mock
     private Logger logger;
 
     @Captor
@@ -46,7 +50,7 @@ class UpdateHandlerTest {
     void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
-        handler = new UpdateHandler();
+        handler = new UpdateHandler(client);
         sampleSnsTopicArn = "arn:aws:sns:us-east-1:012345678901:test-topic";
         sampleSnsRoleName = "arn:aws:iam::012345678901:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS";
 

@@ -3,6 +3,7 @@ package software.amazon.fms.policy;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
@@ -53,6 +54,9 @@ class UpdateHandlerTest {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
+    private FmsClient client;
+
+    @Mock
     private Logger logger;
 
     @Captor
@@ -68,7 +72,7 @@ class UpdateHandlerTest {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
         configuration = new Configuration();
-        handler = new UpdateHandler();
+        handler = new UpdateHandler(client);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package software.amazon.fms.policy;
 
+import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -7,6 +8,14 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
+
+    DeleteHandler() {
+        super();
+    }
+
+    DeleteHandler(final FmsClient client) {
+        super(client);
+    }
 
     @Override
     protected DeletePolicyResponse makeRequest(
