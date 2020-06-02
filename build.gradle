@@ -2,10 +2,6 @@ description "AWS CloudFormation Resource Providers - FMS"
 
 allprojects {
     version "1.0-SNAPSHOT"
-
-    repositories {
-        mavenCentral()
-    }
 }
 
 task release

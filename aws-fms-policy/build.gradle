@@ -1,9 +1,16 @@
+buildscript {
+    dependencies {
+        classpath brazilGradle.tool('BrazilGradleQualityDefaults')
+    }
+}
+
 plugins {
+    id 'brazil-quality-defaults'
     id "java"
     id "jacoco"
 
     // To build a shadow jar of this resource provider
-    id 'com.github.johnrengelman.shadow' version '4.0.2'
+    id 'com.github.johnrengelman.shadow'
 }
 
 description "CloudFormation Resource Provider - AWS::FMS::Policy"
@@ -23,6 +30,8 @@ dependencies {
     testCompile brazilGradle.testbuild()
 }
 
+def cfn_command = "${brazilGradle.path('[AWSCloudFormationRPDKJavaPluginTool]all.runtimefarm')}/bin/cfn"
+
 test {
     useJUnitPlatform()
 
@@ -35,7 +44,7 @@ jacocoTestCoverageVerification {
             element = 'CLASS'
             limit {
                 counter = 'LINE'
-                minimum = 0.8
+                minimum = 0.5
             }
             excludes = [
                     // CFN generated
@@ -51,7 +60,7 @@ jacocoTestCoverageVerification {
 // Generate RPDK wrapper source before compile
 task rpdkGenerateSource(type: Exec) {
   workingDir "."
-  executable = "${brazilGradle.path('tool.runtimefarm')}/bin/cfn"
+  executable = cfn_command
   args = ["generate"]
 }
 
@@ -68,7 +77,7 @@ shadowJar {
 task cfnPackage(type: Exec) {
   dependsOn shadowJar
   workingDir "."
-  executable = "${brazilGradle.path('tool.runtimefarm')}/bin/cfn"
+  executable = cfn_command
   args = ["submit", "--dry-run"]
 }
 

@@ -7,13 +7,6 @@ package.AWSCloudFormationResourceProvidersFMS = {
         generic = true;
     };
 
-    build-environment = {
-        chroot = basic;
-        # fetching the appropriate schemas requires open network access for now
-        # https://github.com/aws-cloudformation/cloudformation-cli/issues/228
-        network-access = open;
-    };
-
     build-system = brazil-gradle;
     build-tools = {
         1.0 = {
@@ -25,6 +18,8 @@ package.AWSCloudFormationResourceProvidersFMS = {
             BrazilGradle = 4.x;
             JDK8 = 1.0;
             BrazilPath = 1.1;
+            BrazilGradleQualityDefaults = 4.x;
+            GradleShadow = 4.x;
         };
     };
 
