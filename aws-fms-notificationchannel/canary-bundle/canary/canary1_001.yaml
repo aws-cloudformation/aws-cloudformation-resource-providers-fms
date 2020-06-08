@@ -4,7 +4,7 @@ Resources:
   NotificationChannel:
     Type: AWS::FMS::NotificationChannel
     Properties:
-      SnsRoleName: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS
+      SnsRoleName: !ImportValue NotificationChannelCreationRole
       SnsTopicArn: !ImportValue SnsTopicArn
   WaiterCustomResource:
     Type: "AWS::CloudFormation::CustomResource"
