@@ -10,6 +10,7 @@
             "amazon",
             "fms",
             "policy"
-        ]
+        ],
+        "protocolVersion": "2.0.0"
     }
 }

@@ -31,7 +31,7 @@ public class UpdateHandler extends NotificationChannelHandler {
 
         // there was a change to how Uluru handles stack updates that broke the update functionality
         // this is a temporary change to give customers a more descriptive error when they try to make a stack update
-        throw new CfnAlreadyExistsException(null);
+        throw new CfnAlreadyExistsException(new Exception("This resource type does no support update actions."));
     }
 
     @Override
