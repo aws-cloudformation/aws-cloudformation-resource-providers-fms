@@ -10,6 +10,7 @@
             "amazon",
             "fms",
             "notificationchannel"
-        ]
+        ],
+        "protocolVersion": "2.0.0"
     }
 }
