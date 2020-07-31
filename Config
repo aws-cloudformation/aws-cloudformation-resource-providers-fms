@@ -11,8 +11,8 @@ package.AWSCloudFormationResourceProvidersFMS = {
     build-tools = {
         1.0 = {
             # CloudFormation RPDK build tool Packages
-            AWSCloudFormationRPDK = 1.1;
-            AWSCloudFormationRPDKJavaPluginTool = 1.1;
+            AWSCloudFormationRPDK = 2.0;
+            AWSCloudFormationRPDKJavaPluginTool = 2.0;
 
             UluruBuild = 1.0;
             BrazilGradle = 4.x;
@@ -30,7 +30,7 @@ package.AWSCloudFormationResourceProvidersFMS = {
     dependencies = {
          1.0 = {
                # CloudFormation RPDK Java Runtime
-               AWSCloudFormationRPDKJavaPlugin = 1.1;
+               AWSCloudFormationRPDKJavaPlugin = 2.0;
 
                # Your package dependencies
                AwsJavaSdk-Fms = 2.0;
