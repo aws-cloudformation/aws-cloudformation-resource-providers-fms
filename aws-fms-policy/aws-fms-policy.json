@@ -146,7 +146,8 @@
                         "SHIELD_ADVANCED",
                         "SECURITY_GROUPS_COMMON",
                         "SECURITY_GROUPS_CONTENT_AUDIT",
-                        "SECURITY_GROUPS_USAGE_AUDIT"
+                        "SECURITY_GROUPS_USAGE_AUDIT",
+                        "NETWORK_FIREWALL"
                     ]
                 }
             },
@@ -193,7 +194,8 @@
                 "waf-regional:ListRuleGroups",
                 "wafv2:CheckCapacity",
                 "wafv2:ListRuleGroups",
-                "wafv2:ListAvailableManagedRuleGroups"
+                "wafv2:ListAvailableManagedRuleGroups",
+                "network-firewall:DescribeRuleGroup"
             ]
         },
         "update": {
@@ -206,7 +208,8 @@
                 "waf-regional:ListRuleGroups",
                 "wafv2:CheckCapacity",
                 "wafv2:ListRuleGroups",
-                "wafv2:ListAvailableManagedRuleGroups"
+                "wafv2:ListAvailableManagedRuleGroups",
+                "network-firewall:DescribeRuleGroup"
             ]
         },
         "read": {
