@@ -29,6 +29,7 @@ Resources:
                 - "fms:PutPolicy"
                 - "fms:TagResource"
                 - "fms:UntagResource"
+                - "network-firewall:DescribeRuleGroup"
                 - "waf-regional:ListRuleGroups"
                 - "wafv2:CheckCapacity"
                 - "wafv2:ListAvailableManagedRuleGroups"
