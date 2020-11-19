@@ -158,10 +158,13 @@ public class FmsSampleHelper extends BaseSampleHelper {
             addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "2")).value(sampleTagValue).build());
         }
 
-        return PutPolicyRequest.builder()
-                .tagList(addTags)
-                .policy(sampleRequiredParametersPolicy(includeIdentifiers).build())
-                .build();
+        final PutPolicyRequest.Builder requestBuilder = PutPolicyRequest.builder()
+                .policy(sampleRequiredParametersPolicy(includeIdentifiers).build());
+
+        if (!addTags.isEmpty()) {
+            requestBuilder.tagList(addTags);
+        }
+        return requestBuilder.build();
     }
 
     /**

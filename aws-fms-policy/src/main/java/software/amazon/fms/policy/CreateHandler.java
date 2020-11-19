@@ -4,12 +4,15 @@ import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
 import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
+import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.cloudformation.exceptions.CfnInternalFailureException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.CfnHelper;
 import software.amazon.fms.policy.helpers.FmsHelper;
+
+import java.util.List;
 
 public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
 
@@ -28,12 +31,14 @@ public class CreateHandler extends PolicyHandler<PutPolicyResponse> {
             final Logger logger) {
 
         // make the create request
-        final PutPolicyRequest putPolicyRequest = PutPolicyRequest.builder()
-                .policy(FmsHelper.convertCFNResourceModelToFMSPolicy(request.getDesiredResourceState()))
-                .tagList(FmsHelper.convertCFNTagMapToFMSTagSet(request.getDesiredResourceTags()))
-                .build();
+        final PutPolicyRequest.Builder putPolicyRequestBuilder = PutPolicyRequest.builder()
+                .policy(FmsHelper.convertCFNResourceModelToFMSPolicy(request.getDesiredResourceState()));
+        final List<Tag> tags = FmsHelper.convertCFNTagMapToFMSTagSet(request.getDesiredResourceTags());
+        if (!tags.isEmpty()) {
+            putPolicyRequestBuilder.tagList(tags);
+        }
         final PutPolicyResponse response = proxy.injectCredentialsAndInvokeV2(
-                putPolicyRequest,
+                putPolicyRequestBuilder.build(),
                 client::putPolicy);
         logRequest(response, logger);
         return response;
