@@ -15,6 +15,7 @@ out/
 
 # auto-generated files
 target/
+docs/
 
 # our logs
 rpdk.log

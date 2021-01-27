@@ -30,6 +30,7 @@ Resources:
                 - "fms:TagResource"
                 - "fms:UntagResource"
                 - "network-firewall:DescribeRuleGroup"
+                - "route53resolver:ListFirewallRuleGroups"
                 - "waf-regional:ListRuleGroups"
                 - "wafv2:CheckCapacity"
                 - "wafv2:ListAvailableManagedRuleGroups"

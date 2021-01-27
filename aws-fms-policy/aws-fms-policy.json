@@ -147,7 +147,8 @@
                         "SECURITY_GROUPS_COMMON",
                         "SECURITY_GROUPS_CONTENT_AUDIT",
                         "SECURITY_GROUPS_USAGE_AUDIT",
-                        "NETWORK_FIREWALL"
+                        "NETWORK_FIREWALL",
+                        "DNS_FIREWALL"
                     ]
                 }
             },
@@ -195,7 +196,8 @@
                 "wafv2:CheckCapacity",
                 "wafv2:ListRuleGroups",
                 "wafv2:ListAvailableManagedRuleGroups",
-                "network-firewall:DescribeRuleGroup"
+                "network-firewall:DescribeRuleGroup",
+                "route53resolver:ListFirewallRuleGroups"
             ]
         },
         "update": {
@@ -209,7 +211,8 @@
                 "wafv2:CheckCapacity",
                 "wafv2:ListRuleGroups",
                 "wafv2:ListAvailableManagedRuleGroups",
-                "network-firewall:DescribeRuleGroup"
+                "network-firewall:DescribeRuleGroup",
+                "route53resolver:ListFirewallRuleGroups"
             ]
         },
         "read": {
