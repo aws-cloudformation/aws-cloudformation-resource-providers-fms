@@ -80,4 +80,32 @@ public class CfnHelper {
         // build and return the resource model
         return resourceModelBuilder.build();
     }
+
+    /**
+     * Convert a list of FMS policies (from the FMS SDK) to a list of CFN resource models (from the resource provider).
+     * @param policySummary FMS policy that was converted from.
+     * @param policyArn Policy ARN to add to the resource model.
+     * @return CFN resource model that was converted to.
+     */
+    public static ResourceModel convertFMSPolicySummaryToCFNResourceModel(
+            final software.amazon.awssdk.services.fms.model.PolicySummary policySummary,
+            final String policyArn) {
+
+        // assemble the security service policy data
+        final SecurityServicePolicyData.SecurityServicePolicyDataBuilder securityServicePolicyData =
+                SecurityServicePolicyData.builder().type(policySummary.securityServiceTypeAsString());
+
+        // assemble the resource model with the required parameters
+        final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
+                .policyName(policySummary.policyName())
+                .remediationEnabled(policySummary.remediationEnabled())
+                .resourceType(policySummary.resourceType())
+                .securityServicePolicyData(securityServicePolicyData.build())
+                .id(policySummary.policyId())
+                .arn(policyArn);
+
+        // build and return the resource model
+        return resourceModelBuilder.build();
+
+    }
 }

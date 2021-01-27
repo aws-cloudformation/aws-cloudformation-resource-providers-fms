@@ -6,6 +6,8 @@ import software.amazon.awssdk.services.fms.model.PutNotificationChannelResponse;
 import software.amazon.cloudformation.exceptions.CfnAlreadyExistsException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
+import software.amazon.cloudformation.proxy.ProgressEvent;
+import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public class UpdateHandler extends NotificationChannelHandler {
 
@@ -35,11 +37,10 @@ public class UpdateHandler extends NotificationChannelHandler {
     }
 
     @Override
-    protected ResourceModel constructSuccessResourceState(
-            final ResourceModel desiredResourceState,
-            final GetNotificationChannelResponse getNotificationChannelResponse) {
-
-        // use the desired resource state as the post-update resource state
-        return desiredResourceState;
+    protected ProgressEvent<ResourceModel, CallbackContext> constructSuccessProgressEvent(
+            final GetNotificationChannelResponse response,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final AmazonWebServicesClientProxy proxy) {
+        return ProgressEvent.defaultSuccessHandler(request.getDesiredResourceState());
     }
 }

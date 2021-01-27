@@ -45,6 +45,11 @@
             "permissions": [
                 "fms:DeleteNotificationChannel"
             ]
+        },
+        "list": {
+            "permissions": [
+                "fms:GetNotificationChannel"
+            ]
         }
     },
     "primaryIdentifier": [

@@ -25,6 +25,7 @@ Resources:
                 Action:
                 - "fms:DeletePolicy"
                 - "fms:GetPolicy"
+                - "fms:ListPolicies"
                 - "fms:ListTagsForResource"
                 - "fms:PutPolicy"
                 - "fms:TagResource"

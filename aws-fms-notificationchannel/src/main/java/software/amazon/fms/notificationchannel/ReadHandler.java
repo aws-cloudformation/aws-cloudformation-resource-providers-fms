@@ -4,6 +4,8 @@ import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.GetNotificationChannelResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
+import software.amazon.cloudformation.proxy.ProgressEvent;
+import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public class ReadHandler extends NotificationChannelHandler {
 
@@ -32,14 +34,15 @@ public class ReadHandler extends NotificationChannelHandler {
     }
 
     @Override
-    protected ResourceModel constructSuccessResourceState(
-            final ResourceModel desiredResourceState,
-            final GetNotificationChannelResponse getNotificationChannelResponse) {
-
-        // assemble the post-read resource state from the read request
-        return ResourceModel.builder()
-                .snsRoleName(getNotificationChannelResponse.snsRoleName())
-                .snsTopicArn(getNotificationChannelResponse.snsTopicArn())
-                .build();
+    protected ProgressEvent<ResourceModel, CallbackContext> constructSuccessProgressEvent(
+            final GetNotificationChannelResponse response,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final AmazonWebServicesClientProxy proxy) {
+        return ProgressEvent.defaultSuccessHandler(
+                ResourceModel.builder()
+                        .snsRoleName(response.snsRoleName())
+                        .snsTopicArn(response.snsTopicArn())
+                        .build()
+        );
     }
 }

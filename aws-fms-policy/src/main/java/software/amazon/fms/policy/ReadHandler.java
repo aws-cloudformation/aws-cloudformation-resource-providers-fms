@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
+import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.CfnHelper;
 
@@ -38,7 +39,14 @@ public class ReadHandler extends PolicyHandler<GetPolicyResponse> {
     }
 
     @Override
-    protected ResourceModel constructSuccessResourceModel(
+    protected ProgressEvent<ResourceModel, CallbackContext> constructSuccessProgressEvent(
+            final GetPolicyResponse response,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final AmazonWebServicesClientProxy proxy) {
+        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceModel(response, request, proxy));
+    }
+
+    private ResourceModel constructSuccessResourceModel(
             final GetPolicyResponse response,
             final ResourceHandlerRequest<ResourceModel> request,
             final AmazonWebServicesClientProxy proxy) {
