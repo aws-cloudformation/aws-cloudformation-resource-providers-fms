@@ -1,4 +1,5 @@
 {
+    "artifact_type": "RESOURCE",
     "typeName": "AWS::FMS::Policy",
     "language": "java",
     "runtime": "java8",
@@ -12,5 +13,6 @@
             "policy"
         ],
         "protocolVersion": "2.0.0"
-    }
+    },
+    "executableEntrypoint": "software.amazon.fms.policy.HandlerWrapperExecutable"
 }
