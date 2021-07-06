@@ -45,6 +45,6 @@ public class DeleteHandler extends NotificationChannelHandler {
             final GetNotificationChannelResponse response,
             final ResourceHandlerRequest<ResourceModel> request,
             final AmazonWebServicesClientProxy proxy) {
-        return ProgressEvent.defaultSuccessHandler(request.getDesiredResourceState());
+        return ProgressEvent.defaultSuccessHandler(null);
     }
 }

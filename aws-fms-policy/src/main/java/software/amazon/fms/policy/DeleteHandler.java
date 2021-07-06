@@ -56,6 +56,6 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
             final DeletePolicyResponse response,
             final ResourceHandlerRequest<ResourceModel> request,
             final AmazonWebServicesClientProxy proxy) {
-        return ProgressEvent.defaultSuccessHandler(ResourceModel.builder().build());
+        return ProgressEvent.defaultSuccessHandler(null);
     }
 }

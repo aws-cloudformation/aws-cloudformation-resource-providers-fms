@@ -43,26 +43,26 @@ public class CfnHelper {
                 .arn(policyArn);
 
         // check each optional parameter and add it if it exists
+        IEMap cfnExcludeMap = new IEMap();
         if (!policy.excludeMap().isEmpty()) {
-            IEMap cfnIEMap = new IEMap();
             if (CollectionUtils.isNotEmpty(policy.excludeMap().get(CustomerPolicyScopeIdType.ACCOUNT))) {
-                cfnIEMap.setACCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
+                cfnExcludeMap.setACCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
             }
             if (CollectionUtils.isNotEmpty(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT))) {
-                cfnIEMap.setORGUNIT(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
+                cfnExcludeMap.setORGUNIT(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
             }
-            resourceModelBuilder.excludeMap(cfnIEMap);
         }
+        resourceModelBuilder.excludeMap(cfnExcludeMap);
+        IEMap cfnIncludeMap = new IEMap();
         if (!policy.includeMap().isEmpty()) {
-            IEMap cfnIEMap = new IEMap();
             if (CollectionUtils.isNotEmpty(policy.includeMap().get(CustomerPolicyScopeIdType.ACCOUNT))) {
-                cfnIEMap.setACCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
+                cfnIncludeMap.setACCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
             }
             if (CollectionUtils.isNotEmpty(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT))) {
-                cfnIEMap.setORGUNIT(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
+                cfnIncludeMap.setORGUNIT(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
             }
-            resourceModelBuilder.includeMap(cfnIEMap);
         }
+        resourceModelBuilder.includeMap(cfnIncludeMap);
         if (!policy.resourceTags().isEmpty()) {
             final List<ResourceTag> resourceTags = new ArrayList<>();
             policy.resourceTags().forEach(rt -> resourceTags.add(new ResourceTag(rt.key(), rt.value())));
@@ -70,6 +70,8 @@ public class CfnHelper {
         }
         if (!policy.resourceTypeList().isEmpty()) {
             resourceModelBuilder.resourceTypeList(policy.resourceTypeList());
+        } else {
+            resourceModelBuilder.resourceTypeList(new ArrayList<>());
         }
         if (!tags.isEmpty()) {
             final List<PolicyTag> policyTags = new ArrayList<>();

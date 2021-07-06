@@ -9,18 +9,13 @@
         "clientRequestToken": "00000000-0000-0000-0000-000000000000",
         "desiredResourceState": {
             "ExcludeResourceTags": false,
-            "Id": "REAL POLICY ID",
+            "Id": "6cf40d53-9144-4562-94ed-a00a0f0d17ef",
             "PolicyName": "CHANGED",
             "RemediationEnabled": false,
             "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
             "SecurityServicePolicyData": {
                 "ManagedServiceData": "{\"type\":\"SHIELD_ADVANCED\"}",
                 "Type": "SHIELD_ADVANCED"
-            },
-            "IncludeMap": {
-                "ORGUNIT": [
-                    "REAL OU ID"
-                ]
             }
         },
         "logicalResourceIdentifier": "MyResource"

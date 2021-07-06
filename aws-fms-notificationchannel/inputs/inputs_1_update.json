@@ -1,0 +1,4 @@
+{
+    "SnsRoleName": "arn:aws:iam::{{CurrentAccountId}}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS",
+    "SnsTopicArn": "{{SnsTopicArn}}"
+}
