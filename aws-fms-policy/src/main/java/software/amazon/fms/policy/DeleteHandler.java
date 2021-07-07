@@ -3,8 +3,10 @@ package software.amazon.fms.policy;
 import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
+import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
+import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
@@ -50,12 +52,10 @@ public class DeleteHandler extends PolicyHandler<DeletePolicyResponse> {
     }
 
     @Override
-    protected ResourceModel constructSuccessResourceModel(
+    protected ProgressEvent<ResourceModel, CallbackContext> constructSuccessProgressEvent(
             final DeletePolicyResponse response,
             final ResourceHandlerRequest<ResourceModel> request,
             final AmazonWebServicesClientProxy proxy) {
-
-        // create an empty resource model since the resource no longer exists
-        return ResourceModel.builder().build();
+        return ProgressEvent.defaultSuccessHandler(null);
     }
 }

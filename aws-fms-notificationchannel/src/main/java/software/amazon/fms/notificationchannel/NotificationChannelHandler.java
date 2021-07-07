@@ -11,8 +11,11 @@ import software.amazon.cloudformation.exceptions.CfnAlreadyExistsException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.HandlerErrorCode;
 import software.amazon.cloudformation.proxy.Logger;
+import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+
+import java.util.Collections;
 
 abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
 
@@ -54,6 +57,14 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
     }
 
     /**
+     * Flag to return an empty list for list handler and not found error for other handlers.
+     * @return A flag indicating if this empty list should be returned instead of error.
+     */
+    boolean shouldReturnEmptyList() {
+        return false;
+    }
+
+    /**
      * Hook called by handleRequest to make the primary action (create, read, etc..) request on the FMS API.
      * @param proxy AWS proxy to make requests.
      * @param desiredResourceState CloudFormation's desired resource state.
@@ -67,14 +78,16 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
             final Logger logger);
 
     /**
-     * Hook called by handleRequest to build the resource's state after successful makeRequest call.
-     * @param desiredResourceState CloudFormation's desired resource state.
-     * @param getNotificationChannelResponse Notification channel get request response.
-     * @return Post-action resource state.
+     * Hook called by handleRequest to build the ProgressEvent after a successful makeRequest call.
+     * @param response Notification channel get request response.
+     * @param request CloudFormation's handler request.
+     * @param proxy AWS proxy to make requests.
+     * @return ProgressEvent with Post-action resource state.
      */
-    protected abstract ResourceModel constructSuccessResourceState(
-            final ResourceModel desiredResourceState,
-            final GetNotificationChannelResponse getNotificationChannelResponse);
+    abstract ProgressEvent<ResourceModel, CallbackContext> constructSuccessProgressEvent(
+            final GetNotificationChannelResponse response,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final AmazonWebServicesClientProxy proxy);
 
     /**
      * Logs the requestId of an FmsResponse.
@@ -137,16 +150,21 @@ abstract class NotificationChannelHandler extends BaseHandler<CallbackContext> {
             return ProgressEvent.failed(null, callbackContext, HandlerErrorCode.AlreadyExists,
                     "The resource cannot be updated. Please delete and recreate the CloudFormation resource.");
         } catch(ResourceNotFoundException e) {
-            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.NotFound);
+            if(shouldReturnEmptyList()) {
+                return ProgressEvent.<ResourceModel, CallbackContext>builder()
+                        .resourceModels(Collections.emptyList())
+                        .status(OperationStatus.SUCCESS)
+                        .build();
+            } else {
+                return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.NotFound);
+            }
         } catch(InvalidOperationException e) {
             return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.InvalidRequest);
         } catch(InternalErrorException e) {
             return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.ServiceInternalError);
         }
 
-        // let each handler construct its own success resource model
-        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceState(
-                request.getDesiredResourceState(), getNotificationChannelResponse
-        ));
+        // let each handler construct its own success progress event with resource model(s)
+        return constructSuccessProgressEvent(getNotificationChannelResponse, request, proxy);
     }
 }

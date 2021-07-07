@@ -1,5 +1,6 @@
 package software.amazon.fms.policy;
 
+import org.apache.commons.lang3.StringUtils;
 import software.amazon.awssdk.services.fms.FmsClient;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
@@ -7,6 +8,7 @@ import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
 import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
+import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.awssdk.services.fms.model.TagResourceRequest;
 import software.amazon.awssdk.services.fms.model.TagResourceResponse;
@@ -14,6 +16,7 @@ import software.amazon.awssdk.services.fms.model.UntagResourceRequest;
 import software.amazon.awssdk.services.fms.model.UntagResourceResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
+import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.fms.policy.helpers.CfnHelper;
 import software.amazon.fms.policy.helpers.FmsHelper;
@@ -38,6 +41,10 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
 
         // make a read request to retrieve an up-to-date PolicyUpdateToken
         logger.log("Retrieving existing policy");
+        if (StringUtils.isBlank(request.getDesiredResourceState().getId())) {
+            throw ResourceNotFoundException.builder()
+                    .message("Firewall manager policy with the provided reference ID does not exist").build();
+        }
         final GetPolicyRequest getPolicyRequest = GetPolicyRequest.builder()
                 .policyId(request.getDesiredResourceState().getId())
                 .build();
@@ -116,7 +123,14 @@ public class UpdateHandler extends PolicyHandler<PutPolicyResponse> {
     }
 
     @Override
-    protected ResourceModel constructSuccessResourceModel(
+    protected ProgressEvent<ResourceModel, CallbackContext> constructSuccessProgressEvent(
+            final PutPolicyResponse response,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final AmazonWebServicesClientProxy proxy) {
+        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceModel(response, request, proxy));
+    }
+
+    private ResourceModel constructSuccessResourceModel(
             final PutPolicyResponse response,
             final ResourceHandlerRequest<ResourceModel> request,
             final AmazonWebServicesClientProxy proxy) {

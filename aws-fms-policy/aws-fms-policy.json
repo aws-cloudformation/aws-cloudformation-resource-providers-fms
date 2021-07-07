@@ -225,6 +225,12 @@
             "permissions": [
                 "fms:DeletePolicy"
             ]
+        },
+        "list": {
+            "permissions": [
+                "fms:ListPolicies",
+                "fms:ListTagsForResource"
+            ]
         }
     }
 }

@@ -1,0 +1,14 @@
+{
+    "credentials": {
+        "accessKeyId": "STS CREDENTIALS",
+        "secretAccessKey": "STS CREDENTIALS",
+        "sessionToken": "STS CREDENTIALS"
+    },
+    "action": "LIST",
+    "request": {
+        "clientRequestToken": "00000000-0000-0000-0000-000000000000",
+        "desiredResourceState": {},
+        "logicalResourceIdentifier": "MyResource"
+    },
+    "callbackContext": null
+}

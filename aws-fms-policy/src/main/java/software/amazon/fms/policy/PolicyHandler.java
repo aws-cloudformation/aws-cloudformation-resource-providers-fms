@@ -47,13 +47,13 @@ abstract class PolicyHandler<ResponseT extends FmsResponse> extends BaseHandler<
             final Logger logger);
 
     /**
-     * Hook called by handleRequest to build the resource state after a successful makeRequest call.
+     * Hook called by handleRequest to build the ProgressEvent after a successful makeRequest call.
      * @param response Generic type request response from makeRequest call.
      * @param request CloudFormation's handler request.
      * @param proxy AWS proxy to make requests.
-     * @return Post-action resource state or null.
+     * @return ProgressEvent with Post-action resource state.
      */
-    abstract ResourceModel constructSuccessResourceModel(
+    abstract ProgressEvent<ResourceModel, CallbackContext> constructSuccessProgressEvent(
             final ResponseT response,
             final ResourceHandlerRequest<ResourceModel> request,
             final AmazonWebServicesClientProxy proxy);
@@ -107,7 +107,9 @@ abstract class PolicyHandler<ResponseT extends FmsResponse> extends BaseHandler<
             return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.ServiceInternalError);
         }
 
-        // let each handler construct its own success resource model
-        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceModel(response, request, proxy));
+        // let each handler construct its own success progress event with resource model(s)
+        return constructSuccessProgressEvent(response, request, proxy);
+
+//        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceModel(response, request, proxy));
     }
 }
