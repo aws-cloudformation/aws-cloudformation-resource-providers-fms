@@ -12,5 +12,6 @@
             "notificationchannel"
         ],
         "protocolVersion": "2.0.0"
-    }
+    },
+    "executableEntrypoint": "software.amazon.fms.notificationchannel.HandlerWrapperExecutable"
 }

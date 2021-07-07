@@ -5,9 +5,11 @@ import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
 import software.amazon.awssdk.services.fms.model.GetPolicyRequest;
 import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
+import software.amazon.awssdk.services.fms.model.ListPoliciesResponse;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.fms.model.Policy;
+import software.amazon.awssdk.services.fms.model.PolicySummary;
 import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
 import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
@@ -361,6 +363,34 @@ public class FmsSampleHelper extends BaseSampleHelper {
         return UntagResourceRequest.builder()
                 .resourceArn(samplePolicyArn)
                 .tagKeys(deleteKeys)
+                .build();
+    }
+
+    /**
+     * Assembles a sample FMS policy summary.
+     * @return The assembled policy summary  builder.
+     */
+    private static PolicySummary.Builder sampleRequiredParametersPolicySummary() {
+        // assemble a sample policy with only the required parameters
+
+        return PolicySummary.builder()
+                .policyName(samplePolicyName)
+                .remediationEnabled(sampleRemediationEnabled)
+                .resourceType(sampleResourceTypeListElement)
+                .securityServiceType(samplePolicyType)
+                .policyId(samplePolicyId)
+                .policyArn(samplePolicyArn);
+    }
+
+    /**
+     * Assembles a sample GetPolicy response with only the required readable parameters.
+     * @return The assembled response.
+     */
+    public static ListPoliciesResponse sampleListPolicies(String nextToken) {
+
+        return ListPoliciesResponse.builder()
+                .policyList(Collections.singletonList(sampleRequiredParametersPolicySummary().build()))
+                .nextToken(nextToken)
                 .build();
     }
 }
