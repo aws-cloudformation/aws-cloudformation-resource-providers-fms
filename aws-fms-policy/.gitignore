@@ -24,4 +24,3 @@ rpdk.log
 .hypothesis
 *.zip
 .aws-sam
-overrides.json
