@@ -1,0 +1,25 @@
+{
+    "ExcludeMap": {},
+    "ExcludeResourceTags": false,
+    "IncludeMap": {},
+    "PolicyName": "PolicyTest",
+    "RemediationEnabled": false,
+    "ResourceTags": [
+        {
+            "Key": "k1",
+            "Value": "v2"
+        }
+    ],
+    "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+    "ResourceTypeList": [],
+    "SecurityServicePolicyData": {
+        "Type": "SHIELD_ADVANCED"
+    },
+    "DeleteAllPolicyResources": false,
+    "Tags": [
+        {
+            "Key": "k2",
+            "Value": "v2"
+        }
+    ]
+}
