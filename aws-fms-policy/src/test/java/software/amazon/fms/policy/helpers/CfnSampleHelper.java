@@ -65,6 +65,8 @@ public class CfnSampleHelper extends BaseSampleHelper {
             resourceModelBuilder.tags(sampleTags);
         }
 
+
+
         return resourceModelBuilder;
     }
 
@@ -130,7 +132,8 @@ public class CfnSampleHelper extends BaseSampleHelper {
                 .includeMap(sampleIEMap)
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
-                .resourceTypeList(sampleResourceTypeList);
+                .resourceTypeList(sampleResourceTypeList)
+                .resourcesCleanUp(true);
     }
 
     /**

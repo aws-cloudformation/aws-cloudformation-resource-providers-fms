@@ -94,7 +94,8 @@ public class FmsSampleHelper extends BaseSampleHelper {
                 .includeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
-                .resourceTypeList(sampleResourceTypeList);
+                .resourceTypeList(sampleResourceTypeList)
+                .deleteUnusedFMManagedResources(true);
     }
 
     /**
@@ -159,6 +160,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
         if (includeTag2) {
             addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "2")).value(sampleTagValue).build());
         }
+
 
         final PutPolicyRequest.Builder requestBuilder = PutPolicyRequest.builder()
                 .policy(sampleRequiredParametersPolicy(includeIdentifiers).build());
