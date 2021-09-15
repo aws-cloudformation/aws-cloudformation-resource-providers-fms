@@ -79,7 +79,7 @@ public class CfnHelper {
             resourceModelBuilder.tags(policyTags);
         }
 
-        if(policy.deleteUnusedFMManagedResources()!=null){
+        if (policy.deleteUnusedFMManagedResources()!=null) {
             resourceModelBuilder.resourcesCleanUp(policy.deleteUnusedFMManagedResources());
         }
 

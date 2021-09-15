@@ -161,7 +161,6 @@ public class FmsSampleHelper extends BaseSampleHelper {
             addTags.add(Tag.builder().key(String.format("%s%s", sampleTagKey, "2")).value(sampleTagValue).build());
         }
 
-
         final PutPolicyRequest.Builder requestBuilder = PutPolicyRequest.builder()
                 .policy(sampleRequiredParametersPolicy(includeIdentifiers).build());
 

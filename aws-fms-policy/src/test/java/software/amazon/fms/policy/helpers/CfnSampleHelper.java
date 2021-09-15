@@ -65,8 +65,6 @@ public class CfnSampleHelper extends BaseSampleHelper {
             resourceModelBuilder.tags(sampleTags);
         }
 
-
-
         return resourceModelBuilder;
     }
 

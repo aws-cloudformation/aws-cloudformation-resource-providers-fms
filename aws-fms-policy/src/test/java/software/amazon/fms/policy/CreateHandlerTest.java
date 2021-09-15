@@ -365,7 +365,6 @@ class CreateHandlerTest {
         assertThat(response.getResourceModel()).isNull();
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.InvalidRequest);
-
     }
 
     @Test
