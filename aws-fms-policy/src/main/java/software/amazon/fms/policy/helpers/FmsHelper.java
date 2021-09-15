@@ -57,8 +57,6 @@ public class FmsHelper {
                 .resourceType(resourceModel.getResourceType())
                 .securityServicePolicyData(securityServicePolicyData.build());
 
-
-
         // add exclude map if present
         if (resourceModel.getExcludeMap() != null) {
             policyBuilder.excludeMap(convertCFNIEMapToFMSIEMap(resourceModel.getExcludeMap()));
