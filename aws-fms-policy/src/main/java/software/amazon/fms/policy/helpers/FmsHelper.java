@@ -95,6 +95,10 @@ public class FmsHelper {
             policyBuilder.resourceTypeList(resourceTypeList);
         }
 
+        if (resourceModel.getResourcesCleanUp() != null){
+            policyBuilder.deleteUnusedFMManagedResources(resourceModel.getResourcesCleanUp());
+        }
+
         // return the policy builder
         return policyBuilder;
     }
