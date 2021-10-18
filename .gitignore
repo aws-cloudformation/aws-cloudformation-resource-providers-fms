@@ -8,3 +8,5 @@
 /wrapper/
 
 *.iml
+.DS_Store
+**/build

@@ -130,7 +130,8 @@ public class CfnSampleHelper extends BaseSampleHelper {
                 .includeMap(sampleIEMap)
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
-                .resourceTypeList(sampleResourceTypeList);
+                .resourceTypeList(sampleResourceTypeList)
+                .resourcesCleanUp(true);
     }
 
     /**

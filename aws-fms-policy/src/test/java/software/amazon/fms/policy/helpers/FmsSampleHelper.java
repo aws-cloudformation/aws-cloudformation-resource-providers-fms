@@ -94,7 +94,8 @@ public class FmsSampleHelper extends BaseSampleHelper {
                 .includeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
-                .resourceTypeList(sampleResourceTypeList);
+                .resourceTypeList(sampleResourceTypeList)
+                .deleteUnusedFMManagedResources(true);
     }
 
     /**
