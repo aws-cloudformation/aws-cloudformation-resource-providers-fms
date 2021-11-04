@@ -24,3 +24,4 @@ rpdk.log
 *.zip
 .aws-sam
 overrides.json
+docs
