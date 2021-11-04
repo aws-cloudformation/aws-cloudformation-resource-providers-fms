@@ -6,10 +6,20 @@ Resources:
     Properties:
       ExcludeResourceTags: false
       PolicyName: CanaryPolicyWAFv2UPDATE
+      RemediationEnabled: false
       ResourcesCleanUp: false
       DeleteAllPolicyResources: false
-      RemediationEnabled: false
       ResourceType: AWS::ElasticLoadBalancingV2::LoadBalancer
+      ResourceTags:
+        - Key: test1
+          Value: test1
+        - Key: test2
+          Value: test2
+      Tags:
+        - Key: test1
+          Value: test1
+        - Key: test2
+          Value: test2
       SecurityServicePolicyData:
         Type: WAFV2
         ManagedServiceData: '
