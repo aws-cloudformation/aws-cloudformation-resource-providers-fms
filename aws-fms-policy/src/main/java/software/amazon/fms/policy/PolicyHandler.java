@@ -109,7 +109,5 @@ abstract class PolicyHandler<ResponseT extends FmsResponse> extends BaseHandler<
 
         // let each handler construct its own success progress event with resource model(s)
         return constructSuccessProgressEvent(response, request, proxy);
-
-//        return ProgressEvent.defaultSuccessHandler(constructSuccessResourceModel(response, request, proxy));
     }
 }
