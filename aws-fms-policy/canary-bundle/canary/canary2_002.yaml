@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: FMS vanta dynamic distributed policy update test.
+
+Conditions:
+  IsVantaPolicyEnabled:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'us-east-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'eu-west-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'us-west-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ap-southeast-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ap-northeast-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'us-west-2'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'sa-east-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ap-southeast-2'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'eu-central-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ap-northeast-2'
+      - Fn::Or:
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ap-south-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'us-east-2'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ca-central-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'eu-west-2'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'eu-west-3'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ap-northeast-3'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'eu-north-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ap-east-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'me-south-1'
+      - Fn::Or:
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'eu-south-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'af-south-1'
+
+Resources:
+  CanaryPolicyVantaDynamicDistributedCREATE:
+    Condition: IsVantaPolicyEnabled
+    Type: AWS::FMS::Policy
+    Properties:
+      ExcludeResourceTags: false
+      PolicyName: CanaryPolicyVantaDynamicDistributedCREATE
+      RemediationEnabled: true
+      ResourcesCleanUp: true
+      DeleteAllPolicyResources: true
+      ResourceType: AWS::EC2::VPC
+      ResourceTags:
+        - Key: test1
+          Value: test1
+        - Key: test2
+          Value: test2
+      Tags:
+        - Key: test1
+          Value: test1
+        - Key: test2
+          Value: test2
+      SecurityServicePolicyData:
+        Type: NETWORK_FIREWALL
+        ManagedServiceData: !Sub
+          - '
+            {
+              "type":"NETWORK_FIREWALL",
+              "networkFirewallStatelessRuleGroupReferences":[
+                {
+                  "priority":1,
+                  "resourceARN":"${VantaStatelessRuleGroup}"
+                }
+              ],
+              "networkFirewallStatelessDefaultActions":["aws:pass"],
+              "networkFirewallStatelessFragmentDefaultActions":["aws:pass"],
+              "networkFirewallStatelessCustomActions":[],
+              "networkFirewallStatefulRuleGroupReferences":[
+                {
+                  "resourceARN":"${VantaStatefulRuleGroup}"
+                  }
+              ],
+              "networkFirewallOrchestrationConfig":{
+                "singleFirewallEndpointPerVPC":false,
+                "allowedIPV4CidrList":[
+                ]
+              }
+            }'
+          - VantaStatelessRuleGroup: !ImportValue VantaStatelessRuleGroup
+            VantaStatefulRuleGroup: !ImportValue VantaStatefulRuleGroup
+  WaiterCustomResource:
+    Type: "AWS::CloudFormation::CustomResource"
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 600

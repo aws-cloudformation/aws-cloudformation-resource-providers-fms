@@ -1,3 +1,10 @@
+Parameters:
+
+  VpcCIDR:
+    Description: Please enter the IP range (CIDR notation) for this VPC
+    Type: String
+    Default: 10.192.0.0/16
+
 Resources:
   LambdaWaiter:
     Type: "AWS::Lambda::Function"
@@ -27,8 +34,80 @@ Resources:
               }
               context.done();
             };
+
+  InspectionVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-Inspection-VPC'
+
+  VantaStatelessRuleGroup:
+    Type: AWS::NetworkFirewall::RuleGroup
+    Properties:
+      RuleGroupName: VantaStatelessRuleGroup
+      Type: STATELESS
+      RuleGroup:
+        RulesSource:
+          StatelessRulesAndCustomActions:
+            StatelessRules:
+              - RuleDefinition:
+                  MatchAttributes:
+                    Sources:
+                        - "AddressDefinition": 0.0.0.0/0
+                    Destinations:
+                        - "AddressDefinition": 0.0.0.0/0
+                  Actions:
+                      - "aws:pass"
+                Priority: 1
+      Capacity: 100
+      Description: CF Canary Vanta Stateless Rule Group
+
+  VantaStatefulRuleGroup:
+    Type: AWS::NetworkFirewall::RuleGroup
+    Properties:
+      RuleGroupName: VantaStatefulRuleGroup
+      Type: STATEFUL
+      RuleGroup:
+        RulesSource:
+          RulesString: >-
+            pass tcp 10.20.20.0/24 45400:45500 <> 10.10.10.0/24 5203
+            (msg:"test";sid:1;rev:1;)
+      Capacity: 100
+      Description: CF Canary Vanta Stateful Rule Group
+
+
 Outputs:
   LambdaWaiter:
     Value: !GetAtt LambdaWaiter.Arn
     Export:
       Name: LambdaWaiter
+
+  AvailabilityZone:
+    Value: !Select
+      - 0
+      - !GetAZs
+        Ref: 'AWS::Region'
+    Export:
+      Name: AvailabilityZone
+
+  InspectionVPC:
+    Value: !Ref InspectionVPC
+    Description: A reference to the created inspection VPC
+    Export:
+      Name: InspectionVPC
+
+  VantaStatelessRuleGroup:
+    Value: !Ref VantaStatelessRuleGroup
+    Description: A reference to the vanta stateless rule group
+    Export:
+      Name: VantaStatelessRuleGroup
+
+  VantaStatefulRuleGroup:
+    Value: !Ref VantaStatefulRuleGroup
+    Description: A reference to the vanta stateful rule group
+    Export:
+      Name: VantaStatefulRuleGroup
