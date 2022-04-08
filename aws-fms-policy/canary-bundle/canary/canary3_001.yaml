@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: FMS vanta dynamic distributed policy create test.
+Description: FMS vanta static distributed policy create test.
 
 Conditions:
   IsVantaPolicyEnabled:
@@ -72,12 +72,12 @@ Conditions:
               - 'af-south-1'
 
 Resources:
-  CanaryPolicyVantaDynamicDistributedCREATE:
+  CanaryPolicyVantaStaticDistributedCREATE:
     Condition: IsVantaPolicyEnabled
     Type: AWS::FMS::Policy
     Properties:
       ExcludeResourceTags: false
-      PolicyName: CanaryPolicyVantaDynamicDistributedCREATE
+      PolicyName: CanaryPolicyVantaStaticDistributedCREATE
       RemediationEnabled: true
       ResourcesCleanUp: true
       DeleteAllPolicyResources: true
@@ -98,25 +98,35 @@ Resources:
           - '
             {
               "type":"NETWORK_FIREWALL",
-              "networkFirewallStatelessRuleGroupReferences":[
-                {
-                  "priority":1,
-                  "resourceARN":"${VantaStatelessRuleGroup}"
-                }
-              ],
-              "networkFirewallStatelessDefaultActions":["aws:pass"],
-              "networkFirewallStatelessFragmentDefaultActions":["aws:pass"],
-              "networkFirewallStatelessCustomActions":[],
-              "networkFirewallStatefulRuleGroupReferences":[
-                {
-                  "resourceARN":"${VantaStatefulRuleGroup}"
-                  }
-              ],
-              "networkFirewallOrchestrationConfig":{
-                "singleFirewallEndpointPerVPC":false,
-                "allowedIPV4CidrList":[
-                ]
-              }
+	          "networkFirewallStatelessRuleGroupReferences":[
+	            {
+	              "priority":1,
+	              "resourceARN":"${VantaStatelessRuleGroup}"
+	            }
+	          ],
+	          "networkFirewallStatelessDefaultActions":["aws:pass"],
+	          "networkFirewallStatelessFragmentDefaultActions":["aws:pass"],
+	          "networkFirewallStatelessCustomActions":[],
+	          "networkFirewallStatefulRuleGroupReferences":[
+	            {
+	              "resourceARN":"${VantaStatefulRuleGroup}"
+	              }
+	          ],
+	          "networkFirewallOrchestrationConfig":{
+	            "firewallCreationConfig": {
+	              "endpointLocation":{
+	                "availabilityZoneConfigList":
+	                  [
+	                    {
+	                      "availabilityZoneName":"${AvailabilityZone}"
+	                    }
+	                  ]
+	                }
+	              },
+	              "allowedIPV4CidrList":null
+	            }
+	          }
             }'
           - VantaStatelessRuleGroup: !ImportValue VantaStatelessRuleGroup
             VantaStatefulRuleGroup: !ImportValue VantaStatefulRuleGroup
+            AvailabilityZone: !ImportValue AvailabilityZone

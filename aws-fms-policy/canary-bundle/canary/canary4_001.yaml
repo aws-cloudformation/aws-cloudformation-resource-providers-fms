@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: FMS vanta dynamic distributed policy create test.
+Description: FMS vanta centralized policy create test.
 
 Conditions:
   IsVantaPolicyEnabled:
@@ -72,21 +72,16 @@ Conditions:
               - 'af-south-1'
 
 Resources:
-  CanaryPolicyVantaDynamicDistributedCREATE:
+  CanaryPolicyVantaCentralizedCREATE:
     Condition: IsVantaPolicyEnabled
     Type: AWS::FMS::Policy
     Properties:
       ExcludeResourceTags: false
-      PolicyName: CanaryPolicyVantaDynamicDistributedCREATE
+      PolicyName: CanaryPolicyVantaCentralizedCREATE
       RemediationEnabled: true
       ResourcesCleanUp: true
       DeleteAllPolicyResources: true
       ResourceType: AWS::EC2::VPC
-      ResourceTags:
-        - Key: test1
-          Value: test1
-        - Key: test2
-          Value: test2
       Tags:
         - Key: test1
           Value: test1
@@ -94,29 +89,56 @@ Resources:
           Value: test2
       SecurityServicePolicyData:
         Type: NETWORK_FIREWALL
+        PolicyOption:
+          NetworkFirewallPolicy:
+            FirewallDeploymentModel: CENTRALIZED
         ManagedServiceData: !Sub
           - '
             {
               "type":"NETWORK_FIREWALL",
-              "networkFirewallStatelessRuleGroupReferences":[
-                {
-                  "priority":1,
-                  "resourceARN":"${VantaStatelessRuleGroup}"
-                }
-              ],
-              "networkFirewallStatelessDefaultActions":["aws:pass"],
-              "networkFirewallStatelessFragmentDefaultActions":["aws:pass"],
-              "networkFirewallStatelessCustomActions":[],
-              "networkFirewallStatefulRuleGroupReferences":[
-                {
-                  "resourceARN":"${VantaStatefulRuleGroup}"
+              "awsNetworkFirewallConfig":{
+                "networkFirewallStatelessRuleGroupReferences":[
+                  {
+                    "priority":1,
+                    "resourceARN":"${VantaStatelessRuleGroup}"
                   }
-              ],
-              "networkFirewallOrchestrationConfig":{
-                "singleFirewallEndpointPerVPC":false,
-                "allowedIPV4CidrList":[
+                ],
+                "networkFirewallStatelessDefaultActions":["aws:pass"],
+                "networkFirewallStatelessFragmentDefaultActions":["aws:pass"],
+                "networkFirewallStatelessCustomActions":[],
+                "networkFirewallStatefulRuleGroupReferences":[
+                  {
+                    "resourceARN":"${VantaStatefulRuleGroup}"
+                    }
                 ]
+	          },
+	          "firewallDeploymentModel":{
+                "centralizedFirewallDeploymentModel":{
+                  "centralizedFirewallOrchestrationConfig":{
+                    "inspectionVpcIds":[
+                      {
+                        "accountId":"${InspectionAccountId}",
+                        "resourceId":"${InspectionVPC}"
+                      }
+                    ],
+                    "firewallCreationConfig":{
+                      "endpointLocation":{
+                        "availabilityZoneConfigList":[
+                          {
+                            "availabilityZoneName":"${AvailabilityZone}"
+                          }
+                        ]
+                      }
+                    },
+                    "allowedIPV4CidrList":[
+                    ]
+                  }
+                }
               }
             }'
           - VantaStatelessRuleGroup: !ImportValue VantaStatelessRuleGroup
             VantaStatefulRuleGroup: !ImportValue VantaStatefulRuleGroup
+            InspectionAccountId:
+              Ref: 'AWS::AccountId'
+            InspectionVPC: !ImportValue InspectionVPC
+            AvailabilityZone: !ImportValue AvailabilityZone
