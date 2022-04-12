@@ -2,12 +2,16 @@ package software.amazon.fms.policy.helpers;
 
 import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
+import software.amazon.awssdk.services.fms.model.Policy;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.policy.IEMap;
+import software.amazon.fms.policy.NetworkFirewallPolicy;
+import software.amazon.fms.policy.PolicyOption;
 import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
 import software.amazon.fms.policy.ResourceTag;
 import software.amazon.fms.policy.SecurityServicePolicyData;
+import software.amazon.fms.policy.ThirdPartyFirewallPolicy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +34,12 @@ public class CfnHelper {
         // add the managed service data if it exists
         if (!policy.securityServicePolicyData().managedServiceData().isEmpty()) {
             securityServicePolicyData.managedServiceData(policy.securityServicePolicyData().managedServiceData());
+        }
+
+        if (policy.securityServicePolicyData().policyOption() != null) {
+            securityServicePolicyData.policyOption(convertFmsPolicyOptionToCFNPolicyOption(
+                policy.securityServicePolicyData().policyOption()
+            ));
         }
 
         // assemble the resource model with the required parameters
@@ -113,5 +123,29 @@ public class CfnHelper {
         // build and return the resource model
         return resourceModelBuilder.build();
 
+    }
+
+    /**
+     * Convert the FMS PolicyOption to CFN PolicyOption.
+     * @param policyOption FMS PolicyOption.
+     * @return CFN resource model that was converted to.
+     */
+    public static PolicyOption convertFmsPolicyOptionToCFNPolicyOption(
+        software.amazon.awssdk.services.fms.model.PolicyOption policyOption) {
+
+        final PolicyOption.PolicyOptionBuilder builder = PolicyOption.builder();
+
+        if (policyOption.networkFirewallPolicy() != null) {
+            builder.networkFirewallPolicy(NetworkFirewallPolicy.
+                builder().firewallDeploymentModel(policyOption.
+                    networkFirewallPolicy().firewallDeploymentModelAsString()).build()).build();
+        }
+
+        if (policyOption.thirdPartyFirewallPolicy() != null) {
+             builder.thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.
+                builder().firewallDeploymentModel(policyOption.
+                    thirdPartyFirewallPolicy().firewallDeploymentModelAsString()).build()).build();
+        }
+        return builder.build();
     }
 }

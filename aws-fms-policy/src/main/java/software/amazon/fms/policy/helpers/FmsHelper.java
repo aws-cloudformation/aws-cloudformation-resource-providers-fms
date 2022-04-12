@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import software.amazon.awssdk.services.fms.model.PolicyOption;
+import software.amazon.awssdk.services.fms.model.NetworkFirewallPolicy;
+import software.amazon.awssdk.services.fms.model.ThirdPartyFirewallPolicy;
+
 
 public class FmsHelper {
 
@@ -34,6 +38,30 @@ public class FmsHelper {
         return fmsIEMap;
     }
 
+     /**
+     * Helper method to convert the cfn input PolicyOption to FMS PolicyOption.
+     * @param policyOption CFN input PolicyOption,
+     * @return The converted PolicyOption.
+     */
+     static PolicyOption convertCFNPolicyOptionToFMSPolicyOption(software.amazon.fms.policy.PolicyOption policyOption) {
+
+         final PolicyOption.Builder builder = PolicyOption.builder();
+
+         if (policyOption.getNetworkFirewallPolicy() != null) {
+             builder.networkFirewallPolicy(NetworkFirewallPolicy.builder()
+                 .firewallDeploymentModel(
+                     policyOption.getNetworkFirewallPolicy().getFirewallDeploymentModel()
+                 ).build()).build();
+         }
+         if (policyOption.getThirdPartyFirewallPolicy() != null) {
+             builder.thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
+                 .firewallDeploymentModel(
+                     policyOption.getThirdPartyFirewallPolicy().getFirewallDeploymentModel()
+                 ).build()).build();
+         }
+         return builder.build();
+     }
+
     /**
      * Logic for converting a CFN resource model (from the resource provider) to an FMS policy (from the FMS SDK).
      * @param resourceModel CFN resource model that was converted from.
@@ -48,6 +76,11 @@ public class FmsHelper {
         // add the managed service data if it exists
         if (resourceModel.getSecurityServicePolicyData().getManagedServiceData() != null) {
                 securityServicePolicyData.managedServiceData(resourceModel.getSecurityServicePolicyData().getManagedServiceData());
+        }
+
+        if (resourceModel.getSecurityServicePolicyData().getPolicyOption() != null) {
+            securityServicePolicyData.policyOption(convertCFNPolicyOptionToFMSPolicyOption(
+                resourceModel.getSecurityServicePolicyData().getPolicyOption()));
         }
 
         // assemble the policy with the required parameters

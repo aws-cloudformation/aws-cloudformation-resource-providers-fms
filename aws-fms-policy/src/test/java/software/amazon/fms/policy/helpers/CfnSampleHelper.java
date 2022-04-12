@@ -6,6 +6,10 @@ import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
 import software.amazon.fms.policy.ResourceTag;
 import software.amazon.fms.policy.SecurityServicePolicyData;
+import software.amazon.fms.policy.PolicyOption;
+import software.amazon.fms.policy.NetworkFirewallPolicy;
+import software.amazon.fms.policy.ThirdPartyFirewallPolicy;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,13 +27,25 @@ public class CfnSampleHelper extends BaseSampleHelper {
     private static ResourceModel.ResourceModelBuilder sampleRequiredParametersResourceModelBuilder(
             final boolean includeIdentifiers,
             final boolean includeTag1,
-            final boolean includeTag2) {
+            final boolean includeTag2,
+            final boolean isThirdPartyPolicy) {
 
         // assemble sample security service policy data
-        final SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
+        SecurityServicePolicyData securityServicePolicyData;
+
+        if (isThirdPartyPolicy) {
+            securityServicePolicyData = SecurityServicePolicyData.builder()
                 .managedServiceData(sampleManagedServiceData)
-                .type(samplePolicyType)
-                .build();
+                .type(samplePolicyType).policyOption(PolicyOption.builder()
+                    .thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
+                        .firewallDeploymentModel("CENTRALIZED").build()).build()).build();
+        } else {
+            securityServicePolicyData = SecurityServicePolicyData.builder()
+                .managedServiceData(sampleManagedServiceData)
+                .type(samplePolicyType).policyOption(PolicyOption.builder()
+                    .networkFirewallPolicy(NetworkFirewallPolicy.builder()
+                        .firewallDeploymentModel("CENTRALIZED").build()).build()).build();
+        }
 
         // assemble a sample resource model with only the required parameters
         final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
@@ -125,7 +141,8 @@ public class CfnSampleHelper extends BaseSampleHelper {
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
         // assemble sample policy with all possible parameters
-        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2)
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2,
+            false)
                 .excludeMap(sampleIEMap)
                 .includeMap(sampleIEMap)
                 .resourceTags(sampleResourceTags)
@@ -146,7 +163,23 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeTag1,
             final boolean includeTag2) {
 
-        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2).build();
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2,false).build();
+    }
+
+
+    /**
+     * Assembles a sample resource model with only the required read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
+     * @return The assembled resource model.
+     */
+    public static ResourceModel sampleRequiredParametersResourceModelForThirdParty(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
+
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2,false).build();
     }
 
     /**
