@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import software.amazon.awssdk.services.fms.model.PolicyOption;
+import software.amazon.awssdk.services.fms.model.NetworkFirewallPolicy;
 
 public class FmsSampleHelper extends BaseSampleHelper {
 
@@ -37,9 +39,12 @@ public class FmsSampleHelper extends BaseSampleHelper {
 
         // assemble sample security service policy data
         final SecurityServicePolicyData sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
-                .managedServiceData(sampleManagedServiceData)
-                .type(samplePolicyType)
-                .build();
+            .managedServiceData(sampleManagedServiceData)
+            .type(samplePolicyType)
+            .policyOption(PolicyOption.builder()
+                .networkFirewallPolicy(NetworkFirewallPolicy.builder()
+                    .firewallDeploymentModel("CENTRALIZED").build()).build())
+            .build();
         // assemble a sample policy with only the required parameters
         final Policy.Builder policyBuilder = Policy.builder()
                 .excludeResourceTags(sampleExcludeResourceTags)
