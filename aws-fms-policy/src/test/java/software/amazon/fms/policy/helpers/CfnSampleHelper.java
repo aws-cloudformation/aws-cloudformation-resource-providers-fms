@@ -6,6 +6,9 @@ import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
 import software.amazon.fms.policy.ResourceTag;
 import software.amazon.fms.policy.SecurityServicePolicyData;
+import software.amazon.fms.policy.PolicyOption;
+import software.amazon.fms.policy.NetworkFirewallPolicy;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,11 +28,15 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeTag1,
             final boolean includeTag2) {
 
+
+        PolicyOption p = PolicyOption.builder()
+                .networkFirewallPolicy(NetworkFirewallPolicy.builder()
+                .firewallDeploymentModel("CENTRALIZED").build()).build();
+
         // assemble sample security service policy data
         final SecurityServicePolicyData securityServicePolicyData = SecurityServicePolicyData.builder()
                 .managedServiceData(sampleManagedServiceData)
-                .type(samplePolicyType)
-                .build();
+                .type(samplePolicyType).policyOption(p).build();
 
         // assemble a sample resource model with only the required parameters
         final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
