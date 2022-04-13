@@ -168,46 +168,46 @@
                     ]
                 },
                 "PolicyOption": {
-                  "type": "object",
-                  "properties": {
-                    "NetworkFirewallPolicy": {
-                      "type": "object",
-                      "properties": {
-                        "FirewallDeploymentModel": {
-                          "$ref": "#/definitions/FirewallDeploymentModel"
+                    "type": "object",
+                    "properties": {
+                        "NetworkFirewallPolicy": {
+                            "type": "object",
+                            "properties": {
+                                "FirewallDeploymentModel": {
+                                    "$ref": "#/definitions/FirewallDeploymentModel"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "FirewallDeploymentModel"
+                            ]
+                        },
+                        "ThirdPartyFirewallPolicy": {
+                            "type": "object",
+                            "properties": {
+                                "FirewallDeploymentModel": {
+                                    "$ref": "#/definitions/FirewallDeploymentModel"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "FirewallDeploymentModel"
+                            ]
                         }
-                      },
-                      "additionalProperties": false,
-                      "required": [
-                        "FirewallDeploymentModel"
-                      ]
                     },
-                    "ThirdPartyFirewallPolicy": {
-                      "type": "object",
-                      "properties": {
-                        "FirewallDeploymentModel": {
-                          "$ref": "#/definitions/FirewallDeploymentModel"
+                    "additionalProperties": false,
+                    "oneOf": [
+                        {
+                            "required": [
+                                "NetworkFirewallPolicy"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "ThirdPartyFirewallPolicy"
+                            ]
                         }
-                      },
-                      "additionalProperties": false,
-                      "required": [
-                        "FirewallDeploymentModel"
-                      ]
-                    }
-                  },
-                  "additionalProperties": false,
-                  "oneOf": [
-                    {
-                      "required": [
-                        "NetworkFirewallPolicy"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "ThirdPartyFirewallPolicy"
-                      ]
-                    }
-                  ]
+                    ]
                 }
             },
             "additionalProperties": false,
