@@ -92,6 +92,14 @@
             "pattern": "^([^\\s]*)$",
             "minLength": 1,
             "maxLength": 1024
+        },
+        "FirewallDeploymentModel": {
+            "description": "Firewall deployment mode.",
+            "type": "string",
+            "enum": [
+                "DISTRIBUTED",
+                "CENTRALIZED"
+            ]
         }
     },
     "properties": {
@@ -155,7 +163,50 @@
                         "SECURITY_GROUPS_CONTENT_AUDIT",
                         "SECURITY_GROUPS_USAGE_AUDIT",
                         "NETWORK_FIREWALL",
+                        "THIRD_PARTY_FIREWALL",
                         "DNS_FIREWALL"
+                    ]
+                },
+                "PolicyOption": {
+                    "type": "object",
+                    "properties": {
+                        "NetworkFirewallPolicy": {
+                            "type": "object",
+                            "properties": {
+                                "FirewallDeploymentModel": {
+                                    "$ref": "#/definitions/FirewallDeploymentModel"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "FirewallDeploymentModel"
+                            ]
+                        },
+                        "ThirdPartyFirewallPolicy": {
+                            "type": "object",
+                            "properties": {
+                                "FirewallDeploymentModel": {
+                                    "$ref": "#/definitions/FirewallDeploymentModel"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "FirewallDeploymentModel"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false,
+                    "oneOf": [
+                        {
+                            "required": [
+                                "NetworkFirewallPolicy"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "ThirdPartyFirewallPolicy"
+                            ]
+                        }
                     ]
                 }
             },
@@ -208,8 +259,12 @@
                 "wafv2:CheckCapacity",
                 "wafv2:ListRuleGroups",
                 "wafv2:ListAvailableManagedRuleGroups",
+                "wafv2:ListAvailableManagedRuleGroupVersions",
                 "network-firewall:DescribeRuleGroup",
-                "route53resolver:ListFirewallRuleGroups"
+                "route53resolver:ListFirewallRuleGroups",
+                "ec2:DescribeAvailabilityZones",
+                "s3:PutBucketPolicy",
+                "s3:GetBucketPolicy"
             ]
         },
         "update": {
@@ -223,8 +278,12 @@
                 "wafv2:CheckCapacity",
                 "wafv2:ListRuleGroups",
                 "wafv2:ListAvailableManagedRuleGroups",
+                "wafv2:ListAvailableManagedRuleGroupVersions",
                 "network-firewall:DescribeRuleGroup",
-                "route53resolver:ListFirewallRuleGroups"
+                "route53resolver:ListFirewallRuleGroups",
+                "ec2:DescribeAvailabilityZones",
+                "s3:PutBucketPolicy",
+                "s3:GetBucketPolicy"
             ]
         },
         "read": {

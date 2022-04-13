@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import software.amazon.awssdk.services.fms.model.PolicyOption;
+import software.amazon.awssdk.services.fms.model.NetworkFirewallPolicy;
+import software.amazon.awssdk.services.fms.model.ThirdPartyFirewallPolicy;
 
 public class FmsSampleHelper extends BaseSampleHelper {
 
@@ -33,13 +36,29 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @param includeIdentifiers Should the policy identifiers be included in the sample policy.
      * @return The assembled policy builder.
      */
-    private static Policy.Builder sampleRequiredParametersPolicy(final boolean includeIdentifiers) {
+    private static Policy.Builder sampleRequiredParametersPolicy(final boolean includeIdentifiers,
+                                                                 final boolean isThirdPartyPolicy) {
 
         // assemble sample security service policy data
-        final SecurityServicePolicyData sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
+        SecurityServicePolicyData sampleSecurityServicePolicyData;
+
+        if (isThirdPartyPolicy) {
+            sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
                 .managedServiceData(sampleManagedServiceData)
                 .type(samplePolicyType)
+                .policyOption(PolicyOption.builder()
+                    .thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
+                        .firewallDeploymentModel("CENTRALIZED").build()).build())
                 .build();
+        }else{
+              sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
+                .managedServiceData(sampleManagedServiceData)
+                .type(samplePolicyType)
+                .policyOption(PolicyOption.builder()
+                    .networkFirewallPolicy(NetworkFirewallPolicy.builder()
+                        .firewallDeploymentModel("CENTRALIZED").build()).build())
+                .build();
+        }
         // assemble a sample policy with only the required parameters
         final Policy.Builder policyBuilder = Policy.builder()
                 .excludeResourceTags(sampleExcludeResourceTags)
@@ -89,7 +108,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
         // assemble sample policy with all possible parameters
-        return sampleRequiredParametersPolicy(includeIdentifiers)
+        return sampleRequiredParametersPolicy(includeIdentifiers,false)
                 .excludeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
                 .includeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
                 .resourceTags(sampleResourceTags)
@@ -115,7 +134,19 @@ public class FmsSampleHelper extends BaseSampleHelper {
     public static PutPolicyResponse samplePutPolicyRequiredParametersResponse() {
 
         return PutPolicyResponse.builder()
-                .policy(sampleRequiredParametersPolicy(true).build())
+                .policy(sampleRequiredParametersPolicy(true,false).build())
+                .policyArn(samplePolicyArn)
+                .build();
+    }
+
+     /**
+     * Assembles a sample PutPolicy response with only the required readable parameters.
+     * @return The assembled response.
+     */
+    public static PutPolicyResponse samplePutPolicyRequiredParametersForThirdPartyResponse() {
+
+        return PutPolicyResponse.builder()
+                .policy(sampleRequiredParametersPolicy(true,true).build())
                 .policyArn(samplePolicyArn)
                 .build();
     }
@@ -162,7 +193,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
         }
 
         final PutPolicyRequest.Builder requestBuilder = PutPolicyRequest.builder()
-                .policy(sampleRequiredParametersPolicy(includeIdentifiers).build());
+                .policy(sampleRequiredParametersPolicy(includeIdentifiers, false).build());
 
         if (!addTags.isEmpty()) {
             requestBuilder.tagList(addTags);
@@ -197,7 +228,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
     public static GetPolicyResponse sampleGetPolicyRequiredParametersResponse() {
 
         return GetPolicyResponse.builder()
-                .policy(sampleRequiredParametersPolicy(true).build())
+                .policy(sampleRequiredParametersPolicy(true,false).build())
                 .policyArn(samplePolicyArn)
                 .build();
     }
