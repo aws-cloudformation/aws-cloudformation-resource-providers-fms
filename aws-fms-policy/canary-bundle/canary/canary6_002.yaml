@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: FMS PANW static centralized policy update test.
+
+Conditions:
+  IsPANWPolicyEnabled:
+    Fn::Or:
+      - Fn::Equals:
+          - !Ref 'AWS::Region'
+          - 'us-east-1'
+      - Fn::Equals:
+          - !Ref 'AWS::Region'
+          - 'eu-west-1'
+
+Resources:
+  CanaryPolicyPANWCentralizedUPDATE:
+    Condition: IsPANWPolicyEnabled
+    Type: AWS::FMS::Policy
+    Properties:
+      ExcludeResourceTags: false
+      PolicyName: CanaryPolicyPANWCentralizedUPDATE
+      RemediationEnabled: true
+      ResourcesCleanUp: true
+      DeleteAllPolicyResources: true
+      ResourceType: AWS::EC2::VPC
+      Tags:
+        - Key: test1
+          Value: test1
+        - Key: test2
+          Value: test2
+      SecurityServicePolicyData:
+        Type: THIRD_PARTY_FIREWALL
+        PolicyOption:
+          ThirdPartyFirewallPolicy:
+            FirewallDeploymentModel: CENTRALIZED
+        ManagedServiceData: !Sub
+          - '
+            {
+              "type":"THIRD_PARTY_FIREWALL",
+              "thirdPartyFirewall":"PALO_ALTO_NETWORKS_CLOUD_NGFW",
+              "thirdPartyFirewallConfig":{
+                "thirdPartyFirewallPolicyList":["global-1"]
+              },
+	          "firewallDeploymentModel":{
+                "centralizedFirewallDeploymentModel":{
+                  "centralizedFirewallOrchestrationConfig":{
+                    "inspectionVpcIds":[
+                      {
+                        "accountId":"${InspectionAccountId}",
+                        "resourceId":"${InspectionVPC}"
+                      }
+                    ],
+                    "firewallCreationConfig":{
+                      "endpointLocation":{
+                        "availabilityZoneConfigList":[
+                          {
+                            "availabilityZoneName":"${AvailabilityZone}"
+                          }
+                        ]
+                      }
+                    },
+                    "allowedIPV4CidrList":[
+                    ]
+                  }
+                }
+              }
+            }'
+          - AvailabilityZone: !ImportValue AvailabilityZone
+  WaiterCustomResource:
+    Type: "AWS::CloudFormation::CustomResource"
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 600
