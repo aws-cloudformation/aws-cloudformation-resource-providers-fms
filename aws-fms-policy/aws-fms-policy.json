@@ -100,6 +100,78 @@
                 "DISTRIBUTED",
                 "CENTRALIZED"
             ]
+        },
+        "ManagedServiceData": {
+            "description": "Firewall managed service data.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192
+        },
+        "PolicyType": {
+            "description": "Firewall policy type.",
+            "type": "string",
+            "enum": [
+                "WAF",
+                "WAFV2",
+                "SHIELD_ADVANCED",
+                "SECURITY_GROUPS_COMMON",
+                "SECURITY_GROUPS_CONTENT_AUDIT",
+                "SECURITY_GROUPS_USAGE_AUDIT",
+                "NETWORK_FIREWALL",
+                "THIRD_PARTY_FIREWALL",
+                "DNS_FIREWALL"
+            ]
+        },
+        "NetworkFirewallPolicy": {
+            "description": "Network firewall policy.",
+            "type": "object",
+            "properties": {
+                "FirewallDeploymentModel": {
+                    "$ref": "#/definitions/FirewallDeploymentModel"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "FirewallDeploymentModel"
+            ]
+        },
+        "ThirdPartyFirewallPolicy": {
+            "description": "Third party firewall policy.",
+            "type": "object",
+            "properties": {
+                "FirewallDeploymentModel": {
+                    "$ref": "#/definitions/FirewallDeploymentModel"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "FirewallDeploymentModel"
+            ]
+        },
+        "PolicyOption": {
+            "description": "Firewall policy option.",
+            "type": "object",
+            "properties": {
+                "NetworkFirewallPolicy": {
+                    "$ref": "#/definitions/NetworkFirewallPolicy"
+                },
+                "ThirdPartyFirewallPolicy": {
+                    "$ref": "#/definitions/ThirdPartyFirewallPolicy"
+                }
+            },
+            "additionalProperties": false,
+            "oneOf": [
+                {
+                    "required": [
+                        "NetworkFirewallPolicy"
+                    ]
+                },
+                {
+                    "required": [
+                        "ThirdPartyFirewallPolicy"
+                    ]
+                }
+            ]
         }
     },
     "properties": {
@@ -149,65 +221,13 @@
             "type": "object",
             "properties": {
                 "ManagedServiceData": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 8192
+                    "$ref": "#/definitions/ManagedServiceData"
                 },
                 "Type": {
-                    "type": "string",
-                    "enum": [
-                        "WAF",
-                        "WAFV2",
-                        "SHIELD_ADVANCED",
-                        "SECURITY_GROUPS_COMMON",
-                        "SECURITY_GROUPS_CONTENT_AUDIT",
-                        "SECURITY_GROUPS_USAGE_AUDIT",
-                        "NETWORK_FIREWALL",
-                        "THIRD_PARTY_FIREWALL",
-                        "DNS_FIREWALL"
-                    ]
+                    "$ref": "#/definitions/PolicyType"
                 },
                 "PolicyOption": {
-                    "type": "object",
-                    "properties": {
-                        "NetworkFirewallPolicy": {
-                            "type": "object",
-                            "properties": {
-                                "FirewallDeploymentModel": {
-                                    "$ref": "#/definitions/FirewallDeploymentModel"
-                                }
-                            },
-                            "additionalProperties": false,
-                            "required": [
-                                "FirewallDeploymentModel"
-                            ]
-                        },
-                        "ThirdPartyFirewallPolicy": {
-                            "type": "object",
-                            "properties": {
-                                "FirewallDeploymentModel": {
-                                    "$ref": "#/definitions/FirewallDeploymentModel"
-                                }
-                            },
-                            "additionalProperties": false,
-                            "required": [
-                                "FirewallDeploymentModel"
-                            ]
-                        }
-                    },
-                    "additionalProperties": false,
-                    "oneOf": [
-                        {
-                            "required": [
-                                "NetworkFirewallPolicy"
-                            ]
-                        },
-                        {
-                            "required": [
-                                "ThirdPartyFirewallPolicy"
-                            ]
-                        }
-                    ]
+                    "$ref": "#/definitions/PolicyOption"
                 }
             },
             "additionalProperties": false,
