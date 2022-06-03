@@ -93,6 +93,25 @@
             "minLength": 1,
             "maxLength": 1024
         },
+        "SecurityServicePolicyData": {
+            "description": "Firewall security service policy data.",
+            "type": "object",
+            "properties": {
+                "ManagedServiceData": {
+                    "$ref": "#/definitions/ManagedServiceData"
+                },
+                "Type": {
+                    "$ref": "#/definitions/PolicyType"
+                },
+                "PolicyOption": {
+                    "$ref": "#/definitions/PolicyOption"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "Type"
+            ]
+        },
         "FirewallDeploymentModel": {
             "description": "Firewall deployment mode.",
             "type": "string",
@@ -218,22 +237,7 @@
             "insertionOrder": true
         },
         "SecurityServicePolicyData": {
-            "type": "object",
-            "properties": {
-                "ManagedServiceData": {
-                    "$ref": "#/definitions/ManagedServiceData"
-                },
-                "Type": {
-                    "$ref": "#/definitions/PolicyType"
-                },
-                "PolicyOption": {
-                    "$ref": "#/definitions/PolicyOption"
-                }
-            },
-            "additionalProperties": false,
-            "required": [
-                "Type"
-            ]
+            "$ref": "#/definitions/SecurityServicePolicyData"
         },
         "Arn": {
             "$ref": "#/definitions/ResourceArn"
