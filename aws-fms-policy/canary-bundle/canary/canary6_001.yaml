@@ -9,7 +9,7 @@ Conditions:
           - 'us-east-1'
       - Fn::Equals:
           - !Ref 'AWS::Region'
-          - 'eu-west-1'
+          - 'us-west-1'
 
 Resources:
   CanaryPolicyPANWCentralizedCREATE:
