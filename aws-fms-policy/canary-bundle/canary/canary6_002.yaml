@@ -70,4 +70,32 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       ServiceToken: !ImportValue LambdaWaiter
-      WaitSeconds: 600
+      WaitSeconds: 750
+  WaiterCustomResource1:
+    Type: "AWS::CloudFormation::CustomResource"
+    DependsOn: WaiterCustomResource
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 750
+  WaiterCustomResource2:
+    Type: "AWS::CloudFormation::CustomResource"
+    DependsOn: WaiterCustomResource1
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 750
+  WaiterCustomResource3:
+    Type: "AWS::CloudFormation::CustomResource"
+    DependsOn: WaiterCustomResource2
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 750
+  WaiterCustomResource4:
+    Type: "AWS::CloudFormation::CustomResource"
+    DependsOn: WaiterCustomResource3
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 750
