@@ -5,6 +5,7 @@ phases:
       java: openjdk8
       python: 3.7
     commands:
+      - pip install --upgrade 'boto3==1.19.5'
       - pip install --upgrade 'six==1.15.0'
       - pip install --upgrade 'pyyaml~=5.1'
       - pip install --upgrade 'boto3==1.19.5'
@@ -18,7 +19,7 @@ phases:
       - mvn clean verify --no-transfer-progress
       # run through the build lifecycle for the policy resource provider
       - cd "$CODEBUILD_SRC_DIR/aws-fms-policy"
-      - mvn clean verify --no-transfer-progress
+      - mvn clean verify --no-transfer-progress -X
     finally:
       - cat "$CODEBUILD_SRC_DIR/aws-fms-notificationchannel/rpdk.log"
       - cat "$CODEBUILD_SRC_DIR/aws-fms-policy/rpdk.log"
