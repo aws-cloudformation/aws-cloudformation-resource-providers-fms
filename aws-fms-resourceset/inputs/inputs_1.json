@@ -1,0 +1,4 @@
+{
+    "Name": "CreateResourceSetCT1",
+    "ResourceTypeList": ["AWS::NetworkFirewall::Firewall"]
+}
