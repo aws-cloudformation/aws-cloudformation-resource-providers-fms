@@ -1,11 +1,13 @@
 package software.amazon.fms.policy.helpers;
 
-import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
+import software.amazon.awssdk.services.fms.model.NetworkFirewallPolicy;
 import software.amazon.awssdk.services.fms.model.Policy;
+import software.amazon.awssdk.services.fms.model.PolicyOption;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
 import software.amazon.awssdk.services.fms.model.SecurityServicePolicyData;
 import software.amazon.awssdk.services.fms.model.Tag;
+import software.amazon.awssdk.services.fms.model.ThirdPartyFirewallPolicy;
 import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.ResourceModel;
 
@@ -15,9 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import software.amazon.awssdk.services.fms.model.PolicyOption;
-import software.amazon.awssdk.services.fms.model.NetworkFirewallPolicy;
-import software.amazon.awssdk.services.fms.model.ThirdPartyFirewallPolicy;
 
 
 public class FmsHelper {
@@ -27,12 +26,12 @@ public class FmsHelper {
      * @param cfnIEMap CFN IEMap to covert,
      * @return The converted include/exclude map.
      */
-    static Map<CustomerPolicyScopeIdType, ? extends List<String>> convertCFNIEMapToFMSIEMap(IEMap cfnIEMap) {
-        HashMap<CustomerPolicyScopeIdType, List<String>> fmsIEMap = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(cfnIEMap.getACCOUNT())) {
+    static Map<CustomerPolicyScopeIdType, ? extends List<String>> convertCFNIEMapToFMSIEMap(final IEMap cfnIEMap) {
+        final HashMap<CustomerPolicyScopeIdType, List<String>> fmsIEMap = new HashMap<>();
+        if (cfnIEMap.getACCOUNT() != null) {
             fmsIEMap.put(CustomerPolicyScopeIdType.ACCOUNT, new ArrayList<>(cfnIEMap.getACCOUNT()));
         }
-        if (CollectionUtils.isNotEmpty(cfnIEMap.getORGUNIT())) {
+        if (cfnIEMap.getORGUNIT() != null) {
             fmsIEMap.put(CustomerPolicyScopeIdType.ORG_UNIT, new ArrayList<>(cfnIEMap.getORGUNIT()));
         }
         return fmsIEMap;
@@ -86,6 +85,7 @@ public class FmsHelper {
         // assemble the policy with the required parameters
         final Policy.Builder policyBuilder = Policy.builder()
                 .policyName(resourceModel.getPolicyName())
+                .policyDescription(resourceModel.getPolicyDescription())
                 .remediationEnabled(resourceModel.getRemediationEnabled())
                 .resourceType(resourceModel.getResourceType())
                 .securityServicePolicyData(securityServicePolicyData.build());
@@ -126,6 +126,12 @@ public class FmsHelper {
         if (resourceModel.getResourceTypeList() != null) {
             final Collection<String> resourceTypeList = new ArrayList<>(resourceModel.getResourceTypeList());
             policyBuilder.resourceTypeList(resourceTypeList);
+        }
+
+        // add resource set list if present
+        if (resourceModel.getResourceSetIds() != null) {
+            final Collection<String> resourceSetList = new ArrayList<>(resourceModel.getResourceSetIds());
+            policyBuilder.resourceSetIds(resourceSetList);
         }
 
         if (resourceModel.getResourcesCleanUp() != null){
