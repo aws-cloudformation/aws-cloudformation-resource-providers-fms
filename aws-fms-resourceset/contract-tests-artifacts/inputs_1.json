@@ -1,4 +1,20 @@
 {
-    "Name": "CreateResourceSetCT1",
-    "ResourceTypeList": ["AWS::NetworkFirewall::Firewall"]
+    "CreateInputs": {
+        "Name": "CreateResourceSetCT1",
+        "Description": "description",
+        "ResourceTypeList": ["AWS::NetworkFirewall::Firewall"],
+        "Tags": [
+            {
+                "Key": "k1",
+                "Value": "v1"
+            }
+        ]
+    },
+    "PatchInputs": [
+        {
+            "op": "add",
+            "path": "/Resources",
+            "value": ["arn:aws:network-firewall:us-west-2:884569237629:firewall/nfw1"]
+        }
+    ]
 }
