@@ -1,8 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
-import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
-import software.amazon.awssdk.services.fms.model.Policy;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.NetworkFirewallPolicy;
@@ -46,6 +44,7 @@ public class CfnHelper {
         final ResourceModel.ResourceModelBuilder resourceModelBuilder = ResourceModel.builder()
                 .excludeResourceTags(policy.excludeResourceTags())
                 .policyName(policy.policyName())
+                .policyDescription(policy.policyDescription())
                 .remediationEnabled(policy.remediationEnabled())
                 .resourceType(policy.resourceType())
                 .securityServicePolicyData(securityServicePolicyData.build())
@@ -53,36 +52,35 @@ public class CfnHelper {
                 .arn(policyArn);
 
         // check each optional parameter and add it if it exists
-        IEMap cfnExcludeMap = new IEMap();
-        if (!policy.excludeMap().isEmpty()) {
-            if (CollectionUtils.isNotEmpty(policy.excludeMap().get(CustomerPolicyScopeIdType.ACCOUNT))) {
+        final IEMap cfnExcludeMap = new IEMap();
+        if (policy.excludeMap() != null) {
+            if (policy.excludeMap().containsKey(CustomerPolicyScopeIdType.ACCOUNT)) {
                 cfnExcludeMap.setACCOUNT(policy.excludeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
             }
-            if (CollectionUtils.isNotEmpty(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT))) {
+            if (policy.excludeMap().containsKey(CustomerPolicyScopeIdType.ORG_UNIT)) {
                 cfnExcludeMap.setORGUNIT(policy.excludeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
             }
         }
         resourceModelBuilder.excludeMap(cfnExcludeMap);
-        IEMap cfnIncludeMap = new IEMap();
-        if (!policy.includeMap().isEmpty()) {
-            if (CollectionUtils.isNotEmpty(policy.includeMap().get(CustomerPolicyScopeIdType.ACCOUNT))) {
+
+        final IEMap cfnIncludeMap = new IEMap();
+        if (policy.includeMap() != null) {
+            if (policy.includeMap().containsKey(CustomerPolicyScopeIdType.ACCOUNT)) {
                 cfnIncludeMap.setACCOUNT(policy.includeMap().get(CustomerPolicyScopeIdType.ACCOUNT));
             }
-            if (CollectionUtils.isNotEmpty(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT))) {
+            if (policy.includeMap().containsKey(CustomerPolicyScopeIdType.ORG_UNIT)) {
                 cfnIncludeMap.setORGUNIT(policy.includeMap().get(CustomerPolicyScopeIdType.ORG_UNIT));
             }
         }
         resourceModelBuilder.includeMap(cfnIncludeMap);
+
         if (!policy.resourceTags().isEmpty()) {
             final List<ResourceTag> resourceTags = new ArrayList<>();
             policy.resourceTags().forEach(rt -> resourceTags.add(new ResourceTag(rt.key(), rt.value())));
             resourceModelBuilder.resourceTags(resourceTags);
         }
-        if (!policy.resourceTypeList().isEmpty()) {
-            resourceModelBuilder.resourceTypeList(policy.resourceTypeList());
-        } else {
-            resourceModelBuilder.resourceTypeList(new ArrayList<>());
-        }
+        resourceModelBuilder.resourceTypeList(policy.resourceTypeList());
+        resourceModelBuilder.resourceSetIds(policy.resourceSetIds());
         if (!tags.isEmpty()) {
             final List<PolicyTag> policyTags = new ArrayList<>();
             tags.forEach(tag -> policyTags.add(new PolicyTag(tag.key(), tag.value())));

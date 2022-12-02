@@ -140,14 +140,20 @@ public class CfnSampleHelper extends BaseSampleHelper {
         final List<String> sampleResourceTypeList = new ArrayList<>();
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
+        // assemble a sample resource set list
+        final List<String> sampleResourceSetIds = new ArrayList<>();
+        sampleResourceSetIds.add(sampleResourceSetIdsElement);
+
         // assemble sample policy with all possible parameters
         return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2,
             false)
+                .policyDescription(samplePolicyDescription)
                 .excludeMap(sampleIEMap)
                 .includeMap(sampleIEMap)
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
                 .resourceTypeList(sampleResourceTypeList)
+                .resourceSetIds(sampleResourceSetIds)
                 .resourcesCleanUp(true);
     }
 

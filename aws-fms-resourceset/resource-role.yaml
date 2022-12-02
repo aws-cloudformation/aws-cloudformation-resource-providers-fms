@@ -21,7 +21,7 @@ Resources:
                   Ref: AWS::AccountId
               StringLike:
                 aws:SourceArn:
-                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/AWS-FMS-Policy/*
+                  Fn::Sub: arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:type/resource/AWS-FMS-ResourceSet/*
       Path: "/"
       Policies:
         - PolicyName: ResourceTypePolicy
@@ -30,24 +30,16 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - "ec2:DescribeAvailabilityZones"
-                  - "fms:DeletePolicy"
-                  - "fms:GetPolicy"
-                  - "fms:ListPolicies"
-                  - "fms:ListTagsForResource"
-                  - "fms:PutPolicy"
-                  - "fms:TagResource"
-                  - "fms:UntagResource"
-                  - "network-firewall:DescribeRuleGroup"
-                  - "network-firewall:DescribeRuleGroupMetadata"
-                  - "route53resolver:ListFirewallRuleGroups"
-                  - "s3:GetBucketPolicy"
-                  - "s3:PutBucketPolicy"
-                  - "waf-regional:ListRuleGroups"
-                  - "wafv2:CheckCapacity"
-                  - "wafv2:ListAvailableManagedRuleGroupVersions"
-                  - "wafv2:ListAvailableManagedRuleGroups"
-                  - "wafv2:ListRuleGroups"
+                - "fms:BatchAssociateResource"
+                - "fms:BatchDisassociateResource"
+                - "fms:DeleteResourceSet"
+                - "fms:GetResourceSet"
+                - "fms:ListResourceSetResources"
+                - "fms:ListResourceSets"
+                - "fms:ListTagsForResource"
+                - "fms:PutResourceSet"
+                - "fms:TagResource"
+                - "fms:UntagResource"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

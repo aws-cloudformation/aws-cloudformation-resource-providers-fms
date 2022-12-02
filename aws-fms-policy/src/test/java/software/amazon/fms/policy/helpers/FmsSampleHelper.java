@@ -107,13 +107,19 @@ public class FmsSampleHelper extends BaseSampleHelper {
         final Collection<String> sampleResourceTypeList = new ArrayList<>();
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
+        // assemble a sample resource type list
+        final Collection<String> sampleResourceSetIds = new ArrayList<>();
+        sampleResourceSetIds.add(sampleResourceSetIdsElement);
+
         // assemble sample policy with all possible parameters
         return sampleRequiredParametersPolicy(includeIdentifiers,false)
+                .policyDescription(samplePolicyDescription)
                 .excludeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
                 .includeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
                 .resourceTypeList(sampleResourceTypeList)
+                .resourceSetIds(sampleResourceSetIds)
                 .deleteUnusedFMManagedResources(true);
     }
 
