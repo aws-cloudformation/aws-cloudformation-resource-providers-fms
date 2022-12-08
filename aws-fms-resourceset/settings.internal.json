@@ -1,0 +1,5 @@
+{
+  "FasPolicyPath": {
+    "aws": "/policies/AuthRuntime/authNPolicy/cloudformation/aws-fms-resourceset.2022-10-28-18-44-15"
+  }
+}

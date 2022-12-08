@@ -86,7 +86,7 @@ task rpdkPackage(type: Zip) {
   dependsOn cfnPackage
   from zipTree("aws-fms-resourceset.zip")
   // Inject internal files
-  from (rootDir) {
+  from ("${rootDir}/aws-fms-resourceset") {
     include "settings.internal.json"
   }
   from ("${rootDir}/aws-fms-resourceset") {
