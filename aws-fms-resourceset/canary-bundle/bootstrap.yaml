@@ -1,0 +1,34 @@
+Resources:
+  LambdaWaiter:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.handler"
+      Runtime: "nodejs12.x"
+      Timeout: 900
+      Role: !ImportValue LambdaExecutionRole
+      Code:
+        ZipFile:
+          !Sub |
+          exports.handler = async function(event, context) {
+            var response = require('cfn-response');
+            var waitTimeSeconds = event.ResourceProperties.WaitSeconds;
+            var waitTime = waitTimeSeconds * 1000;
+            var attemptCount = 3;
+            var fakeContext = {
+              logStreamName: context.logStreamName,
+              done: function() {}
+            }
+            console.log("Starting initial wait period");
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            for (var i = 1; i <= attemptCount; i++) {
+              console.log("Attempt " + i);
+              response.send(event, fakeContext, response.SUCCESS, {}, "Waiter-" + waitTimeSeconds + "-Seconds");
+              await new Promise(resolve => setTimeout(resolve, 10 * 1000));
+            }
+            context.done();
+          };
+Outputs:
+  LambdaWaiter:
+    Value: !GetAtt LambdaWaiter.Arn
+    Export:
+      Name: LambdaWaiter

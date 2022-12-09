@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ResourceSet update test.
+Resources:
+  ResourceSetWithNFW:
+    Type: AWS::FMS::ResourceSet
+    Properties:
+      Name: ResourceSetWithNFW
+      Description: updatedDescription
+      Resources:
+        - arn:aws:network-firewall:us-west-2:884569237629:firewall/fake-nfw
+      ResourceTypeList:
+        - AWS::NetworkFirewall::Firewall
+      Tags:
+        - Key: test1
+          Value: test1
+  WaiterCustomResource:
+    Type: "AWS::CloudFormation::CustomResource"
+    DeletionPolicy: Retain
+    Properties:
+      ServiceToken: !ImportValue LambdaWaiter
+      WaitSeconds: 300
