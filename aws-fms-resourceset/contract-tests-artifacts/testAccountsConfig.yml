@@ -1,0 +1,5 @@
+testAccounts:
+  - regionName: us-west-2
+    iamRoleArn: arn:aws:iam::237480289856:role/CfnContractTests
+    s3BucketName: cfn-contract-test-237480289856
+    kmsKeyArn: arn:aws:kms:us-west-2:237480289856:key/4caf793e-4153-43f2-bb4f-7ed065203cba
