@@ -91,3 +91,4 @@ testAccounts:
     iamRoleArn: arn:aws:iam::940635575975:role/CfnContractTests
     s3BucketName: cfn-contract-test-940635575975
     kmsKeyArn: arn:aws:kms:eu-south-1:940635575975:key/27dc9a53-4214-4f53-9c04-01011bc6f29a
+
