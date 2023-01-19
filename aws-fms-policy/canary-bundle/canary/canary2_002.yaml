@@ -70,6 +70,9 @@ Conditions:
           - Fn::Equals:
               - !Ref 'AWS::Region'
               - 'af-south-1'
+          - Fn::Equals:
+              - !Ref 'AWS::Region'
+              - 'ap-southeast-3'
 
 Resources:
   CanaryPolicyVantaDynamicDistributedCREATE:
