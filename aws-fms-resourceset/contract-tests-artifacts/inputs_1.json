@@ -14,7 +14,7 @@
         {
             "op": "add",
             "path": "/Resources",
-            "value": ["arn:aws:network-firewall:us-west-2:884569237629:firewall/nfw1"]
+            "value": ["arn:aws:network-firewall:{{ region }}:884569237629:firewall/nfw1"]
         }
     ]
 }
