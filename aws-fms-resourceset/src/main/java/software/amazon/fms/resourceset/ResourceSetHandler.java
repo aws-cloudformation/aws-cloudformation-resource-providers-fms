@@ -113,4 +113,3 @@ abstract class ResourceSetHandler<ResponseT extends FmsResponse> extends BaseHan
         return constructSuccessProgressEvent(response, request, proxy);
     }
 }
-

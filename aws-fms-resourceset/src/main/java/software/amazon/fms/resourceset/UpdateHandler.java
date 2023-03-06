@@ -2,19 +2,12 @@ package software.amazon.fms.resourceset;
 
 import org.apache.commons.lang3.StringUtils;
 import software.amazon.awssdk.services.fms.FmsClient;
-import software.amazon.awssdk.services.fms.model.BatchAssociateResourceRequest;
-import software.amazon.awssdk.services.fms.model.BatchAssociateResourceResponse;
-import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceRequest;
-import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceResponse;
 import software.amazon.awssdk.services.fms.model.GetResourceSetRequest;
 import software.amazon.awssdk.services.fms.model.GetResourceSetResponse;
-import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesRequest;
-import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesResponse;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.fms.model.PutResourceSetRequest;
 import software.amazon.awssdk.services.fms.model.PutResourceSetResponse;
-import software.amazon.awssdk.services.fms.model.Resource;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.awssdk.services.fms.model.TagResourceRequest;
@@ -25,10 +18,10 @@ import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.fms.resourceset.helpers.AssociationHelper;
 import software.amazon.fms.resourceset.helpers.CfnHelper;
 import software.amazon.fms.resourceset.helpers.FmsHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UpdateHandler extends ResourceSetHandler<PutResourceSetResponse> {
@@ -127,62 +120,13 @@ public class UpdateHandler extends ResourceSetHandler<PutResourceSetResponse> {
             logger.log("No tags to add");
         }
 
-        // list current resources of the resourceSet
-        String nextToken = null;
-        List<Resource> resources = new ArrayList<>();
-        do {
-            // list the resources for the resourceSet
-            ListResourceSetResourcesRequest resourceSetResourcesRequest = ListResourceSetResourcesRequest.builder()
-                    .identifier(getResourceSetResponse.resourceSet().id())
-                    .nextToken(nextToken)
-                    .build();
-
-            ListResourceSetResourcesResponse resourceSetResourcesResponse = proxy.injectCredentialsAndInvokeV2(
-                    resourceSetResourcesRequest,
-                    client::listResourceSetResources);
-
-            nextToken = resourceSetResourcesResponse.nextToken();
-
-            resources.addAll(resourceSetResourcesResponse.items());
-        } while (nextToken != null);
-
-        // determine resources to associate and disassociate
-        final List<String> disassociateResources = FmsHelper.resourcesToDisassociate(
-                resources, request.getDesiredResourceState().getResources());
-        final List<String> associateResources = FmsHelper.resourcesToAssociate(
-                resources, request.getDesiredResourceState().getResources());
-
-        // make a disassociate request
-        if (!disassociateResources.isEmpty()) {
-            logger.log(String.format("Disassociating %d resources/s", disassociateResources.size()));
-            final BatchDisassociateResourceRequest disassociateRequest = BatchDisassociateResourceRequest.builder()
-                    .resourceSetIdentifier(getResourceSetResponse.resourceSet().id())
-                    .items(disassociateResources)
-                    .build();
-            final BatchDisassociateResourceResponse disassociateResponse = proxy.injectCredentialsAndInvokeV2(
-                    disassociateRequest,
-                    client::batchDisassociateResource);
-            logger.log("Resources disassociated successfully");
-            logRequest(disassociateResponse, logger);
-        } else {
-            logger.log("No resources to disassociate");
-        }
-
-        // make a associate request
-        if (!associateResources.isEmpty()) {
-            logger.log(String.format("Associating %d resources/s", associateResources.size()));
-            final BatchAssociateResourceRequest associateRequest = BatchAssociateResourceRequest.builder()
-                    .resourceSetIdentifier(getResourceSetResponse.resourceSet().id())
-                    .items(associateResources)
-                    .build();
-            final BatchAssociateResourceResponse associateResponse = proxy.injectCredentialsAndInvokeV2(
-                    associateRequest,
-                    client::batchAssociateResource);
-            logger.log("Resources associated successfully");
-            logRequest(associateResponse, logger);
-        } else {
-            logger.log("No resources to associate");
-        }
+        AssociationHelper.updateResourceAssociations(
+                getResourceSetResponse.resourceSet().id(),
+                request.getDesiredResourceState().getResources(),
+                client,
+                proxy,
+                logger
+        );
 
         // return the status of the ResourceSet update
         return putResourceSetResponse;

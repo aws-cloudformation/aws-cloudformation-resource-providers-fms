@@ -1,15 +1,8 @@
 package software.amazon.fms.resourceset;
 
 import software.amazon.awssdk.services.fms.FmsClient;
-import software.amazon.awssdk.services.fms.model.GetResourceSetRequest;
-import software.amazon.awssdk.services.fms.model.GetResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.ListResourceSetsRequest;
 import software.amazon.awssdk.services.fms.model.ListResourceSetsResponse;
-import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesRequest;
-import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesResponse;
-import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
-import software.amazon.awssdk.services.fms.model.Resource;
 import software.amazon.awssdk.services.fms.model.ResourceSetSummary;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;

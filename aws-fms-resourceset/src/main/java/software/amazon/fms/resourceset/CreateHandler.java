@@ -10,6 +10,7 @@ import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.fms.resourceset.helpers.AssociationHelper;
 import software.amazon.fms.resourceset.helpers.CfnHelper;
 import software.amazon.fms.resourceset.helpers.FmsHelper;
 
@@ -41,11 +42,20 @@ public class CreateHandler extends ResourceSetHandler<PutResourceSetResponse> {
         if (!tags.isEmpty()) {
             putResourceSetRequestBuilder.tagList(tags);
         }
-        final PutResourceSetResponse response = proxy.injectCredentialsAndInvokeV2(
+        final PutResourceSetResponse putResourceSetResponse = proxy.injectCredentialsAndInvokeV2(
                 putResourceSetRequestBuilder.build(),
                 client::putResourceSet);
-        logRequest(response, logger);
-        return response;
+        logRequest(putResourceSetResponse, logger);
+
+        AssociationHelper.updateResourceAssociations(
+                putResourceSetResponse.resourceSet().id(),
+                request.getDesiredResourceState().getResources(),
+                client,
+                proxy,
+                logger
+        );
+
+        return putResourceSetResponse;
     }
 
     @Override
@@ -81,4 +91,3 @@ public class CreateHandler extends ResourceSetHandler<PutResourceSetResponse> {
         }
     }
 }
-
