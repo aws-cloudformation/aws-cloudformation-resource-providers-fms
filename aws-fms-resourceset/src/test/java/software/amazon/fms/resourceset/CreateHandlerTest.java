@@ -1,14 +1,18 @@
 package software.amazon.fms.resourceset;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.fms.FmsClient;
+import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceRequest;
+import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceResponse;
 import software.amazon.awssdk.services.fms.model.DeleteResourceSetRequest;
 import software.amazon.awssdk.services.fms.model.DeleteResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
@@ -17,6 +21,8 @@ import software.amazon.awssdk.services.fms.model.InvalidInputException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.InvalidTypeException;
 import software.amazon.awssdk.services.fms.model.LimitExceededException;
+import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesRequest;
+import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesResponse;
 import software.amazon.awssdk.services.fms.model.PutResourceSetRequest;
 import software.amazon.awssdk.services.fms.model.PutResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
@@ -27,13 +33,11 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.fms.resourceset.helpers.CfnSampleHelper;
 import software.amazon.fms.resourceset.helpers.FmsSampleHelper;
+
+import java.util.Arrays;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -82,6 +86,16 @@ class CreateHandlerTest {
                         ArgumentMatchers.any()
                 );
 
+        // stub the response for the list resource set resources request
+        final ListResourceSetResourcesResponse listResourceSetResourcesResponse =
+                FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
+        doReturn(listResourceSetResourcesResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
+                        ArgumentMatchers.any()
+                );
+
         // model the pre-request and post-request resource state
         final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
         final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false, false);
@@ -94,13 +108,14 @@ class CreateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false)
-        );
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false),
+                FmsSampleHelper.sampleListResourceSetResourcesRequest()
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -124,6 +139,16 @@ class CreateHandlerTest {
                         ArgumentMatchers.any()
                 );
 
+        // stub the response for the list resource set resources request
+        final ListResourceSetResourcesResponse listResourceSetResourcesResponse =
+                FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
+        doReturn(listResourceSetResourcesResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
+                        ArgumentMatchers.any()
+                );
+
         // model the pre-request resource state
         final ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(false, false, false);
 
@@ -135,10 +160,15 @@ class CreateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(3)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.samplePutResourceSetAllParametersRequest(false),
+                FmsSampleHelper.sampleListResourceSetResourcesRequest(),
+                FmsSampleHelper.sampleBatchAssociateResourceRequest()
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -161,6 +191,16 @@ class CreateHandlerTest {
                         ArgumentMatchers.any()
                 );
 
+        // stub the response for the list resource set resources request
+        final ListResourceSetResourcesResponse listResourceSetResourcesResponse =
+                FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
+        doReturn(listResourceSetResourcesResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
+                        ArgumentMatchers.any()
+                );
+
         // model the pre-request and post-request resource state
         final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, true, false);
         final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, true, false);
@@ -177,7 +217,7 @@ class CreateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
@@ -440,6 +480,26 @@ class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         ArgumentMatchers.isA(PutResourceSetRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list resource set resources request
+        final ListResourceSetResourcesResponse listResourceSetResourcesResponse =
+                FmsSampleHelper.sampleListResourceSetResourcesResponse();
+        doReturn(listResourceSetResourcesResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the batch disassociate resources request
+        final BatchDisassociateResourceResponse batchDisassociateResourceResponse =
+                FmsSampleHelper.sampleBatchDisassociateResourceResponse(false);
+        doReturn(batchDisassociateResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(BatchDisassociateResourceRequest.class),
                         ArgumentMatchers.any()
                 );
 

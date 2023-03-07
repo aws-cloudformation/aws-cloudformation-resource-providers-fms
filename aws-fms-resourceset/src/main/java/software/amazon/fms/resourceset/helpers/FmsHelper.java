@@ -1,12 +1,12 @@
 package software.amazon.fms.resourceset.helpers;
 
-import software.amazon.awssdk.services.fms.model.*;
+import software.amazon.awssdk.services.fms.model.ResourceSet;
+import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.fms.resourceset.ResourceModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FmsHelper {
@@ -108,50 +108,6 @@ public class FmsHelper {
         // determine tags to add
         return desiredTagListFms.stream()
                 .filter(tag -> !existingTagList.contains(tag))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Determine the resources that need to be disassociated from a resourceSet.
-     * @param existingResourcesList The resources that currently exist on the resourceSet.
-     * @param desiredResourcesList The resources that should exist on the resourceSet.
-     * @return A list of resources to remove from the resourceSet.
-     */
-    public static List<String> resourcesToDisassociate(
-            List<Resource> existingResourcesList, Set<String> desiredResourcesList
-    ) {
-        // format existingResourcesList
-        List<String> resources = existingResourcesList.stream().map(i -> i.uri()).collect(Collectors.toList());
-
-        if (desiredResourcesList == null || desiredResourcesList.isEmpty()) {
-            return resources;
-        }
-
-        // determine resources to remove
-        return resources.stream()
-                .filter(resource -> !desiredResourcesList.contains(resource))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Determine the resources that need to be associated to a resourceSet.
-     * @param existingResourcesList The resources that currently exist on the resourceSet.
-     * @param desiredResourcesList The resources that should exist on the resourceSet.
-     * @return A list of resources to associate to the resourceSet.
-     */
-    public static List<String> resourcesToAssociate(
-            List<Resource> existingResourcesList, Set<String> desiredResourcesList
-    ) {
-        // format existingResourcesList
-        Set<String> resources = existingResourcesList.stream().map(i -> i.uri()).collect(Collectors.toSet());
-
-        if (desiredResourcesList == null || desiredResourcesList.isEmpty()) {
-            return new ArrayList<String>();
-        }
-
-        // determine resources to remove
-        return desiredResourcesList.stream()
-                .filter(resource -> !resources.contains(resource))
                 .collect(Collectors.toList());
     }
 }
