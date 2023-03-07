@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.fms.FmsClient;
+import software.amazon.awssdk.services.fms.model.BatchAssociateResourceRequest;
+import software.amazon.awssdk.services.fms.model.BatchAssociateResourceResponse;
 import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceRequest;
 import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceResponse;
 import software.amazon.awssdk.services.fms.model.DeleteResourceSetRequest;
@@ -146,6 +148,16 @@ class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list resource set resources request
+        final BatchAssociateResourceResponse batchAssociateResourceResponse =
+                FmsSampleHelper.sampleBatchAssociateResourceResponse(false);
+        doReturn(batchAssociateResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(BatchAssociateResourceRequest.class),
                         ArgumentMatchers.any()
                 );
 
