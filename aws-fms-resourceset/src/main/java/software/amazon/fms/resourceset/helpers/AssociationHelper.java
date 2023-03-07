@@ -6,9 +6,11 @@ import software.amazon.awssdk.services.fms.model.BatchAssociateResourceRequest;
 import software.amazon.awssdk.services.fms.model.BatchAssociateResourceResponse;
 import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceRequest;
 import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceResponse;
+import software.amazon.awssdk.services.fms.model.FailedItem;
 import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesRequest;
 import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesResponse;
 import software.amazon.awssdk.services.fms.model.Resource;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 
@@ -122,15 +124,37 @@ public class AssociationHelper {
             return;
         }
 
-        logger.log(String.format("Associating %d resources/s", resources.size()));
-        final BatchAssociateResourceRequest associateRequest = BatchAssociateResourceRequest.builder()
-                .resourceSetIdentifier(resourceSetId)
-                .items(resources)
-                .build();
-        proxy.injectCredentialsAndInvokeV2(
-                associateRequest,
-                fmsClient::batchAssociateResource);
-        logger.log("Resources associated successfully");
+        logger.log(String.format("Associating %d resource/s", resources.size()));
+
+        // divide the resources into lists of maximum 100 resources
+        final Iterable<List<String>> partitions = Iterables.partition(resources, MAX_ASSOCIATION_CHANGES_PER_REQUEST);
+
+        // iterate over each partition of 100 resources and call the associate APIs
+        for (final List<String> partition : partitions) {
+            logger.log(String.format("Associating batch of %d resource/s", partition.size()));
+
+            // call the association API
+            final BatchAssociateResourceRequest associateRequest = BatchAssociateResourceRequest.builder()
+                    .resourceSetIdentifier(resourceSetId)
+                    .items(partition)
+                    .build();
+            final BatchAssociateResourceResponse associateResponse = proxy.injectCredentialsAndInvokeV2(
+                    associateRequest,
+                    fmsClient::batchAssociateResource);
+
+            // throw CFN exception for any failed associations
+            if (associateResponse.failedItems() != null && associateResponse.failedItems().size() > 0) {
+                final FailedItem failedItem = associateResponse.failedItems().get(0);
+                final String message = String.format(
+                        "Resource '%s' association failed for reason: %s",
+                        failedItem.uri(),
+                        failedItem.reason().toString()
+                );
+                throw new CfnGeneralServiceException(message);
+            }
+
+            logger.log("Batch resource association successful");
+        }
     }
 
     private static void batchDisassociateResources(
@@ -140,20 +164,41 @@ public class AssociationHelper {
             final AmazonWebServicesClientProxy proxy,
             final Logger logger
     ) {
-        // make a disassociate request
         if (resources.isEmpty()) {
             logger.log("No resources to disassociate");
             return;
         }
 
-        logger.log(String.format("Disassociating %d resources/s", resources.size()));
-        final BatchDisassociateResourceRequest disassociateRequest = BatchDisassociateResourceRequest.builder()
-                .resourceSetIdentifier(resourceSetId)
-                .items(resources)
-                .build();
-        proxy.injectCredentialsAndInvokeV2(
-                disassociateRequest,
-                fmsClient::batchDisassociateResource);
-        logger.log("Resources disassociated successfully");
+        logger.log(String.format("Disassociating %d resource/s", resources.size()));
+
+        // divide the resources into lists of maximum 100 resources
+        final Iterable<List<String>> partitions = Iterables.partition(resources, MAX_ASSOCIATION_CHANGES_PER_REQUEST);
+
+        // iterate over each partition of 100 resources and call the disassociate APIs
+        for (final List<String> partition : partitions) {
+            logger.log(String.format("Disassociating batch of %d resource/s", partition.size()));
+
+            // call the disassociation API
+            final BatchDisassociateResourceRequest disassociateRequest = BatchDisassociateResourceRequest.builder()
+                    .resourceSetIdentifier(resourceSetId)
+                    .items(partition)
+                    .build();
+            final BatchDisassociateResourceResponse disassociateResponse = proxy.injectCredentialsAndInvokeV2(
+                    disassociateRequest,
+                    fmsClient::batchDisassociateResource);
+
+            // throw CFN exception for any failed disassociations
+            if (disassociateResponse.failedItems() != null && disassociateResponse.failedItems().size() > 0) {
+                final FailedItem failedItem = disassociateResponse.failedItems().get(0);
+                final String message = String.format(
+                        "Resource '%s' disassociation failed for reason: %s",
+                        failedItem.uri(),
+                        failedItem.reason().toString()
+                );
+                throw new CfnGeneralServiceException(message);
+            }
+
+            logger.log("Batch resource disassociation successful");
+        }
     }
 }
