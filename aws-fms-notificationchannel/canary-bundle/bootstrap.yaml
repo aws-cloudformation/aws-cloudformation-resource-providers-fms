@@ -19,7 +19,7 @@ Resources:
           - Sid: AWSFirewallManagerSNSPolicy
             Effect: Allow
             Principal:
-              AWS: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS
+              AWS: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/aws-service-role/fms.amazonaws.com/AWSServiceRoleForFMS
             Action:
               - sns:GetTopicAttributes
               - sns:SetTopicAttributes
