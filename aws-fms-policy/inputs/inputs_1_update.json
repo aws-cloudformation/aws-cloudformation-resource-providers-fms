@@ -13,7 +13,8 @@
     "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
     "ResourceTypeList": [],
     "SecurityServicePolicyData": {
-        "Type": "SHIELD_ADVANCED"
+        "ManagedServiceData": "{\"type\":\"WAFV2\",\"preProcessRuleGroups\":[{\"ruleGroupArn\":null,\"overrideAction\":{\"type\":\"NONE\"},\"managedRuleGroupIdentifier\":{\"versionEnabled\":null,\"version\":null,\"vendorName\":\"AWS\",\"managedRuleGroupName\":\"AWSManagedRulesBotControlRuleSet\"},\"ruleGroupType\":\"ManagedRuleGroup\",\"excludeRules\":[],\"sampledRequestsEnabled\":true}],\"postProcessRuleGroups\":[],\"defaultAction\":{\"type\":\"ALLOW\"},\"customRequestHandling\":null,\"customResponse\":null,\"overrideCustomerWebACLAssociation\":false,\"loggingConfiguration\":null,\"sampledRequestsEnabledForDefaultActions\":true}",
+        "Type": "WAFV2"
     },
     "DeleteAllPolicyResources": false,
     "Tags": [
