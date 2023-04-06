@@ -1,5 +1,6 @@
 {
     "FasPolicyPath": {
-        "aws": "/policies/AuthRuntime/authNPolicy/cloudformation/fms.2022-08-15-17-49-07"
+        "aws": "/policies/AuthRuntime/authNPolicy/cloudformation/fms.2022-08-15-17-49-07",
+        "aws-cn": "/policies/AuthRuntime/authNPolicy/cloudformation/fms.2022-08-15-17-50-16-BJS"
     }
 }
