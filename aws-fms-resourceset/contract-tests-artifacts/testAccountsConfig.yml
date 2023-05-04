@@ -115,7 +115,3 @@ testAccounts:
     iamRoleArn: arn:aws:iam::015318954793:role/CfnContractTests
     s3BucketName: cfn-contract-test-015318954793
     kmsKeyArn: arn:aws:kms:ap-southeast-4:015318954793:key/f73f6214-e032-43c5-bcd2-fc48347003a3
-  - regionName: il-central-1
-    iamRoleArn: arn:aws:iam::868388716062:role/CfnContractTests
-    s3BucketName: cfn-contract-test-868388716062
-    kmsKeyArn: arn:aws:kms:il-central-1:868388716062:key/0760343b-d0e6-4847-b63a-68e89e10c671
