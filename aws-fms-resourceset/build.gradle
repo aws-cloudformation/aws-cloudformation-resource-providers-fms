@@ -24,10 +24,15 @@ sourceSets.main.resources {
   include 'aws-fms-resourceset.json'
 }
 
+configurations {
+    cfnPackageArchive
+    happyTrails // For RIPConfig ANT task
+}
+
 dependencies {
     compile brazilGradle.build()
-
     testCompile brazilGradle.testbuild()
+    happyTrails brazilGradle.tool('HappyTrails')
 }
 
 def cfn_command = "${brazilGradle.path('[AWSCloudFormationRPDKJavaPluginTool]all.runtimefarm')}/bin/cfn"
@@ -82,6 +87,18 @@ task cfnPackage(type: Exec) {
   args = ["submit", "--dry-run"]
 }
 
+ant.taskdef(name: 'attachBrazilPathPropertyHelper', classname: 'amazon.happytrails.ant.tasks.AttachBrazilPathPropertyHelper', classpath: configurations.happyTrails.asPath)
+ant.attachBrazilPathPropertyHelper()
+ant.importBuild("${brazilGradle.path("[RIPConfigBuilder]pkg.configfarm.antfiles")}/antfiles/generateConfig.xml")
+tasks.register('generateCTAccountConfig') {
+    String inputDir = "${brazilGradle.path('package-src-root')}/aws-fms-resourceset/templates"
+    String outputDir = "${brazilGradle.path('package-src-root')}/aws-fms-resourceset/contract-tests-artifacts"
+    doLast {
+        ant."build-rip-config"("template-dir": "${inputDir}", "output-dir": "${outputDir}", "verbose": "true")
+        logger.lifecycle('Generated RIP Config.')
+    }
+}
+
 task rpdkPackage(type: Zip) {
   dependsOn cfnPackage
   from zipTree("aws-fms-resourceset.zip")
@@ -96,6 +113,8 @@ task rpdkPackage(type: Zip) {
   destinationDir = file("./build/rpdk")
   archiveName("aws-fms-resourceset.zip")
 }
+
+rpdkPackage.dependsOn(generateCTAccountConfig)
 
 assemble.dependsOn(rpdkPackage)
 

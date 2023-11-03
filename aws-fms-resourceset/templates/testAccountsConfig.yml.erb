@@ -1,0 +1,10 @@
+#ALL_REGIONS = true
+#TARGET_SERVICE = fms|BUILD,IA,GA
+#DEPENDENT_SERVICE = cloudformation/cloudformationregistry|IA,GA
+testAccounts:
+<% @regions.each{|region| -%>
+  - regionName: <%= region.region_name.downcase %>
+    iamRoleArn: arn:aws:iam::<%= region.service("fms").custom_properties["aws_fms_policy_cfn_prod_" + region.region_name.downcase.gsub("-", "")] %>:role/CfnContractTests
+    s3BucketName: cfn-contract-test-<%= region.service("fms").custom_properties["aws_fms_policy_cfn_prod_" + region.region_name.downcase.gsub("-", "")] %>
+    kmsKeyAlias: contract-test-lambda-key
+<% } -%>

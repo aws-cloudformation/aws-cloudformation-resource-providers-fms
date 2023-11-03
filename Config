@@ -20,6 +20,8 @@ package.AWSCloudFormationResourceProvidersFMS = {
             BrazilPath = 1.1;
             BrazilGradleQualityDefaults = 4.x;
             GradleShadow = 4.x;
+            HappierTrails = 3.6;
+            RIPConfigBuilder = 2.0;
         };
     };
 
