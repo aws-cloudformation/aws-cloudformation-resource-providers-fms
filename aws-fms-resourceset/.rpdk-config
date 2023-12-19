@@ -2,7 +2,7 @@
     "artifact_type": "RESOURCE",
     "typeName": "AWS::FMS::ResourceSet",
     "language": "java",
-    "runtime": "java8",
+    "runtime": "java17",
     "entrypoint": "software.amazon.fms.resourceset.HandlerWrapper::handleRequest",
     "testEntrypoint": "software.amazon.fms.resourceset.HandlerWrapper::testEntrypoint",
     "settings": {

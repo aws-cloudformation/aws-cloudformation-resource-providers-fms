@@ -1,7 +1,7 @@
 {
     "typeName": "AWS::FMS::NotificationChannel",
     "language": "java",
-    "runtime": "java8",
+    "runtime": "java17",
     "entrypoint": "software.amazon.fms.notificationchannel.HandlerWrapper::handleRequest",
     "testEntrypoint": "software.amazon.fms.notificationchannel.HandlerWrapper::testEntrypoint",
     "settings": {
