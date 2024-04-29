@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Builds a Firewall Manager Network ACL Policy and deploys it
+Resources:
+  CanaryNetworkAclCommonPolicy:
+    Type: AWS::FMS::Policy
+    Properties:
+      PolicyName: CanaryNetworkAclCommonPolicy
+      DeleteAllPolicyResources: true
+      ResourcesCleanUp: true
+      RemediationEnabled: true
+      ExcludeResourceTags: false
+      ResourceType: AWS::EC2::Subnet
+      SecurityServicePolicyData:
+        Type: NETWORK_ACL_COMMON
+        ManagedServiceData: '{"type":"NETWORK_ACL_COMMON"}'
+        PolicyOption:
+          NetworkAclCommonPolicy:
+            NetworkAclEntrySet:
+              FirstEntries:
+                - Protocol: '6'
+                  PortRange:
+                    From: 2048
+                    To: 2048
+                  CidrBlock: 10.16.0.0/16
+                  RuleAction: allow
+                  Egress: false
+                - Protocol: '6'
+                  PortRange:
+                    From: 2048
+                    To: 2048
+                  CidrBlock: 10.16.0.0/16
+                  RuleAction: allow
+                  Egress: true
+              LastEntries:
+                - Protocol: '6'
+                  PortRange:
+                    From: 4096
+                    To: 4096
+                  CidrBlock: 10.16.0.0/16
+                  RuleAction: allow
+                  Egress: true
+                - Protocol: '6'
+                  PortRange:
+                    From: 4096
+                    To: 4096
+                  CidrBlock: 10.16.0.0/16
+                  RuleAction: allow
+                  Egress: false
+              ForceRemediateForFirstEntries: true
+              ForceRemediateForLastEntries: true

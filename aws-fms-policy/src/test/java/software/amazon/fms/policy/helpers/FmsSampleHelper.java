@@ -1,5 +1,6 @@
 package software.amazon.fms.policy.helpers;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
 import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
@@ -8,12 +9,15 @@ import software.amazon.awssdk.services.fms.model.GetPolicyResponse;
 import software.amazon.awssdk.services.fms.model.ListPoliciesResponse;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
+import software.amazon.awssdk.services.fms.model.NetworkAclCommonPolicy;
+import software.amazon.awssdk.services.fms.model.NetworkAclEntrySet;
 import software.amazon.awssdk.services.fms.model.Policy;
 import software.amazon.awssdk.services.fms.model.PolicySummary;
 import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
 import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
 import software.amazon.awssdk.services.fms.model.SecurityServicePolicyData;
+import software.amazon.awssdk.services.fms.model.SecurityServiceType;
 import software.amazon.awssdk.services.fms.model.Tag;
 import software.amazon.awssdk.services.fms.model.TagResourceRequest;
 import software.amazon.awssdk.services.fms.model.TagResourceResponse;
@@ -37,28 +41,58 @@ public class FmsSampleHelper extends BaseSampleHelper {
      * @return The assembled policy builder.
      */
     private static Policy.Builder sampleRequiredParametersPolicy(final boolean includeIdentifiers,
-                                                                 final boolean isThirdPartyPolicy) {
+                                                                 final SecurityServiceType securityServiceType) {
 
         // assemble sample security service policy data
         SecurityServicePolicyData sampleSecurityServicePolicyData;
 
-        if (isThirdPartyPolicy) {
+        if (securityServiceType.equals(SecurityServiceType.THIRD_PARTY_FIREWALL)) {
             sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
-                .managedServiceData(sampleManagedServiceData)
-                .type(samplePolicyType)
-                .policyOption(PolicyOption.builder()
-                    .thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
-                        .firewallDeploymentModel("CENTRALIZED").build()).build())
-                .build();
-        }else{
-              sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
-                .managedServiceData(sampleManagedServiceData)
-                .type(samplePolicyType)
-                .policyOption(PolicyOption.builder()
-                    .networkFirewallPolicy(NetworkFirewallPolicy.builder()
-                        .firewallDeploymentModel("CENTRALIZED").build()).build())
-                .build();
+                    .managedServiceData(sampleManagedServiceData)
+                    .type(securityServiceType)
+                    .policyOption(PolicyOption.builder()
+                            .thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
+                                    .firewallDeploymentModel("CENTRALIZED")
+                                    .build())
+                            .build())
+                    .build();
+        } else if (securityServiceType.equals(SecurityServiceType.IMPORT_NETWORK_FIREWALL)
+                || securityServiceType.equals(SecurityServiceType.NETWORK_FIREWALL)) {
+            sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
+                    .managedServiceData(sampleManagedServiceData)
+                    .type(securityServiceType)
+                    .policyOption(PolicyOption.builder()
+                            .networkFirewallPolicy(NetworkFirewallPolicy.builder()
+                                    .firewallDeploymentModel("CENTRALIZED")
+                                    .build())
+                            .build())
+                    .build();
+        } else if(securityServiceType.equals(SecurityServiceType.NETWORK_ACL_COMMON)) {
+            sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
+                    .managedServiceData(sampleManagedServiceData)
+                    .type(securityServiceType)
+                    .policyOption(PolicyOption.builder()
+                            .networkAclCommonPolicy(NetworkAclCommonPolicy.builder()
+                                    .networkAclEntrySet(NetworkAclEntrySet.builder()
+                                            .firstEntries(ImmutableList.of(
+
+                                            ))
+                                            .lastEntries(ImmutableList.of(
+
+                                            ))
+                                            .forceRemediateForFirstEntries(true)
+                                            .forceRemediateForLastEntries(false)
+                                            .build())
+                                    .build())
+                            .build())
+                    .build();
+        } else {
+            sampleSecurityServicePolicyData = SecurityServicePolicyData.builder()
+                    .managedServiceData(sampleManagedServiceData)
+                    .type(securityServiceType)
+                    .build();
         }
+
         // assemble a sample policy with only the required parameters
         final Policy.Builder policyBuilder = Policy.builder()
                 .excludeResourceTags(sampleExcludeResourceTags)
@@ -112,7 +146,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
         sampleResourceSetIds.add(sampleResourceSetIdsElement);
 
         // assemble sample policy with all possible parameters
-        return sampleRequiredParametersPolicy(includeIdentifiers,false)
+        return sampleRequiredParametersPolicy(includeIdentifiers, sampleSecurityServiceType)
                 .policyDescription(samplePolicyDescription)
                 .excludeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
                 .includeMap(FmsHelper.convertCFNIEMapToFMSIEMap(sampleIEMap))
@@ -140,7 +174,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
     public static PutPolicyResponse samplePutPolicyRequiredParametersResponse() {
 
         return PutPolicyResponse.builder()
-                .policy(sampleRequiredParametersPolicy(true,false).build())
+                .policy(sampleRequiredParametersPolicy(true,sampleSecurityServiceType).build())
                 .policyArn(samplePolicyArn)
                 .build();
     }
@@ -152,7 +186,31 @@ public class FmsSampleHelper extends BaseSampleHelper {
     public static PutPolicyResponse samplePutPolicyRequiredParametersForThirdPartyResponse() {
 
         return PutPolicyResponse.builder()
-                .policy(sampleRequiredParametersPolicy(true,true).build())
+                .policy(sampleRequiredParametersPolicy(true,SecurityServiceType.THIRD_PARTY_FIREWALL).build())
+                .policyArn(samplePolicyArn)
+                .build();
+    }
+
+    /**
+     * Assembles a sample PutPolicy response with only the required readable parameters.
+     * @return The assembled response.
+     */
+    public static PutPolicyResponse samplePutPolicyRequiredParametersForNetworkFirewallResponse() {
+
+        return PutPolicyResponse.builder()
+                .policy(sampleRequiredParametersPolicy(true,SecurityServiceType.NETWORK_FIREWALL).build())
+                .policyArn(samplePolicyArn)
+                .build();
+    }
+
+    /**
+     * Assembles a sample PutPolicy response with only the required readable parameters.
+     * @return The assembled response.
+     */
+    public static PutPolicyResponse samplePutPolicyRequiredParametersForNetworkAclResponse() {
+
+        return PutPolicyResponse.builder()
+                .policy(sampleRequiredParametersPolicy(true,SecurityServiceType.NETWORK_ACL_COMMON).build())
                 .policyArn(samplePolicyArn)
                 .build();
     }
@@ -187,7 +245,8 @@ public class FmsSampleHelper extends BaseSampleHelper {
     public static PutPolicyRequest samplePutPolicyRequiredParametersRequest(
             final boolean includeIdentifiers,
             final boolean includeTag1,
-            final boolean includeTag2) {
+            final boolean includeTag2,
+            final SecurityServiceType securityServiceType) {
 
         // determine tags to list
         final List<Tag> addTags = new ArrayList<>();
@@ -199,12 +258,26 @@ public class FmsSampleHelper extends BaseSampleHelper {
         }
 
         final PutPolicyRequest.Builder requestBuilder = PutPolicyRequest.builder()
-                .policy(sampleRequiredParametersPolicy(includeIdentifiers, false).build());
+                .policy(sampleRequiredParametersPolicy(includeIdentifiers, securityServiceType).build());
 
         if (!addTags.isEmpty()) {
             requestBuilder.tagList(addTags);
         }
         return requestBuilder.build();
+    }
+
+    /**
+     * Assembles a sample PutPolicy request with only the required readable parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should unique tag 1 be included.
+     * @param includeTag2 Should unique tag 2 be included.
+     * @return The assembled request.
+     */
+    public static PutPolicyRequest samplePutPolicyRequiredParametersRequest(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
+        return samplePutPolicyRequiredParametersRequest(includeIdentifiers, includeTag1, includeTag2, sampleSecurityServiceType);
     }
 
     /**
@@ -234,7 +307,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
     public static GetPolicyResponse sampleGetPolicyRequiredParametersResponse() {
 
         return GetPolicyResponse.builder()
-                .policy(sampleRequiredParametersPolicy(true,false).build())
+                .policy(sampleRequiredParametersPolicy(true,sampleSecurityServiceType).build())
                 .policyArn(samplePolicyArn)
                 .build();
     }
@@ -415,7 +488,7 @@ public class FmsSampleHelper extends BaseSampleHelper {
                 .policyName(samplePolicyName)
                 .remediationEnabled(sampleRemediationEnabled)
                 .resourceType(sampleResourceTypeListElement)
-                .securityServiceType(samplePolicyType)
+                .securityServiceType(sampleSecurityServiceType.toString())
                 .policyId(samplePolicyId)
                 .policyArn(samplePolicyArn);
     }
