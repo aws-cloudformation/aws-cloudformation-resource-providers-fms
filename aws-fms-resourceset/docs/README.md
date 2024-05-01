@@ -44,9 +44,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>128</code>
+_Maximum Length_: <code>128</code>
 
 _Pattern_: <code>^([a-zA-Z0-9_.:/=+\-@\s]+)$</code>
 
@@ -58,7 +58,7 @@ _Required_: No
 
 _Type_: String
 
-_Maximum_: <code>256</code>
+_Maximum Length_: <code>256</code>
 
 _Pattern_: <code>^([a-zA-Z0-9_.:/=+\-@\s]*)$</code>
 
@@ -103,3 +103,4 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Id
 
 A Base62 ID
+

@@ -30,9 +30,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Minimum_: <code>1</code>
+_Minimum Length_: <code>1</code>
 
-_Maximum_: <code>128</code>
+_Maximum Length_: <code>128</code>
 
 _Pattern_: <code>^([^\s]*)$</code>
 
@@ -44,8 +44,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Maximum_: <code>256</code>
+_Maximum Length_: <code>256</code>
 
 _Pattern_: <code>^([^\s]*)$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
