@@ -2,7 +2,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: openjdk8
+      java: openjdk17
       python: 3.7
     commands:
       - pip install --upgrade 'six==1.15.0'
@@ -18,6 +18,9 @@ phases:
       - mvn clean verify --no-transfer-progress
       # run through the build lifecycle for the policy resource provider
       - cd "$CODEBUILD_SRC_DIR/aws-fms-policy"
+      - mvn clean verify --no-transfer-progress
+      # run through the build lifecycle for the resourceset resource provider
+      - cd "$CODEBUILD_SRC_DIR/aws-fms-resourceset"
       - mvn clean verify --no-transfer-progress
     finally:
       - cat "$CODEBUILD_SRC_DIR/aws-fms-notificationchannel/rpdk.log"
