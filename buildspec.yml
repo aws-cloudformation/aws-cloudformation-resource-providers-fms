@@ -15,13 +15,14 @@ phases:
       - pre-commit run --all-files
       # run through the build lifecycle for the notification channel resource provider
       - cd "$CODEBUILD_SRC_DIR/aws-fms-notificationchannel"
-      - mvn clean verify --no-transfer-progress
+      - mvn clean verify --no-transfer-progress -X
       # run through the build lifecycle for the policy resource provider
       - cd "$CODEBUILD_SRC_DIR/aws-fms-policy"
-      - mvn clean verify --no-transfer-progress
+      - mvn clean verify --no-transfer-progress -X
       # run through the build lifecycle for the resourceset resource provider
       - cd "$CODEBUILD_SRC_DIR/aws-fms-resourceset"
-      - mvn clean verify --no-transfer-progress
+      - mvn clean verify --no-transfer-progress -X
     finally:
       - cat "$CODEBUILD_SRC_DIR/aws-fms-notificationchannel/rpdk.log"
       - cat "$CODEBUILD_SRC_DIR/aws-fms-policy/rpdk.log"
+      - cat "$CODEBUILD_SRC_DIR/aws-fms-resourceset/rpdk.log"
