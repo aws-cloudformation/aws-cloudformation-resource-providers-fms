@@ -9,6 +9,7 @@ phases:
       - pip install --upgrade 'pyyaml~=6.0.1'
       - pip install --upgrade 'urllib3~=1.26.0'
 #      - pip install --upgrade 'request~=2.26.0'
+      - pip install 'botocore>=1.15.49,<1.16.0'
       - pip install pre-commit cloudformation-cli-java-plugin
   build:
     commands:
