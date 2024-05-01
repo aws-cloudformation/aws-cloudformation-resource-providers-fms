@@ -307,7 +307,7 @@
         "NetworkAclCommonPolicy": {
             "description": "Network ACL common policy.",
             "type": "object",
-            "properties":  {
+            "properties": {
                 "NetworkAclEntrySet": {
                     "$ref": "#/definitions/NetworkAclEntrySet"
                 }
