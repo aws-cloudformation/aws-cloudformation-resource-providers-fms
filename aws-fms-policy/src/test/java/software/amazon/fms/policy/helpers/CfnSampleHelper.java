@@ -1,6 +1,11 @@
 package software.amazon.fms.policy.helpers;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.collections.CollectionUtils;
+import software.amazon.fms.policy.NetworkFirewallPolicy;
+import software.amazon.awssdk.services.fms.model.SecurityServiceType;
+import software.amazon.fms.policy.NetworkAclCommonPolicy;
+import software.amazon.fms.policy.NetworkAclEntrySet;
 import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.PolicyTag;
 import software.amazon.fms.policy.ResourceModel;
@@ -28,23 +33,56 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeIdentifiers,
             final boolean includeTag1,
             final boolean includeTag2,
-            final boolean isThirdPartyPolicy) {
+            final SecurityServiceType securityServiceType) {
 
         // assemble sample security service policy data
         SecurityServicePolicyData securityServicePolicyData;
 
-        if (isThirdPartyPolicy) {
+        if(securityServiceType.equals(SecurityServiceType.THIRD_PARTY_FIREWALL)) {
             securityServicePolicyData = SecurityServicePolicyData.builder()
-                .managedServiceData(sampleManagedServiceData)
-                .type(samplePolicyType).policyOption(PolicyOption.builder()
-                    .thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
-                        .firewallDeploymentModel("CENTRALIZED").build()).build()).build();
+                    .managedServiceData(sampleManagedServiceData)
+                    .type(securityServiceType.toString())
+                    .policyOption(PolicyOption.builder()
+                            .thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
+                                    .firewallDeploymentModel("CENTRALIZED")
+                                    .build())
+                            .build())
+                    .build();
+        } else if(securityServiceType.equals(SecurityServiceType.IMPORT_NETWORK_FIREWALL)
+            || securityServiceType.equals(SecurityServiceType.NETWORK_FIREWALL)) {
+            securityServicePolicyData = SecurityServicePolicyData.builder()
+                    .managedServiceData(sampleManagedServiceData)
+                    .type(securityServiceType.toString())
+                    .policyOption(PolicyOption.builder()
+                            .networkFirewallPolicy(NetworkFirewallPolicy.builder()
+                                    .firewallDeploymentModel("CENTRALIZED")
+                                    .build())
+                            .build())
+                    .build();
+        } else if (securityServiceType.equals(SecurityServiceType.NETWORK_ACL_COMMON)){
+            securityServicePolicyData = SecurityServicePolicyData.builder()
+                    .managedServiceData(sampleManagedServiceData)
+                    .type(securityServiceType.toString())
+                    .policyOption(PolicyOption.builder()
+                            .networkAclCommonPolicy(NetworkAclCommonPolicy.builder()
+                                    .networkAclEntrySet(NetworkAclEntrySet.builder()
+                                            .firstEntries(ImmutableList.of(
+
+                                            ))
+                                            .lastEntries(ImmutableList.of(
+
+                                            ))
+                                            .forceRemediateForFirstEntries(true)
+                                            .forceRemediateForLastEntries(false)
+                                            .build())
+                                    .build())
+                            .build())
+                    .build();
         } else {
             securityServicePolicyData = SecurityServicePolicyData.builder()
-                .managedServiceData(sampleManagedServiceData)
-                .type(samplePolicyType).policyOption(PolicyOption.builder()
-                    .networkFirewallPolicy(NetworkFirewallPolicy.builder()
-                        .firewallDeploymentModel("CENTRALIZED").build()).build()).build();
+                    .managedServiceData(sampleManagedServiceData)
+                    .type(securityServiceType.toString())
+                    .build();
         }
 
         // assemble a sample resource model with only the required parameters
@@ -140,14 +178,20 @@ public class CfnSampleHelper extends BaseSampleHelper {
         final List<String> sampleResourceTypeList = new ArrayList<>();
         sampleResourceTypeList.add(sampleResourceTypeListElement);
 
+        // assemble a sample resource set list
+        final List<String> sampleResourceSetIds = new ArrayList<>();
+        sampleResourceSetIds.add(sampleResourceSetIdsElement);
+
         // assemble sample policy with all possible parameters
         return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2,
-            false)
+                sampleSecurityServiceType)
+                .policyDescription(samplePolicyDescription)
                 .excludeMap(sampleIEMap)
                 .includeMap(sampleIEMap)
                 .resourceTags(sampleResourceTags)
                 .resourceType(sampleResourceType)
                 .resourceTypeList(sampleResourceTypeList)
+                .resourceSetIds(sampleResourceSetIds)
                 .resourcesCleanUp(true);
     }
 
@@ -163,7 +207,7 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeTag1,
             final boolean includeTag2) {
 
-        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2,false).build();
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2,sampleSecurityServiceType).build();
     }
 
 
@@ -179,7 +223,37 @@ public class CfnSampleHelper extends BaseSampleHelper {
             final boolean includeTag1,
             final boolean includeTag2) {
 
-        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2,false).build();
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2, SecurityServiceType.THIRD_PARTY_FIREWALL).build();
+    }
+
+    /**
+     * Assembles a sample resource model with only the required read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
+     * @return The assembled resource model.
+     */
+    public static ResourceModel sampleRequiredParametersResourceModelForNetworkFirewall(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
+
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2, SecurityServiceType.NETWORK_FIREWALL).build();
+    }
+
+    /**
+     * Assembles a sample resource model with only the required read/write parameters.
+     * @param includeIdentifiers Should the policy identifiers be included.
+     * @param includeTag1 Should the policy have unique tag 1.
+     * @param includeTag2 Should the policy have unique tag 2.
+     * @return The assembled resource model.
+     */
+    public static ResourceModel sampleRequiredParametersResourceModelForNetworkAcl(
+            final boolean includeIdentifiers,
+            final boolean includeTag1,
+            final boolean includeTag2) {
+
+        return sampleRequiredParametersResourceModelBuilder(includeIdentifiers, includeTag1, includeTag2, SecurityServiceType.NETWORK_ACL_COMMON).build();
     }
 
     /**

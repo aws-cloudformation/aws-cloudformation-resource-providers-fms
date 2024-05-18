@@ -1,11 +1,18 @@
 package software.amazon.fms.policy.helpers;
 
-import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.services.fms.model.CustomerPolicyScopeIdType;
+import software.amazon.awssdk.services.fms.model.NetworkAclCommonPolicy;
+import software.amazon.awssdk.services.fms.model.NetworkAclEntry;
+import software.amazon.awssdk.services.fms.model.NetworkAclEntrySet;
+import software.amazon.awssdk.services.fms.model.NetworkAclIcmpTypeCode;
+import software.amazon.awssdk.services.fms.model.NetworkAclPortRange;
+import software.amazon.awssdk.services.fms.model.NetworkFirewallPolicy;
 import software.amazon.awssdk.services.fms.model.Policy;
+import software.amazon.awssdk.services.fms.model.PolicyOption;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
 import software.amazon.awssdk.services.fms.model.SecurityServicePolicyData;
 import software.amazon.awssdk.services.fms.model.Tag;
+import software.amazon.awssdk.services.fms.model.ThirdPartyFirewallPolicy;
 import software.amazon.fms.policy.IEMap;
 import software.amazon.fms.policy.ResourceModel;
 
@@ -15,55 +22,105 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import software.amazon.awssdk.services.fms.model.PolicyOption;
-import software.amazon.awssdk.services.fms.model.NetworkFirewallPolicy;
-import software.amazon.awssdk.services.fms.model.ThirdPartyFirewallPolicy;
 
 
 public class FmsHelper {
 
     /**
      * Helper method to assign values in an include/exclude map.
+     *
      * @param cfnIEMap CFN IEMap to covert,
      * @return The converted include/exclude map.
      */
-    static Map<CustomerPolicyScopeIdType, ? extends List<String>> convertCFNIEMapToFMSIEMap(IEMap cfnIEMap) {
-        HashMap<CustomerPolicyScopeIdType, List<String>> fmsIEMap = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(cfnIEMap.getACCOUNT())) {
+    static Map<CustomerPolicyScopeIdType, ? extends List<String>> convertCFNIEMapToFMSIEMap(final IEMap cfnIEMap) {
+        final HashMap<CustomerPolicyScopeIdType, List<String>> fmsIEMap = new HashMap<>();
+        if (cfnIEMap.getACCOUNT() != null) {
             fmsIEMap.put(CustomerPolicyScopeIdType.ACCOUNT, new ArrayList<>(cfnIEMap.getACCOUNT()));
         }
-        if (CollectionUtils.isNotEmpty(cfnIEMap.getORGUNIT())) {
+        if (cfnIEMap.getORGUNIT() != null) {
             fmsIEMap.put(CustomerPolicyScopeIdType.ORG_UNIT, new ArrayList<>(cfnIEMap.getORGUNIT()));
         }
         return fmsIEMap;
     }
 
-     /**
+    /**
      * Helper method to convert the cfn input PolicyOption to FMS PolicyOption.
+     *
      * @param policyOption CFN input PolicyOption,
      * @return The converted PolicyOption.
      */
-     static PolicyOption convertCFNPolicyOptionToFMSPolicyOption(software.amazon.fms.policy.PolicyOption policyOption) {
+    static PolicyOption convertCFNPolicyOptionToFMSPolicyOption(software.amazon.fms.policy.PolicyOption policyOption) {
 
-         final PolicyOption.Builder builder = PolicyOption.builder();
+        final PolicyOption.Builder builder = PolicyOption.builder();
 
-         if (policyOption.getNetworkFirewallPolicy() != null) {
-             builder.networkFirewallPolicy(NetworkFirewallPolicy.builder()
-                 .firewallDeploymentModel(
-                     policyOption.getNetworkFirewallPolicy().getFirewallDeploymentModel()
-                 ).build()).build();
-         }
-         if (policyOption.getThirdPartyFirewallPolicy() != null) {
-             builder.thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
-                 .firewallDeploymentModel(
-                     policyOption.getThirdPartyFirewallPolicy().getFirewallDeploymentModel()
-                 ).build()).build();
-         }
-         return builder.build();
-     }
+        if (policyOption.getNetworkFirewallPolicy() != null) {
+            builder.networkFirewallPolicy(NetworkFirewallPolicy.builder()
+                    .firewallDeploymentModel(
+                            policyOption.getNetworkFirewallPolicy().getFirewallDeploymentModel()
+                    ).build()).build();
+        }
+        if (policyOption.getThirdPartyFirewallPolicy() != null) {
+            builder.thirdPartyFirewallPolicy(ThirdPartyFirewallPolicy.builder()
+                    .firewallDeploymentModel(
+                            policyOption.getThirdPartyFirewallPolicy().getFirewallDeploymentModel()
+                    ).build()).build();
+        }
+        if (policyOption.getNetworkAclCommonPolicy() != null) {
+            final software.amazon.fms.policy.NetworkAclEntrySet entrySet =
+                    policyOption.getNetworkAclCommonPolicy().getNetworkAclEntrySet();
+
+            builder.networkAclCommonPolicy(NetworkAclCommonPolicy.builder()
+                    .networkAclEntrySet(NetworkAclEntrySet.builder()
+                            .firstEntries(
+                                    entrySet.getFirstEntries().stream()
+                                            .map(FmsHelper::convertCFNNetworkAclEntryToFMSNetworkAclEntry)
+                                            .collect(Collectors.toList())
+                            )
+                            .lastEntries(
+                                    entrySet.getLastEntries().stream()
+                                            .map(FmsHelper::convertCFNNetworkAclEntryToFMSNetworkAclEntry)
+                                            .collect(Collectors.toList())
+                            )
+                            .forceRemediateForFirstEntries(
+                                    entrySet.getForceRemediateForFirstEntries()
+                            )
+                            .forceRemediateForLastEntries(
+                                    entrySet.getForceRemediateForLastEntries()
+                            )
+                            .build())
+                    .build());
+        }
+        return builder.build();
+    }
+
+    static NetworkAclEntry convertCFNNetworkAclEntryToFMSNetworkAclEntry(
+            software.amazon.fms.policy.NetworkAclEntry networkAclEntry) {
+        return NetworkAclEntry.builder()
+                .protocol(networkAclEntry.getProtocol())
+                .ruleAction(networkAclEntry.getRuleAction())
+                .cidrBlock(networkAclEntry.getCidrBlock())
+                .ipv6CidrBlock(networkAclEntry.getIpv6CidrBlock())
+                .icmpTypeCode(networkAclEntry.getIcmpTypeCode() == null
+                        ? null
+                        : NetworkAclIcmpTypeCode.builder()
+                        .type(networkAclEntry.getIcmpTypeCode().getType())
+                        .code(networkAclEntry.getIcmpTypeCode().getCode())
+                        .build()
+                )
+                .portRange(networkAclEntry.getPortRange() == null
+                        ? null
+                        : NetworkAclPortRange.builder()
+                        .from(networkAclEntry.getPortRange().getFrom())
+                        .to(networkAclEntry.getPortRange().getTo())
+                        .build()
+                )
+                .egress(networkAclEntry.getEgress())
+                .build();
+    }
 
     /**
      * Logic for converting a CFN resource model (from the resource provider) to an FMS policy (from the FMS SDK).
+     *
      * @param resourceModel CFN resource model that was converted from.
      * @return FMS policy builder that was converted to.
      */
@@ -75,17 +132,18 @@ public class FmsHelper {
 
         // add the managed service data if it exists
         if (resourceModel.getSecurityServicePolicyData().getManagedServiceData() != null) {
-                securityServicePolicyData.managedServiceData(resourceModel.getSecurityServicePolicyData().getManagedServiceData());
+            securityServicePolicyData.managedServiceData(resourceModel.getSecurityServicePolicyData().getManagedServiceData());
         }
 
         if (resourceModel.getSecurityServicePolicyData().getPolicyOption() != null) {
             securityServicePolicyData.policyOption(convertCFNPolicyOptionToFMSPolicyOption(
-                resourceModel.getSecurityServicePolicyData().getPolicyOption()));
+                    resourceModel.getSecurityServicePolicyData().getPolicyOption()));
         }
 
         // assemble the policy with the required parameters
         final Policy.Builder policyBuilder = Policy.builder()
                 .policyName(resourceModel.getPolicyName())
+                .policyDescription(resourceModel.getPolicyDescription())
                 .remediationEnabled(resourceModel.getRemediationEnabled())
                 .resourceType(resourceModel.getResourceType())
                 .securityServicePolicyData(securityServicePolicyData.build());
@@ -128,7 +186,13 @@ public class FmsHelper {
             policyBuilder.resourceTypeList(resourceTypeList);
         }
 
-        if (resourceModel.getResourcesCleanUp() != null){
+        // add resource set list if present
+        if (resourceModel.getResourceSetIds() != null) {
+            final Collection<String> resourceSetList = new ArrayList<>(resourceModel.getResourceSetIds());
+            policyBuilder.resourceSetIds(resourceSetList);
+        }
+
+        if (resourceModel.getResourcesCleanUp() != null) {
             policyBuilder.deleteUnusedFMManagedResources(resourceModel.getResourcesCleanUp());
         }
 
@@ -138,6 +202,7 @@ public class FmsHelper {
 
     /**
      * Convert a CFN resource model (from the resource provider) to an FMS policy (from the FMS SDK).
+     *
      * @param resourceModel CFN resource model that was converted from.
      * @return FMS policy that was converted to.
      */
@@ -149,7 +214,8 @@ public class FmsHelper {
     /**
      * Convert a CFN resource model (from the resource provider) to an FMS policy (from the FMS SDK) and inject a
      * policyUpdateToken.
-     * @param resourceModel CFN resource model that was converted from.
+     *
+     * @param resourceModel     CFN resource model that was converted from.
      * @param policyUpdateToken The Policy update token to inject into the FMS policy
      * @return FMS policy that was converted to with the policyUpdateToken.
      */
@@ -162,6 +228,7 @@ public class FmsHelper {
 
     /**
      * Convert a CFN tag map to an FMS tag list.
+     *
      * @param cfnTags Tags from the CFN resource provider request.
      * @return A list of FMS tag objects.
      */
@@ -177,8 +244,9 @@ public class FmsHelper {
 
     /**
      * Determine the tags that need to be removed from a policy.
+     *
      * @param existingTagList The tags that currently exist on the policy.
-     * @param desiredTagList The tags that should exist on the policy.
+     * @param desiredTagList  The tags that should exist on the policy.
      * @return A list of tag keys to remove from the policy.
      */
     public static List<String> tagsToRemove(List<Tag> existingTagList, Map<String, String> desiredTagList) {
@@ -195,8 +263,9 @@ public class FmsHelper {
 
     /**
      * Determine the tags that need to be added to a policy.
+     *
      * @param existingTagList The tags that currently exist on the policy.
-     * @param desiredTagList The tags that should exist on the policy.
+     * @param desiredTagList  The tags that should exist on the policy.
      * @return A list of tags to add to the policy.
      */
     public static List<Tag> tagsToAdd(List<Tag> existingTagList, Map<String, String> desiredTagList) {

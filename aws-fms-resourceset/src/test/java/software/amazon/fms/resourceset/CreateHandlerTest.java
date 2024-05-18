@@ -1,28 +1,33 @@
-package software.amazon.fms.policy;
+package software.amazon.fms.resourceset;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.fms.FmsClient;
-import software.amazon.awssdk.services.fms.model.DeletePolicyRequest;
-import software.amazon.awssdk.services.fms.model.DeletePolicyResponse;
+import software.amazon.awssdk.services.fms.model.BatchAssociateResourceRequest;
+import software.amazon.awssdk.services.fms.model.BatchAssociateResourceResponse;
+import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceRequest;
+import software.amazon.awssdk.services.fms.model.BatchDisassociateResourceResponse;
+import software.amazon.awssdk.services.fms.model.DeleteResourceSetRequest;
+import software.amazon.awssdk.services.fms.model.DeleteResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.FmsRequest;
 import software.amazon.awssdk.services.fms.model.InternalErrorException;
 import software.amazon.awssdk.services.fms.model.InvalidInputException;
 import software.amazon.awssdk.services.fms.model.InvalidOperationException;
 import software.amazon.awssdk.services.fms.model.InvalidTypeException;
 import software.amazon.awssdk.services.fms.model.LimitExceededException;
-import software.amazon.awssdk.services.fms.model.PutPolicyRequest;
-import software.amazon.awssdk.services.fms.model.PutPolicyResponse;
+import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesRequest;
+import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesResponse;
+import software.amazon.awssdk.services.fms.model.PutResourceSetRequest;
+import software.amazon.awssdk.services.fms.model.PutResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.ResourceNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.awssdk.services.fms.model.SecurityServiceType;
 import software.amazon.cloudformation.exceptions.CfnInternalFailureException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.HandlerErrorCode;
@@ -30,12 +35,10 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
-import software.amazon.fms.policy.helpers.FmsSampleHelper;
-import software.amazon.fms.policy.helpers.CfnSampleHelper;
+import software.amazon.fms.resourceset.helpers.CfnSampleHelper;
+import software.amazon.fms.resourceset.helpers.FmsSampleHelper;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +66,6 @@ class CreateHandlerTest {
 
     private Configuration configuration;
     private CreateHandler handler;
-    public final static String sampleOUId = "ou-0000-88888888";
 
     @BeforeEach
     void setup() {
@@ -78,17 +80,27 @@ class CreateHandlerTest {
     void handleRequestRequiredParametersSuccess() {
 
         // stub the response for the create request
-        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersResponse();
+        final PutResourceSetResponse describeResponse = FmsSampleHelper.samplePutResourceSetRequiredParametersResponse();
         doReturn(describeResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list resource set resources request
+        final ListResourceSetResourcesResponse listResourceSetResourcesResponse =
+                FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
+        doReturn(listResourceSetResourcesResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request and post-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
-        final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -98,13 +110,14 @@ class CreateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
-        );
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false),
+                FmsSampleHelper.sampleListResourceSetResourcesRequest()
+        ));
 
         // assertions
         assertThat(response).isNotNull();
@@ -117,140 +130,39 @@ class CreateHandlerTest {
     }
 
     @Test
-    void handleRequestRequiredParametersWithThirdPartyOptionSuccess() {
-
-        // stub the response for the create request
-        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersForThirdPartyResponse();
-        doReturn(describeResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
-                        ArgumentMatchers.any()
-                );
-
-        // model the pre-request and post-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModelForThirdParty(false, false, false);
-
-        // create the create request and send it
-        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(requestModel)
-                .build();
-        final ProgressEvent<ResourceModel, CallbackContext> response =
-                handler.handleRequest(proxy, request, null, logger);
-
-        // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
-                captor.capture(),
-                ArgumentMatchers.any()
-        );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false, SecurityServiceType.THIRD_PARTY_FIREWALL)
-        );
-
-        // assertions
-        assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
-        assertThat(response.getCallbackContext()).isNull();
-        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModels()).isNull();
-        assertThat(response.getErrorCode()).isNull();
-    }
-
-    @Test
-    void handleRequestRequiredParametersWithNetworkFirewallOptionSuccess() {
-
-        // stub the response for the create request
-        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersForNetworkFirewallResponse();
-        doReturn(describeResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
-                        ArgumentMatchers.any()
-                );
-
-        // model the pre-request and post-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModelForNetworkFirewall(false, false, false);
-
-        // create the create request and send it
-        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(requestModel)
-                .build();
-        final ProgressEvent<ResourceModel, CallbackContext> response =
-                handler.handleRequest(proxy, request, null, logger);
-
-        // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
-                captor.capture(),
-                ArgumentMatchers.any()
-        );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false, SecurityServiceType.NETWORK_FIREWALL)
-        );
-
-        // assertions
-        assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
-        assertThat(response.getCallbackContext()).isNull();
-        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModels()).isNull();
-        assertThat(response.getErrorCode()).isNull();
-    }
-
-    @Test
-    void handleRequestRequiredParametersWithNetworkAclOptionSuccess() {
-
-        // stub the response for the create request
-        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersForNetworkAclResponse();
-        doReturn(describeResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
-                        ArgumentMatchers.any()
-                );
-
-        // model the pre-request and post-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModelForNetworkAcl(false, false, false);
-
-        // create the create request and send it
-        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(requestModel)
-                .build();
-        final ProgressEvent<ResourceModel, CallbackContext> response =
-                handler.handleRequest(proxy, request, null, logger);
-
-        // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
-                captor.capture(),
-                ArgumentMatchers.any()
-        );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false, SecurityServiceType.NETWORK_ACL_COMMON)
-        );
-
-        // assertions
-        assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
-        assertThat(response.getCallbackContext()).isNull();
-        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModels()).isNull();
-        assertThat(response.getErrorCode()).isNull();
-    }
-
-    @Test
     void handleRequestAllParametersSuccess() {
 
         // stub the response for the create request
-        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyAllParametersResponse();
+        final PutResourceSetResponse describeResponse = FmsSampleHelper.samplePutResourceSetAllParametersResponse();
         doReturn(describeResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
                         ArgumentMatchers.any()
                 );
 
-        // model the pre-request and post-request resource state
+        // stub the response for the list resource set resources request
+        final ListResourceSetResourcesResponse listResourceSetResourcesResponse =
+                FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
+        doReturn(listResourceSetResourcesResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list resource set resources request
+        final BatchAssociateResourceResponse batchAssociateResourceResponse =
+                FmsSampleHelper.sampleBatchAssociateResourceResponse(false);
+        doReturn(batchAssociateResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(BatchAssociateResourceRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // model the pre-request resource state
         final ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(false, false, false);
-        final ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -260,83 +172,50 @@ class CreateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(3)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyAllParametersRequest(false)
-        );
+        assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
+                FmsSampleHelper.samplePutResourceSetAllParametersRequest(false),
+                FmsSampleHelper.sampleListResourceSetResourcesRequest(),
+                FmsSampleHelper.sampleBatchAssociateResourceRequest()
+        ));
 
         // assertions
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }
 
     @Test
-    void handleRequestAllParametersWithOUScopeSuccess() {
-        final List<String> ouList = new ArrayList<>();
-        ouList.add(sampleOUId);
+    void handlerRequestResourceSetTags() {
 
         // stub the response for the create request
-        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyAllParametersResponse(ouList);
+        final PutResourceSetResponse describeResponse = FmsSampleHelper.samplePutResourceSetRequiredParametersResponse();
         doReturn(describeResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list resource set resources request
+        final ListResourceSetResourcesResponse listResourceSetResourcesResponse =
+                FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
+        doReturn(listResourceSetResourcesResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request and post-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleAllParametersResourceModel(false, false, false, ouList);
-        final ResourceModel expectedModel = CfnSampleHelper.sampleAllParametersResourceModel(true, false, false, ouList);
-
-        // create the create request and send it
-        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(requestModel)
-                .build();
-        final ProgressEvent<ResourceModel, CallbackContext> response =
-                handler.handleRequest(proxy, request, null, logger);
-
-        // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
-                captor.capture(),
-                ArgumentMatchers.any()
-        );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyAllParametersRequest(false, ouList)
-        );
-
-        // assertions
-        assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
-        assertThat(response.getCallbackContext()).isNull();
-        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
-        assertThat(response.getResourceModels()).isNull();
-        assertThat(response.getErrorCode()).isNull();
-    }
-
-    @Test
-    void handlerRequestPolicyTags() {
-
-        // stub the response for the create request
-        final PutPolicyResponse describeResponse = FmsSampleHelper.samplePutPolicyRequiredParametersResponse();
-        doReturn(describeResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
-                        ArgumentMatchers.any()
-                );
-
-        // model the pre-request and post-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, true, false);
-        final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, true, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, true, false);
+        final ResourceModel expectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, true, false);
 
         // create sample tags how cfn interprets them from the resource model
         final Map<String, String> tags = configuration.resourceDefinedTags(requestModel);
@@ -350,12 +229,9 @@ class CreateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(1)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(2)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
-        );
-        assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, true, false)
         );
 
         // assertions
@@ -363,7 +239,6 @@ class CreateHandlerTest {
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-//        assertThat(response.getResourceModel()).isEqualTo(expectedModel);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }
@@ -375,12 +250,12 @@ class CreateHandlerTest {
         doThrow(ResourceNotFoundException.builder().build())
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -395,7 +270,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
+                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -415,12 +290,12 @@ class CreateHandlerTest {
         doThrow(InvalidOperationException.builder().build())
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -435,7 +310,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
+                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -455,12 +330,12 @@ class CreateHandlerTest {
         doThrow(InvalidInputException.builder().build())
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -475,7 +350,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
+                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -495,12 +370,12 @@ class CreateHandlerTest {
         doThrow(InvalidTypeException.builder().build())
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -515,7 +390,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
+                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -535,12 +410,12 @@ class CreateHandlerTest {
         doThrow(LimitExceededException.builder().build())
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -555,7 +430,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
+                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -575,12 +450,12 @@ class CreateHandlerTest {
         doThrow(InternalErrorException.builder().build())
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -595,7 +470,7 @@ class CreateHandlerTest {
                 ArgumentMatchers.any()
         );
         assertThat(captor.getValue()).isEqualTo(
-                FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false)
+                FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false)
         );
 
         // assertions
@@ -609,28 +484,48 @@ class CreateHandlerTest {
     }
 
     @Test
-    void handlePostPolicyCreationException() {
+    void handlePostResourceSetCreationException() {
 
         // stub the response for the create request
-        final PutPolicyResponse describePutResponse = FmsSampleHelper.samplePutPolicyRequiredParametersResponse();
+        final PutResourceSetResponse describePutResponse = FmsSampleHelper.samplePutResourceSetRequiredParametersResponse();
         doReturn(describePutResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(PutPolicyRequest.class),
+                        ArgumentMatchers.isA(PutResourceSetRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the list resource set resources request
+        final ListResourceSetResourcesResponse listResourceSetResourcesResponse =
+                FmsSampleHelper.sampleListResourceSetResourcesResponse();
+        doReturn(listResourceSetResourcesResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(ListResourceSetResourcesRequest.class),
+                        ArgumentMatchers.any()
+                );
+
+        // stub the response for the batch disassociate resources request
+        final BatchDisassociateResourceResponse batchDisassociateResourceResponse =
+                FmsSampleHelper.sampleBatchDisassociateResourceResponse(false);
+        doReturn(batchDisassociateResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        ArgumentMatchers.isA(BatchDisassociateResourceRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // stub the response for the delete request
-        final DeletePolicyResponse describeDeleteResponse = FmsSampleHelper.sampleDeletePolicyResponse();
+        final DeleteResourceSetResponse describeDeleteResponse = FmsSampleHelper.sampleDeleteResourceSetResponse();
         doReturn(describeDeleteResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(DeletePolicyRequest.class),
+                        ArgumentMatchers.isA(DeleteResourceSetRequest.class),
                         ArgumentMatchers.any()
                 );
 
         // model the pre-request and post-request resource state
-        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false);
+        final ResourceModel requestModel = CfnSampleHelper.sampleRequiredParametersResourceModel(false, false, false, false);
 
         // create the create request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -638,7 +533,7 @@ class CreateHandlerTest {
                 .build();
 
         // spy the request to throw an exception during constructSuccessResourceModel(). the exception handling being
-        // tested is primarily guarding against possible errors in convertFMSPolicyToCFNResourceModel.
+        // tested is primarily guarding against possible errors in convertFMSResourceSetToCFNResourceModel.
         // getDesiredResourceTags() is being used to throw an exception since it is not static and can be accessed
         // from this test. this ends up testing exception handling logic the same way as an exception in
         // constructSuccessResourceModel() would.
@@ -657,8 +552,8 @@ class CreateHandlerTest {
                     ArgumentMatchers.any()
             );
             assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
-                    FmsSampleHelper.samplePutPolicyRequiredParametersRequest(false, false, false),
-                    FmsSampleHelper.sampleDeletePolicyRequest()
+                    FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(false, false, false),
+                    FmsSampleHelper.sampleDeleteResourceSetRequest()
             ));
         });
     }
