@@ -21,6 +21,5 @@ rpdk.log*
 
 # contains credentials
 sam-tests/
-
 # This is generated, do not commit it
 *testAccountsConfig.yml
