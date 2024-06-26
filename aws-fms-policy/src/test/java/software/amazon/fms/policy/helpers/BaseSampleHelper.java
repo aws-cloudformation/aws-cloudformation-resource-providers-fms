@@ -1,10 +1,13 @@
 package software.amazon.fms.policy.helpers;
 
+import software.amazon.awssdk.services.fms.model.SecurityServiceType;
+
 class BaseSampleHelper {
 
     public final static String sampleAccountId = "000000000000";
     public final static String sampleManagedServiceData = "{\"type\":\"SHIELD_ADVANCED\"}";
-    public final static String samplePolicyType = "SHIELD_ADVANCED";
+
+    public final static SecurityServiceType sampleSecurityServiceType = SecurityServiceType.SHIELD_ADVANCED;
     public final static boolean sampleExcludeResourceTags = false;
     public final static String samplePolicyId = "00000000-0000-0000-0000-000000000000";
     public final static String samplePolicyName = "TEST";
