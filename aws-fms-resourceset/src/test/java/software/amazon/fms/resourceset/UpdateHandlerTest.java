@@ -99,16 +99,6 @@ public class UpdateHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // stub the response for the list tags request
-        final ListTagsForResourceResponse describeListResponse =
-                FmsSampleHelper.sampleListTagsForResourceResponse(false, false);
-        doReturn(describeListResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
-                        ArgumentMatchers.any()
-                );
-
         // stub the response for the list resourceSet resources request
         final ListResourceSetResourcesResponse describeListResourceSetResourcesResponse =
                 FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
@@ -130,14 +120,13 @@ public class UpdateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(4)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(3)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetResourceSetRequest(),
                 FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(true, false, false),
-                FmsSampleHelper.sampleListTagsForResourceRequest(),
                 FmsSampleHelper.sampleListResourceSetResourcesRequest()
         ));
 
@@ -173,16 +162,6 @@ public class UpdateHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // stub the response for the list tags request
-        final ListTagsForResourceResponse describeListResponse =
-                FmsSampleHelper.sampleListTagsForResourceResponse(false, false);
-        doReturn(describeListResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
-                        ArgumentMatchers.any()
-                );
-
         // stub the response for the list resourceSet resources request
         final ListResourceSetResourcesResponse describeListResourceSetResourcesResponse =
                 FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
@@ -215,14 +194,13 @@ public class UpdateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(5)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(4)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetResourceSetRequest(),
                 FmsSampleHelper.samplePutResourceSetAllParametersRequest(true),
-                FmsSampleHelper.sampleListTagsForResourceRequest(),
                 FmsSampleHelper.sampleListResourceSetResourcesRequest(),
                 FmsSampleHelper.sampleBatchAssociateResourceRequest()
         ));
@@ -260,16 +238,6 @@ public class UpdateHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // stub the response for the list tags request
-        final ListTagsForResourceResponse describeListResponse =
-                FmsSampleHelper.sampleListTagsForResourceResponse(false, false);
-        doReturn(describeListResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
-                        ArgumentMatchers.any()
-                );
-
         // stub the response for the list resourceSet resources request
         final ListResourceSetResourcesResponse describeListResourceSetResourcesResponse =
                 FmsSampleHelper.sampleListResourceSetResourcesResponseMultipleResources();
@@ -302,14 +270,13 @@ public class UpdateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(5)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(4)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetResourceSetRequest(),
                 FmsSampleHelper.samplePutResourceSetAllParametersRequest(true),
-                FmsSampleHelper.sampleListTagsForResourceRequest(),
                 FmsSampleHelper.sampleListResourceSetResourcesRequest(),
                 FmsSampleHelper.sampleBatchDisassociateResourceRequest()
         ));
@@ -345,16 +312,6 @@ public class UpdateHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // stub the response for the list tags request
-        final ListTagsForResourceResponse describeListResponse =
-                FmsSampleHelper.sampleListTagsForResourceResponse(true, false);
-        doReturn(describeListResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
-                        ArgumentMatchers.any()
-                );
-
         // stub the response for the list resourceSet resources request
         final ListResourceSetResourcesResponse describeListResourceSetResourcesResponse =
                 FmsSampleHelper.sampleListResourceSetResourcesResponseEmptyResource();
@@ -376,23 +333,25 @@ public class UpdateHandlerTest {
 
         // model the pre-request and post-request resource state
         final ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false, false);
+        final ResourceModel previousModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, true, false);
 
         // create the update request and send it
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(requestExpectedModel)
+                .previousResourceState(previousModel)
+                .previousResourceTags(FmsSampleHelper.generateSampleResourceTags(true, false))
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(5)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(4)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetResourceSetRequest(),
                 FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(true, false, false),
-                FmsSampleHelper.sampleListTagsForResourceRequest(),
                 FmsSampleHelper.sampleUntagResourceRequest(true, false),
                 FmsSampleHelper.sampleListResourceSetResourcesRequest()
         ));
@@ -424,16 +383,6 @@ public class UpdateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         ArgumentMatchers.isA(PutResourceSetRequest.class),
-                        ArgumentMatchers.any()
-                );
-
-        // stub the response for the list tags request
-        final ListTagsForResourceResponse describeListResponse =
-                FmsSampleHelper.sampleListTagsForResourceResponse(false, false);
-        doReturn(describeListResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
                         ArgumentMatchers.any()
                 );
 
@@ -471,14 +420,13 @@ public class UpdateHandlerTest {
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(5)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(4)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetResourceSetRequest(),
                 FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(true, false, false),
-                FmsSampleHelper.sampleListTagsForResourceRequest(),
                 FmsSampleHelper.sampleTagResourceRequest(true, false),
                 FmsSampleHelper.sampleListResourceSetResourcesRequest()
         ));
@@ -514,16 +462,6 @@ public class UpdateHandlerTest {
                         ArgumentMatchers.any()
                 );
 
-        // stub the response for the list tags request
-        final ListTagsForResourceResponse describeListResponse =
-                FmsSampleHelper.sampleListTagsForResourceResponse(true, false);
-        doReturn(describeListResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.isA(ListTagsForResourceRequest.class),
-                        ArgumentMatchers.any()
-                );
-
         // stub the response for the untag resource request
         final UntagResourceResponse describeUntagResponse = FmsSampleHelper.sampleUntagResourceResponse();
         doReturn(describeUntagResponse)
@@ -554,6 +492,7 @@ public class UpdateHandlerTest {
 
         // model the pre-request and post-request resource state
         final ResourceModel requestExpectedModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, false, true);
+        final ResourceModel previousModel = CfnSampleHelper.sampleRequiredParametersResourceModel(true, false, true, false);
 
         // create sample tags how cfn interprets them from the resource model
         final Map<String, String> tags = configuration.resourceDefinedTags(requestExpectedModel);
@@ -562,19 +501,20 @@ public class UpdateHandlerTest {
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(requestExpectedModel)
                 .desiredResourceTags(tags)
+                .previousResourceState(previousModel)
+                .previousResourceTags(FmsSampleHelper.generateSampleResourceTags(true, false))
                 .build();
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, null, logger);
 
         // verify stub calls
-        verify(proxy, times(6)).injectCredentialsAndInvokeV2(
+        verify(proxy, times(5)).injectCredentialsAndInvokeV2(
                 captor.capture(),
                 ArgumentMatchers.any()
         );
         assertThat(captor.getAllValues()).isEqualTo(Arrays.asList(
                 FmsSampleHelper.sampleGetResourceSetRequest(),
                 FmsSampleHelper.samplePutResourceSetRequiredParametersRequest(true, false, false),
-                FmsSampleHelper.sampleListTagsForResourceRequest(),
                 FmsSampleHelper.sampleUntagResourceRequest(true, false),
                 FmsSampleHelper.sampleTagResourceRequest(false, true),
                 FmsSampleHelper.sampleListResourceSetResourcesRequest()

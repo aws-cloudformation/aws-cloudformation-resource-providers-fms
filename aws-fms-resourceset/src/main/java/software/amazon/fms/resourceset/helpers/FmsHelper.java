@@ -82,13 +82,14 @@ public class FmsHelper {
      * @param desiredTagList The tags that should exist on the policy.
      * @return A list of tag keys to remove from the policy.
      */
-    public static List<String> tagsToRemove(List<Tag> existingTagList, Map<String, String> desiredTagList) {
+    public static List<String> tagsToRemove(Map<String, String> existingTagList, Map<String, String> desiredTagList) {
 
         // format existing and new tags
+        final List<Tag> previousTagListFms = convertCFNTagMapToFMSTagSet(existingTagList);
         final List<Tag> desiredTagListFms = convertCFNTagMapToFMSTagSet(desiredTagList);
 
         // determine tags to remove
-        return existingTagList.stream()
+        return previousTagListFms.stream()
                 .filter(tag -> !desiredTagListFms.contains(tag))
                 .map(Tag::key)
                 .collect(Collectors.toList());
@@ -100,14 +101,15 @@ public class FmsHelper {
      * @param desiredTagList The tags that should exist on the policy.
      * @return A list of tags to add to the policy.
      */
-    public static List<Tag> tagsToAdd(List<Tag> existingTagList, Map<String, String> desiredTagList) {
+    public static List<Tag> tagsToAdd(Map<String, String> existingTagList, Map<String, String> desiredTagList) {
 
         // format existing and new tags
+        final List<Tag> previousTagListFms = convertCFNTagMapToFMSTagSet(existingTagList);
         final List<Tag> desiredTagListFms = convertCFNTagMapToFMSTagSet(desiredTagList);
 
         // determine tags to add
         return desiredTagListFms.stream()
-                .filter(tag -> !existingTagList.contains(tag))
+                .filter(tag -> !previousTagListFms.contains(tag))
                 .collect(Collectors.toList());
     }
 }

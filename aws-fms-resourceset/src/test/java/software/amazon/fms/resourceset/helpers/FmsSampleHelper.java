@@ -11,7 +11,6 @@ import software.amazon.awssdk.services.fms.model.DeleteResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.FailedItem;
 import software.amazon.awssdk.services.fms.model.GetResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.GetResourceSetRequest;
-import software.amazon.awssdk.services.fms.model.GetResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.ListPoliciesResponse;
 import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesRequest;
 import software.amazon.awssdk.services.fms.model.ListResourceSetResourcesResponse;
@@ -20,12 +19,8 @@ import software.amazon.awssdk.services.fms.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.fms.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.fms.model.PutResourceSetRequest;
 import software.amazon.awssdk.services.fms.model.PutResourceSetResponse;
-import software.amazon.awssdk.services.fms.model.PutResourceSetRequest;
-import software.amazon.awssdk.services.fms.model.PutResourceSetResponse;
-import software.amazon.awssdk.services.fms.model.PutResourceSetResponse;
 import software.amazon.awssdk.services.fms.model.ResourceSetSummary;
 import software.amazon.awssdk.services.fms.model.Resource;
-import software.amazon.awssdk.services.fms.model.ResourceSet;
 import software.amazon.awssdk.services.fms.model.ResourceSet;
 import software.amazon.awssdk.services.fms.model.ResourceTag;
 import software.amazon.awssdk.services.fms.model.Tag;
@@ -36,10 +31,10 @@ import software.amazon.awssdk.services.fms.model.UntagResourceResponse;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FmsSampleHelper extends BaseSampleHelper {
 
@@ -152,6 +147,25 @@ public class FmsSampleHelper extends BaseSampleHelper {
         }
 
         return ListTagsForResourceResponse.builder().tagList(listTags).build();
+    }
+
+    /***
+     * Assembles a sample tag map in the CloudFormation resource state.
+     * @param includeTag1 Should unique tag 1 be added.
+     * @param includeTag2 Should unique tag 2 be added.
+     * @return The assembled sample tag map.
+     */
+
+    public static Map<String, String> generateSampleResourceTags(final boolean includeTag1, final boolean includeTag2) {
+        // determine tags to include in the map
+        final Map<String, String> tags = new HashMap<>();
+        if (includeTag1) {
+            tags.put(String.format("%s%s", sampleTagKey, "1"), sampleTagValue);
+        }
+        if (includeTag2) {
+            tags.put(String.format("%s%s", sampleTagKey, "2"), sampleTagValue);
+        }
+        return tags;
     }
 
     /**
