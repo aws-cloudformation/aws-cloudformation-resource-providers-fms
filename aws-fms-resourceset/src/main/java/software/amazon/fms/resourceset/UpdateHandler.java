@@ -23,6 +23,7 @@ import software.amazon.fms.resourceset.helpers.CfnHelper;
 import software.amazon.fms.resourceset.helpers.FmsHelper;
 
 import java.util.List;
+import java.util.Map;
 
 public class UpdateHandler extends ResourceSetHandler<PutResourceSetResponse> {
 
@@ -69,23 +70,14 @@ public class UpdateHandler extends ResourceSetHandler<PutResourceSetResponse> {
         logger.log("ResourceSet updated successfully");
         logRequest(putResourceSetResponse, logger);
 
-        // make a list request to get the current tags on the ResourceSet
-        logger.log("Retrieving ResourceSet tags");
-        final ListTagsForResourceRequest listTagsForResourceRequest = ListTagsForResourceRequest.builder()
-                .resourceArn(getResourceSetResponse.resourceSetArn())
-                .build();
-        final ListTagsForResourceResponse listTagsForResourceResponse = proxy.injectCredentialsAndInvokeV2(
-                listTagsForResourceRequest,
-                client::listTagsForResource);
-        logger.log("ResourceSet tags retrieved successfully");
-        logRequest(listTagsForResourceResponse, logger);
+        Map<String, String> previousResourceTags = request.getPreviousResourceTags();
 
         // determine tags to remove and add
         final List<String> removeTags = FmsHelper.tagsToRemove(
-                listTagsForResourceResponse.tagList(),
+                previousResourceTags,
                 request.getDesiredResourceTags());
         final List<Tag> addTags = FmsHelper.tagsToAdd(
-                listTagsForResourceResponse.tagList(),
+                previousResourceTags,
                 request.getDesiredResourceTags());
 
         // make an untag request
